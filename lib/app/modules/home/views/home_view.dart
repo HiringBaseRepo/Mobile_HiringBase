@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:uifrontendmobile/app/routes/app_pages.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -11,7 +12,7 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFF),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -45,23 +46,19 @@ class HomeView extends GetView<HomeController> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
+                color: AppColors.accent,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
                 Icons.assignment_ind,
-                color: Colors.blue,
+                color: AppColors.primary,
                 size: 24,
               ),
             ),
             const SizedBox(width: 10),
             Text(
               'SmartScreen AI',
-              style: GoogleFonts.outfit(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF2563EB),
-              ),
+              style: AppTextStyles.h3.copyWith(color: AppColors.primary),
             ),
           ],
         ),
@@ -81,16 +78,12 @@ class HomeView extends GetView<HomeController> {
       children: [
         Text(
           'Good Morning, Sarah',
-          style: GoogleFonts.outfit(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF1E293B),
-          ),
+          style: AppTextStyles.h1,
         ),
         const SizedBox(height: 4),
         Text(
           'Here is your daily recruitment overview.',
-          style: GoogleFonts.outfit(fontSize: 16, color: Colors.grey.shade600),
+          style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -106,7 +99,7 @@ class HomeView extends GetView<HomeController> {
             margin: const EdgeInsets.only(right: 15),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.cardBackground,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -127,8 +120,7 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 15),
                 Text(
                   stat['title'].toString(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
+                  style: AppTextStyles.bodyS.copyWith(
                     color: Colors.grey.shade500,
                     fontWeight: FontWeight.w500,
                   ),
@@ -136,11 +128,7 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 4),
                 Text(
                   stat['value'].toString(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1E293B),
-                  ),
+                  style: AppTextStyles.h2,
                 ),
               ],
             ),
@@ -169,11 +157,7 @@ class HomeView extends GetView<HomeController> {
         children: [
           Text(
             'Applicants per Month',
-            style: GoogleFonts.outfit(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E293B),
-            ),
+            style: AppTextStyles.subHeader1,
           ),
           const SizedBox(height: 20),
           SizedBox(
@@ -189,10 +173,7 @@ class HomeView extends GetView<HomeController> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        const style = TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        );
+                        final style = AppTextStyles.caption.copyWith(color: Colors.grey);
                         String text = '';
                         switch (value.toInt()) {
                           case 0:
@@ -256,7 +237,7 @@ class HomeView extends GetView<HomeController> {
       barRods: [
         BarChartRodData(
           toY: y,
-          color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFBFDBFE),
+          color: isSelected ? AppColors.chartPrimary : AppColors.chartSecondary,
           width: 35,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
         ),
@@ -272,11 +253,7 @@ class HomeView extends GetView<HomeController> {
           children: [
             Text(
               'Recent Candidates',
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1E293B),
-              ),
+              style: AppTextStyles.subHeader1,
             ),
             TextButton(
               onPressed: () {
@@ -287,15 +264,14 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   Text(
                     'View All',
-                    style: GoogleFonts.outfit(
-                      color: const Color(0xFF2563EB),
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.button.copyWith(
+                      color: AppColors.primary,
                     ),
                   ),
                   const Icon(
                     Icons.arrow_forward,
                     size: 16,
-                    color: Color(0xFF2563EB),
+                    color: AppColors.primary,
                   ),
                 ],
               ),
@@ -344,16 +320,11 @@ class HomeView extends GetView<HomeController> {
                   children: [
                     Text(
                       candidate['name'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
-                      ),
+                      style: AppTextStyles.subHeader2,
                     ),
                     Text(
                       candidate['role'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
+                      style: AppTextStyles.bodyS.copyWith(
                         color: Colors.grey.shade500,
                       ),
                     ),
@@ -367,18 +338,17 @@ class HomeView extends GetView<HomeController> {
                 ),
                 decoration: BoxDecoration(
                   color: candidate['status'] == 'Interview'
-                      ? Colors.orange.shade50
-                      : Colors.blue.shade50,
+                      ? AppColors.warning.withOpacity(0.1)
+                      : AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   candidate['status'].toString(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 11,
+                  style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w600,
                     color: candidate['status'] == 'Interview'
-                        ? Colors.orange.shade700
-                        : Colors.blue.shade700,
+                        ? AppColors.warning
+                        : AppColors.primary,
                   ),
                 ),
               ),
@@ -388,7 +358,7 @@ class HomeView extends GetView<HomeController> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -402,16 +372,15 @@ class HomeView extends GetView<HomeController> {
                       child: CircularProgressIndicator(
                         value: (candidate['score'] as int) / 100,
                         strokeWidth: 3,
-                        backgroundColor: Colors.grey.shade300,
-                        color: const Color(0xFF8B5CF6),
+                        backgroundColor: AppColors.background,
+                        color: AppColors.secondary,
                       ),
                     ),
                     Text(
                       candidate['score'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 10,
+                      style: AppTextStyles.caption.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -419,10 +388,9 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(width: 12),
                 Text(
                   'AI Score',
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
+                  style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF475569),
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -432,10 +400,13 @@ class HomeView extends GetView<HomeController> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                debugPrint('Navigating to Candidate Detail: ${candidate['name']}');
+                Get.toNamed('/candidate-detail', arguments: candidate);
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEEF2FF),
-                foregroundColor: const Color(0xFF4F46E5),
+                backgroundColor: AppColors.accent,
+                foregroundColor: AppColors.accentText,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -444,7 +415,7 @@ class HomeView extends GetView<HomeController> {
               ),
               child: Text(
                 'View Details',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                style: AppTextStyles.button,
               ),
             ),
           ),
@@ -461,14 +432,13 @@ class HomeView extends GetView<HomeController> {
           controller.changeNavIndex(index);
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF2563EB),
-        unselectedItemColor: Colors.grey.shade400,
-        selectedLabelStyle: GoogleFonts.outfit(
-          fontSize: 10,
+        backgroundColor: AppColors.cardBackground,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textTertiary,
+        selectedLabelStyle: AppTextStyles.caption.copyWith(
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.outfit(fontSize: 10),
+        unselectedLabelStyle: AppTextStyles.caption,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),

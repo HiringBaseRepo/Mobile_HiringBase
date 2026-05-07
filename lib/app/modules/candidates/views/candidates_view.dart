@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/routes/app_pages.dart';
 import '../controllers/candidates_controller.dart';
 
 class CandidatesView extends GetView<CandidatesController> {
@@ -9,9 +11,9 @@ class CandidatesView extends GetView<CandidatesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFF),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.cardBackground,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.grey, size: 20),
@@ -19,11 +21,7 @@ class CandidatesView extends GetView<CandidatesController> {
         ),
         title: Text(
           'Recent Candidates',
-          style: GoogleFonts.outfit(
-            color: const Color(0xFF2563EB),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
         ),
         centerTitle: true,
         actions: [
@@ -98,7 +96,7 @@ class CandidatesView extends GetView<CandidatesController> {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Quick find candidate..',
-          hintStyle: GoogleFonts.outfit(color: Colors.grey.shade400, fontSize: 14),
+          hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -113,28 +111,22 @@ class CandidatesView extends GetView<CandidatesController> {
       children: [
         Text(
           'ACTIVE PIPELINE',
-          style: GoogleFonts.outfit(
-            fontSize: 12,
+          style: AppTextStyles.caption.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF8B5CF6),
+            color: AppColors.secondary,
             letterSpacing: 1.2,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Screening Queue',
-          style: GoogleFonts.outfit(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF1E293B),
-          ),
+          style: AppTextStyles.h1,
         ),
         const SizedBox(height: 8),
         Text(
           'Reviewing 24 new applicants for Senior Engineering roles.',
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            color: Colors.grey.shade600,
+          style: AppTextStyles.bodyM.copyWith(
+            color: AppColors.textSecondary,
           ),
         ),
       ],
@@ -149,8 +141,8 @@ class CandidatesView extends GetView<CandidatesController> {
           icon: const Icon(Icons.filter_list, size: 18),
           label: const Text('Filter'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.black87,
-            side: BorderSide(color: Colors.grey.shade300),
+            foregroundColor: AppColors.textPrimary,
+            side: BorderSide(color: AppColors.surface),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
@@ -162,7 +154,7 @@ class CandidatesView extends GetView<CandidatesController> {
             icon: const Icon(Icons.add, size: 18),
             label: const Text('Add Candidate'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2563EB),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -179,7 +171,7 @@ class CandidatesView extends GetView<CandidatesController> {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -208,7 +200,7 @@ class CandidatesView extends GetView<CandidatesController> {
                       decoration: BoxDecoration(
                         color: Colors.green,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: AppColors.cardBackground, width: 2),
                       ),
                     ),
                   ),
@@ -221,17 +213,12 @@ class CandidatesView extends GetView<CandidatesController> {
                   children: [
                     Text(
                       candidate['name'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
-                      ),
+                      style: AppTextStyles.subHeader1,
                     ),
                     Text(
                       candidate['role'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 14,
-                        color: Colors.grey.shade500,
+                      style: AppTextStyles.bodyM.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -245,8 +232,7 @@ class CandidatesView extends GetView<CandidatesController> {
                 ),
                 child: Text(
                   candidate['status'].toString(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 10,
+                  style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Color(candidate['statusColor'] as int),
                   ),
@@ -258,7 +244,7 @@ class CandidatesView extends GetView<CandidatesController> {
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
@@ -273,15 +259,14 @@ class CandidatesView extends GetView<CandidatesController> {
                         value: (candidate['score'] as int) / 100,
                         strokeWidth: 4,
                         backgroundColor: Colors.grey.shade300,
-                        color: const Color(0xFF8B5CF6),
+                        color: AppColors.secondary,
                       ),
                     ),
                     Text(
                       candidate['score'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
+                      style: AppTextStyles.caption.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -293,18 +278,16 @@ class CandidatesView extends GetView<CandidatesController> {
                     children: [
                       Text(
                         'AI SCORE',
-                        style: GoogleFonts.outfit(
-                          fontSize: 10,
+                        style: AppTextStyles.caption.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade500,
+                          color: AppColors.textTertiary,
                         ),
                       ),
                       Text(
                         candidate['matchText'].toString(),
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
+                        style: AppTextStyles.caption.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF2563EB),
+                          color: AppColors.primary,
                         ),
                       ),
                     ],
@@ -315,17 +298,15 @@ class CandidatesView extends GetView<CandidatesController> {
                   children: [
                     Text(
                       'Applied',
-                      style: GoogleFonts.outfit(
-                        fontSize: 10,
-                        color: Colors.grey.shade500,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     Text(
                       candidate['appliedAt'].toString(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
+                      style: AppTextStyles.bodyS.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -338,29 +319,32 @@ class CandidatesView extends GetView<CandidatesController> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    debugPrint('Navigating to Candidate Detail: ${candidate['name']}');
+                    Get.toNamed('/candidate-detail', arguments: candidate);
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.cardBackground,
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(
                     'View Details',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                    style: AppTextStyles.button.copyWith(color: AppColors.cardBackground),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(color: AppColors.surface),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: IconButton(
                   onPressed: () {},
-                  icon: const Icon(Icons.more_horiz, color: Colors.grey),
+                  icon: const Icon(Icons.more_horiz, color: AppColors.textTertiary),
                 ),
               ),
             ],
@@ -376,7 +360,7 @@ class CandidatesView extends GetView<CandidatesController> {
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF8B5CF6), Color(0xFF2563EB)],
+          colors: [AppColors.secondary, AppColors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -396,17 +380,14 @@ class CandidatesView extends GetView<CandidatesController> {
           const SizedBox(height: 20),
           Text(
             'Smart screening is active',
-            style: GoogleFonts.outfit(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyles.h3.copyWith(
               color: Colors.white,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             'AI has analyzed 120+ applications this week, saving your team 14 hours of manual review.',
-            style: GoogleFonts.outfit(
-              fontSize: 14,
+            style: AppTextStyles.bodyM.copyWith(
               color: Colors.white.withOpacity(0.9),
             ),
           ),
@@ -416,15 +397,15 @@ class CandidatesView extends GetView<CandidatesController> {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF2563EB),
+                backgroundColor: AppColors.cardBackground,
+                foregroundColor: AppColors.primary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
               child: Text(
                 'View AI Reports',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                style: AppTextStyles.button,
               ),
             ),
           ),
@@ -440,8 +421,8 @@ class CandidatesView extends GetView<CandidatesController> {
         icon: const Icon(Icons.keyboard_arrow_down),
         label: const Text('Load More Candidates'),
         style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.grey.shade700,
-          side: BorderSide(color: Colors.grey.shade300),
+          foregroundColor: AppColors.textSecondary,
+          side: BorderSide(color: AppColors.surface),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
         ),

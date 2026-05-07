@@ -6,6 +6,8 @@ import '../modules/candidates/bindings/candidates_binding.dart';
 import '../modules/candidates/views/candidates_view.dart';
 import '../modules/jobs/bindings/jobs_binding.dart';
 import '../modules/jobs/views/jobs_view.dart';
+import '../modules/candidate_detail/bindings/candidate_detail_binding.dart';
+import '../modules/candidate_detail/views/candidate_detail_view.dart';
 
 part 'app_routes.dart';
 
@@ -29,6 +31,11 @@ class AppPages {
       name: _Paths.JOBS,
       page: () => const JobsView(),
       binding: JobsBinding(),
+    ),
+    GetPage(
+      name: _Paths.CANDIDATE_DETAIL,
+      page: () => const CandidateDetailView(),
+      binding: CandidateDetailBinding(),
     ),
   ];
 }
