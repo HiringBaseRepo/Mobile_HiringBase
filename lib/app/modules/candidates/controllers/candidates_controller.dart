@@ -58,6 +58,32 @@ class CandidatesController extends GetxController {
 
   final selectedNavIndex = 1.obs; // Index 1 for Candidates
 
+  void updateCandidateStatus(int index, String status) {
+    String colorCode = '0xFF6B7280'; // Default Gray (Review)
+    
+    switch (status.toUpperCase()) {
+      case 'REVIEW':
+        colorCode = '0xFF6B7280';
+        break;
+      case 'INTERVIEW':
+        colorCode = '0xFF3B82F6';
+        break;
+      case 'DITERIMA':
+        colorCode = '0xFF10B981';
+        break;
+      case 'DITOLAK':
+        colorCode = '0xFFEF4444';
+        break;
+    }
+
+    candidates[index] = {
+      ...candidates[index],
+      'status': status.toUpperCase(),
+      'statusColor': int.parse(colorCode),
+    };
+    candidates.refresh();
+  }
+
   void changeNavIndex(int index) {
     selectedNavIndex.value = index;
     if (index == 0) Get.offAllNamed('/home');

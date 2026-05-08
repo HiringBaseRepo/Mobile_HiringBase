@@ -39,6 +39,8 @@ class HomeController extends GetxController {
     selectedNavIndex.value = index;
     if (index == 1) {
       Get.toNamed('/jobs');
+    } else if (index == 2) {
+      Get.toNamed('/analytics');
     }
   }
 }

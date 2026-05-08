@@ -67,7 +67,7 @@ class CandidatesView extends GetView<CandidatesController> {
             _buildActionButtons(),
             const SizedBox(height: 25),
             Obx(() => Column(
-              children: controller.candidates.map((candidate) => _buildCandidateCard(candidate)).toList(),
+              children: controller.candidates.asMap().entries.map((e) => _buildCandidateCard(e.value, e.key)).toList(),
             )),
             const SizedBox(height: 20),
             _buildAiPromoCard(),
@@ -166,7 +166,7 @@ class CandidatesView extends GetView<CandidatesController> {
     );
   }
 
-  Widget _buildCandidateCard(Map<String, dynamic> candidate) {
+  Widget _buildCandidateCard(Map<String, dynamic> candidate, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -224,17 +224,32 @@ class CandidatesView extends GetView<CandidatesController> {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Color(candidate['statusColor'] as int).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  candidate['status'].toString(),
-                  style: AppTextStyles.caption.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Color(candidate['statusColor'] as int),
+              PopupMenuButton<String>(
+                onSelected: (status) => controller.updateCandidateStatus(index, status),
+                itemBuilder: (context) => [
+                  _buildPopupItem('REVIEW', AppColors.textTertiary),
+                  _buildPopupItem('INTERVIEW', AppColors.primary),
+                  _buildPopupItem('DITERIMA', AppColors.success),
+                  _buildPopupItem('DITOLAK', AppColors.error),
+                ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Color(candidate['statusColor'] as int).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        candidate['status'].toString(),
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Color(candidate['statusColor'] as int),
+                        ),
+                      ),
+                      Icon(Icons.arrow_drop_down, size: 16, color: Color(candidate['statusColor'] as int)),
+                    ],
                   ),
                 ),
               ),
@@ -321,7 +336,10 @@ class CandidatesView extends GetView<CandidatesController> {
                 child: ElevatedButton(
                   onPressed: () {
                     debugPrint('Navigating to Candidate Detail: ${candidate['name']}');
-                    Get.toNamed('/candidate-detail', arguments: candidate);
+                    Get.toNamed('/candidate-detail', arguments: {
+                      'candidate': candidate,
+                      'index': index,
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
@@ -348,6 +366,29 @@ class CandidatesView extends GetView<CandidatesController> {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildPopupItem(String value, Color color) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            value,
+            style: AppTextStyles.bodyM.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
         ],
       ),

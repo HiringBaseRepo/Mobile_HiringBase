@@ -281,16 +281,14 @@ class HomeView extends GetView<HomeController> {
         const SizedBox(height: 10),
         Obx(
           () => Column(
-            children: controller.candidates.map((candidate) {
-              return _buildCandidateCard(candidate);
-            }).toList(),
+            children: controller.candidates.asMap().entries.map((e) => _buildCandidateCard(e.value, e.key)).toList(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCandidateCard(Map<String, dynamic> candidate) {
+  Widget _buildCandidateCard(Map<String, dynamic> candidate, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(16),
@@ -402,7 +400,10 @@ class HomeView extends GetView<HomeController> {
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('Navigating to Candidate Detail: ${candidate['name']}');
-                Get.toNamed('/candidate-detail', arguments: candidate);
+                Get.toNamed('/candidate-detail', arguments: {
+                  'candidate': candidate,
+                  'index': index,
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,

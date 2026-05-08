@@ -46,7 +46,11 @@ class JobsView extends GetView<JobsController> {
               _buildTextField("e.g. Senior Software Engineer"),
               const SizedBox(height: 20),
               _buildLabel("DEPARTMENT"),
-              _buildDropdown(["Engineering", "Product", "Design", "Marketing"]),
+              Obx(() => _buildDropdown(
+                ["Engineering", "Product", "Design", "Marketing"],
+                value: controller.department.value,
+                onChanged: (v) => controller.department.value = v!,
+              )),
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -55,7 +59,11 @@ class JobsView extends GetView<JobsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildLabel("EMPLOYMENT TYPE"),
-                        _buildDropdown(["Full-time", "Part-time", "Contract"]),
+                        Obx(() => _buildDropdown(
+                          ["Full-time", "Part-time", "Contract"],
+                          value: controller.employmentType.value,
+                          onChanged: (v) => controller.employmentType.value = v!,
+                        )),
                       ],
                     ),
                   ),
@@ -65,7 +73,11 @@ class JobsView extends GetView<JobsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildLabel("LOCATION"),
-                        _buildDropdown(["Remote", "On-site", "Hybrid"]),
+                        Obx(() => _buildDropdown(
+                          ["Remote", "On-site", "Hybrid"],
+                          value: controller.location.value,
+                          onChanged: (v) => controller.location.value = v!,
+                        )),
                       ],
                     ),
                   ),
@@ -148,10 +160,18 @@ class JobsView extends GetView<JobsController> {
               _buildCardTitle(Icons.school_outlined, "Experience & Education"),
               const SizedBox(height: 20),
               _buildLabel("MINIMUM EXPERIENCE"),
-              _buildDropdown(["Entry Level", "1-2 Years", "3-5 Years", "5+ Years"]),
+              Obx(() => _buildDropdown(
+                ["Entry Level", "1-2 Years", "3-5 Years", "5+ Years"],
+                value: controller.minExperience.value,
+                onChanged: (v) => controller.minExperience.value = v!,
+              )),
               const SizedBox(height: 20),
               _buildLabel("EDUCATION MINIMUM"),
-              _buildDropdown(["High School", "Associate", "Bachelor's", "Master's", "PhD"]),
+              Obx(() => _buildDropdown(
+                ["High School", "Associate", "Bachelor's", "Master's", "PhD"],
+                value: controller.educationMin.value,
+                onChanged: (v) => controller.educationMin.value = v!,
+              )),
               const SizedBox(height: 20),
               _buildLabel("CERTIFICATIONS"),
               _buildTextField("e.g. AWS Certified Developer"),
@@ -173,7 +193,7 @@ class JobsView extends GetView<JobsController> {
       context,
       title: "Applicant Form Setup",
       step: "Step 3 of 4",
-      sub: "Customize the application process and evaluation criteria.",
+      sub: "Customize the fields that applicants need to fill out.",
       progress: 0.75,
       children: [
         _buildCard(
@@ -184,7 +204,35 @@ class JobsView extends GetView<JobsController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildCardTitle(Icons.dynamic_form_outlined, "Custom Fields"),
-                  TextButton.icon(onPressed: () {}, icon: const Icon(Icons.add, size: 18), label: const Text("Add")),
+                  TextButton.icon(
+                    onPressed: () {
+                      final textController = TextEditingController();
+                      Get.defaultDialog(
+                        title: "Add Custom Field",
+                        titleStyle: AppTextStyles.h2,
+                        backgroundColor: AppColors.cardBackground,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        content: TextField(
+                          controller: textController,
+                          decoration: InputDecoration(
+                            hintText: "e.g. Portfolio Link",
+                            hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.surface)),
+                          ),
+                        ),
+                        textConfirm: "Add",
+                        textCancel: "Cancel",
+                        confirmTextColor: Colors.white,
+                        buttonColor: AppColors.primary,
+                        onConfirm: () {
+                          controller.addCustomField(textController.text);
+                          Get.back();
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text("Add"),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -194,24 +242,7 @@ class JobsView extends GetView<JobsController> {
             ],
           ),
         ),
-        const SizedBox(height: 25),
-        _buildCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCardTitle(Icons.rule_outlined, "Evaluation Rules", iconColor: AppColors.warning),
-              const SizedBox(height: 20),
-              _buildLabel("REQUIRED DOCUMENTS"),
-              _buildTextField("e.g. CV, Portfolio, Cover Letter"),
-              const SizedBox(height: 20),
-              _buildLabel("KNOCKOUT RULES"),
-              _buildTextField("e.g. Reject if no work permit"),
-              const SizedBox(height: 20),
-              _buildLabel("SCORING TEMPLATE"),
-              _buildDropdown(["Standard Engineering", "Executive Search", "Quick Filter"]),
-            ],
-          ),
-        ),
+
         const SizedBox(height: 30),
         _buildNavigationButtons(),
       ],
@@ -234,7 +265,11 @@ class JobsView extends GetView<JobsController> {
               _buildCardTitle(Icons.send_outlined, "Visibility & Status"),
               const SizedBox(height: 20),
               _buildLabel("PUBLISH STATUS"),
-              _buildDropdown(["Public (Live)", "Private (Link Only)", "Internal Only"]),
+              Obx(() => _buildDropdown(
+                ["Public (Live)", "Private (Link Only)", "Internal Only"],
+                value: controller.publishStatus.value,
+                onChanged: (v) => controller.publishStatus.value = v!,
+              )),
               const SizedBox(height: 25),
               Row(
                 children: [
@@ -456,17 +491,17 @@ class JobsView extends GetView<JobsController> {
     );
   }
 
-  Widget _buildDropdown(List<String> items) {
+  Widget _buildDropdown(List<String> items, {required String value, required Function(String?) onChanged}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: items[0],
+          value: items.contains(value) ? value : items[0],
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textTertiary),
           items: items.map((String v) => DropdownMenuItem(value: v, child: Text(v, style: AppTextStyles.bodyM))).toList(),
-          onChanged: (_) {},
+          onChanged: onChanged,
         ),
       ),
     );
@@ -522,8 +557,15 @@ class JobsView extends GetView<JobsController> {
           const Icon(Icons.drag_indicator, color: AppColors.textTertiary, size: 20),
           const SizedBox(width: 12),
           Expanded(child: Text(field['name'].toString(), style: AppTextStyles.subHeader2)),
-          if (field['locked'] == true) const Icon(Icons.lock_outline, color: AppColors.textTertiary, size: 18)
-          else Switch(value: field['required'] as bool, onChanged: (_) => controller.toggleFieldRequired(index), activeColor: AppColors.primary),
+          if (field['locked'] == true) 
+            const Icon(Icons.lock_outline, color: AppColors.textTertiary, size: 18)
+          else ...[
+            Switch(value: field['required'] as bool, onChanged: (_) => controller.toggleFieldRequired(index), activeColor: AppColors.primary),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+              onPressed: () => controller.removeCustomField(index),
+            ),
+          ],
         ],
       ),
     );
@@ -590,7 +632,13 @@ class JobsView extends GetView<JobsController> {
   Widget _buildBottomNavBar() {
     return BottomNavigationBar(
       currentIndex: 1,
-      onTap: (index) { if (index == 0) Get.offAllNamed('/home'); },
+      onTap: (index) {
+        if (index == 0) {
+          Get.offAllNamed('/home');
+        } else if (index == 2) {
+          Get.toNamed('/analytics');
+        }
+      },
       type: BottomNavigationBarType.fixed,
       backgroundColor: AppColors.cardBackground,
       selectedItemColor: AppColors.primary,

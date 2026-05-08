@@ -80,21 +80,80 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
                   style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    candidate['status'].toString(),
-                    style: AppTextStyles.caption.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.accentText,
+                Obx(() {
+                  final currentStatus = controller.candidate['status'] ?? 'NEW';
+                  final statusColor = _getStatusColor(currentStatus.toString());
+                  
+                  return PopupMenuButton<String>(
+                    onSelected: (status) => controller.updateStatus(status),
+                    itemBuilder: (context) => [
+                      _buildPopupItem('REVIEW', AppColors.textTertiary),
+                      _buildPopupItem('INTERVIEW', const Color(0xFFF97316)), // Orange as seen in your image
+                      _buildPopupItem('DITERIMA', AppColors.success),
+                      _buildPopupItem('DITOLAK', AppColors.error),
+                    ],
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            currentStatus.toString(),
+                            style: AppTextStyles.caption.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: statusColor,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.keyboard_arrow_down, size: 14, color: statusColor),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'REVIEW':
+        return AppColors.textTertiary;
+      case 'INTERVIEW':
+        return const Color(0xFFF97316); // Matches your image
+      case 'DITERIMA':
+        return AppColors.success;
+      case 'DITOLAK':
+        return AppColors.error;
+      default:
+        return AppColors.accentText;
+    }
+  }
+
+  PopupMenuItem<String> _buildPopupItem(String value, Color color) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            value,
+            style: AppTextStyles.bodyM.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
             ),
           ),
         ],

@@ -17,8 +17,8 @@ class JobsController extends GetxController {
   // Step 2: Requirement Builder
   final requiredSkills = <String>['React.js', 'TypeScript'].obs;
   final preferredSkills = <String>['Node.js', 'Docker'].obs;
-  final minExperience = '3+ Years'.obs;
-  final educationMin = 'Bachelor\'s Degree'.obs;
+  final minExperience = '3-5 Years'.obs;
+  final educationMin = 'Bachelor\'s'.obs;
   final certifications = <String>[].obs;
   final languages = <String>['English'].obs;
   final workModel = 'Remote'.obs; // shift / WFO / remote
@@ -30,12 +30,10 @@ class JobsController extends GetxController {
     {'name': 'Education', 'required': true, 'locked': false},
     {'name': 'Work Experience', 'required': true, 'locked': false},
   ].obs;
-  final requiredDocs = <String>['CV/Resume', 'Portfolio'].obs;
-  final knockoutRules = <String>['Must have 3+ years experience'].obs;
-  final scoringTemplate = 'Standard Engineering'.obs;
+
 
   // Step 4: Publish Control
-  final publishStatus = 'Public'.obs; // Public/Private
+  final publishStatus = 'Public (Live)'.obs; // Public/Private
   final isScheduled = false.obs;
   final scheduledDate = ''.obs;
   final generateApplyCode = true.obs;
@@ -74,6 +72,18 @@ class JobsController extends GetxController {
       bool current = customFields[index]['required'] as bool;
       customFields[index]['required'] = !current;
       customFields.refresh();
+    }
+  }
+
+  void addCustomField(String name) {
+    if (name.isNotEmpty) {
+      customFields.add({'name': name, 'required': false, 'locked': false});
+    }
+  }
+
+  void removeCustomField(int index) {
+    if (customFields[index]['locked'] == false) {
+      customFields.removeAt(index);
     }
   }
 }
