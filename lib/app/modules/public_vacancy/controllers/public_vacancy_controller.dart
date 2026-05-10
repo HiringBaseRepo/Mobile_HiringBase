@@ -19,7 +19,7 @@ class PublicVacancyController extends GetxController {
       salary: r'$5,000 - $8,000',
       description: 'We are looking for a Senior Software Engineer to join our core team...',
       requirements: ['Dart/Flutter', 'GetX', 'Node.js', 'PostgreSQL'],
-      docs: ['CV', 'Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
+      docs: ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
     ),
     const Vacancy(
       id: 'VAC-002',
@@ -30,7 +30,7 @@ class PublicVacancyController extends GetxController {
       salary: r'$4,000 - $6,500',
       description: 'Join our design team to create beautiful and intuitive user experiences...',
       requirements: ['Figma', 'Prototyping', 'User Research', 'Design Systems'],
-      docs: ['CV', 'Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
+      docs: ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
     )
   ].obs;
 
