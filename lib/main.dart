@@ -7,7 +7,18 @@ import 'app/routes/app_pages.dart';
 import 'app/core/values/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+import 'app/services/app_service.dart';
+import 'app/services/navigation_service.dart';
+import 'app/services/scoring_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Global Services
+  Get.put(AppService(), permanent: true);
+  Get.put(NavigationService(), permanent: true);
+  Get.put(ScoringService(), permanent: true);
+
   runApp(
     GetMaterialApp(
       title: "SmartScreen AI",

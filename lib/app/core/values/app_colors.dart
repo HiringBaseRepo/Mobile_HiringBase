@@ -5,9 +5,12 @@ class AppColors {
   static const Color background = Color(0xFFF8FAFF);
   static const Color cardBackground = Colors.white;
   static const Color surface = Color(0xFFF1F5F9);
+  static const Color outline = Color(0xFFE2E8F0);
+  static const Color outlineVariant = Color(0xFFC3C6D7);
 
   // Brand Colors
   static const Color primary = Color(0xFF2563EB);
+  static const Color primaryDark = Color(0xFF1D4ED8);
   static const Color secondary = Color(0xFF8B5CF6);
   static const Color accent = Color(0xFFEEF2FF);
   static const Color accentText = Color(0xFF4F46E5);
@@ -17,6 +20,7 @@ class AppColors {
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
+  static const Color interview = Color(0xFFF97316);
 
   // Text Colors
   static const Color textPrimary = Color(0xFF1E293B);

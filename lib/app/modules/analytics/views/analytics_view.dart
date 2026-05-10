@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import '../controllers/analytics_controller.dart';
+import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
+import 'package:uifrontendmobile/app/core/widgets/app_bottom_nav.dart';
 
 class AnalyticsView extends GetView<AnalyticsController> {
   const AnalyticsView({super.key});
@@ -33,11 +35,11 @@ class AnalyticsView extends GetView<AnalyticsController> {
                 return Center(
                   child: Column(
                     children: [
-                      Icon(Icons.touch_app_outlined, size: 64, color: Colors.grey.shade300),
+                      Icon(Icons.touch_app_outlined, size: 64, color: AppColors.textTertiary),
                       const SizedBox(height: 10),
                       Text(
                         'Pilih job untuk melihat detail pelamar',
-                        style: AppTextStyles.bodyM.copyWith(color: Colors.grey),
+                        style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -49,32 +51,10 @@ class AnalyticsView extends GetView<AnalyticsController> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: const AppBottomNav(),
     );
   }
 
-  Widget _buildBottomNavBar() {
-    return BottomNavigationBar(
-      currentIndex: 2,
-      onTap: (index) {
-        if (index == 0) {
-          Get.offAllNamed('/home');
-        } else if (index == 1) {
-          Get.toNamed('/jobs');
-        }
-      },
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: AppColors.cardBackground,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.textTertiary,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Dashboard'),
-        BottomNavigationBarItem(icon: Icon(Icons.work_outline), label: 'Jobs'),
-        BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: 'Analytic'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-      ],
-    );
-  }
 
   Widget _buildOverallStats() {
     return Container(
@@ -82,14 +62,14 @@ class AnalyticsView extends GetView<AnalyticsController> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primary, Color(0xFF1D4ED8)],
+          colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -103,7 +83,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
             children: [
               Text(
                 'Total Pelamar Keseluruhan',
-                style: AppTextStyles.bodyL.copyWith(color: Colors.white.withOpacity(0.8)),
+                style: AppTextStyles.bodyL.copyWith(color: Colors.white.withValues(alpha: 0.8)),
               ),
               const Icon(Icons.trending_up, color: Colors.white, size: 24),
             ],
@@ -116,7 +96,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
           const SizedBox(height: 5),
           Text(
             '+12% dari bulan lalu',
-            style: AppTextStyles.caption.copyWith(color: Colors.white.withOpacity(0.6)),
+            style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.6)),
           ),
         ],
       ),
@@ -141,15 +121,15 @@ class AnalyticsView extends GetView<AnalyticsController> {
                   margin: const EdgeInsets.only(right: 15),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : Colors.white,
+                    color: isSelected ? AppColors.primary : AppColors.cardBackground,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : Colors.grey.shade200,
+                      color: isSelected ? AppColors.primary : AppColors.surface,
                       width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(isSelected ? 0.1 : 0.02),
+                        color: Colors.black.withValues(alpha: isSelected ? 0.1 : 0.02),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -161,12 +141,12 @@ class AnalyticsView extends GetView<AnalyticsController> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white.withOpacity(0.2) : Color(job['color'] as int).withOpacity(0.1),
+                          color: isSelected ? AppColors.cardBackground.withValues(alpha: 0.2) : Color(job['color'] as int).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.work_outline,
-                          color: isSelected ? Colors.white : Color(job['color'] as int),
+                          color: isSelected ? AppColors.cardBackground : Color(job['color'] as int),
                           size: 20,
                         ),
                       ),
@@ -176,7 +156,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.subHeader2.copyWith(
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          color: isSelected ? AppColors.cardBackground : AppColors.textPrimary,
                           height: 1.2,
                         ),
                       ),
@@ -184,7 +164,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
                       Text(
                         '${job['applicants']} Pelamar',
                         style: AppTextStyles.caption.copyWith(
-                          color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.textSecondary,
+                          color: isSelected ? AppColors.cardBackground.withValues(alpha: 0.8) : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -230,7 +210,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -258,7 +238,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
             child: Text(
               label,
               style: AppTextStyles.button.copyWith(
-                color: isSelected ? AppColors.primary : Colors.grey,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),
             ),
           ),
@@ -267,16 +247,16 @@ class AnalyticsView extends GetView<AnalyticsController> {
     });
   }
 
-  Widget _buildCandidateTile(Map<String, dynamic> candidate, int index) {
+  Widget _buildCandidateTile(Candidate candidate, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -295,15 +275,15 @@ class AnalyticsView extends GetView<AnalyticsController> {
             ),
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(candidate['image'].toString()),
+            backgroundImage: NetworkImage(candidate.imageUrl),
           ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(candidate['name'].toString(), style: AppTextStyles.subHeader2),
-                Text(candidate['status'].toString(), style: AppTextStyles.bodyS),
+                Text(candidate.name, style: AppTextStyles.subHeader2),
+                Text(candidate.status, style: AppTextStyles.bodyS),
               ],
             ),
           ),
@@ -311,7 +291,7 @@ class AnalyticsView extends GetView<AnalyticsController> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${candidate['score']}',
+                '${candidate.score}',
                 style: AppTextStyles.h3.copyWith(color: AppColors.secondary),
               ),
               Text('AI Score', style: AppTextStyles.caption),
