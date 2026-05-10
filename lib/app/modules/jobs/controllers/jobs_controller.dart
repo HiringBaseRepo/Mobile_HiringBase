@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 
+import 'package:uifrontendmobile/app/services/scoring_service.dart';
+
 class JobsController extends GetxController {
+  final _scoringService = Get.find<ScoringService>();
   final currentStep = 1.obs;
 
   // Step 1: Job Core
@@ -32,14 +35,59 @@ class JobsController extends GetxController {
   ].obs;
 
 
-  // Step 4: Publish Control
+  // Step 4: Scoring Weights & Publish Control
+  final skillMatchWeight = 30.0.obs;
+  final experienceWeight = 25.0.obs;
+  final educationWeight = 15.0.obs;
+  final portfolioWeight = 15.0.obs;
+  final softSkillWeight = 10.0.obs;
+  final administrativeWeight = 5.0.obs;
+
+  double get totalWeight => 
+      skillMatchWeight.value + 
+      experienceWeight.value + 
+      educationWeight.value + 
+      portfolioWeight.value + 
+      softSkillWeight.value + 
+      administrativeWeight.value;
+
   final publishStatus = 'Public (Live)'.obs; // Public/Private
   final isScheduled = false.obs;
   final scheduledDate = ''.obs;
   final generateApplyCode = true.obs;
 
-  void nextStep() {
-    if (currentStep.value < 5) {
+  void updateWeight(RxDouble weight, double value) {
+    weight.value = value;
+  }
+
+  void nextStep() async {
+    if (currentStep.value == 4) {
+      // Validate Total Weight
+      if (totalWeight != 100.0) {
+        Get.snackbar(
+          "Validation Error", 
+          "Total scoring weight must be exactly 100%. Current: ${totalWeight.toInt()}%",
+          backgroundColor: Get.theme.colorScheme.errorContainer,
+        );
+        return;
+      }
+
+      // Perform Publish + Save Weights
+      try {
+        await _scoringService.saveTemplate(
+          jobId: "NEW_JOB_ID", // This should be from the created job response
+          skillMatch: skillMatchWeight.value,
+          experience: experienceWeight.value,
+          education: educationWeight.value,
+          portfolio: portfolioWeight.value,
+          softSkill: softSkillWeight.value,
+          administrative: administrativeWeight.value,
+        );
+        currentStep.value++;
+      } catch (e) {
+        Get.snackbar("Error", "Failed to publish job scoring template.");
+      }
+    } else if (currentStep.value < 5) {
       currentStep.value++;
     }
   }
@@ -53,18 +101,21 @@ class JobsController extends GetxController {
   // Helper methods
   void addSkill(String skill, bool isRequired) {
     if (skill.isNotEmpty) {
-      if (isRequired && !requiredSkills.contains(skill))
+      if (isRequired && !requiredSkills.contains(skill)) {
         requiredSkills.add(skill);
-      if (!isRequired && !preferredSkills.contains(skill))
+      }
+      if (!isRequired && !preferredSkills.contains(skill)) {
         preferredSkills.add(skill);
+      }
     }
   }
 
   void removeSkill(String skill, bool isRequired) {
-    if (isRequired)
+    if (isRequired) {
       requiredSkills.remove(skill);
-    else
+    } else {
       preferredSkills.remove(skill);
+    }
   }
 
   void toggleFieldRequired(int index) {

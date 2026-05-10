@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/mnt/windows/Users/boyblanco/Documents/code/web/Hirebase/Mobile_HiringBase/logs/.caa81f9bbfb464fdf73190b9164595d64ac7fa99-audit.json",
+    "files": [
+        {
+            "date": 1778382192596,
+            "name": "/mnt/windows/Users/boyblanco/Documents/code/web/Hirebase/Mobile_HiringBase/logs/mcp-puppeteer-2026-05-10.log",
+            "hash": "bea9ecb1e21be2bbd61627c43e7a2596108dac6e418e8d942aa6b69f746e7a84"
+        }
+    ],
+    "hashType": "sha256"
+}
