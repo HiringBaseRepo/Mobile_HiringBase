@@ -100,6 +100,25 @@ class PublicVacancyController extends GetxController {
   }
 
   void nextStep() {
+    if (currentStep.value == 2) {
+      if (fullNameController.text.isEmpty || 
+          emailController.text.isEmpty || 
+          !GetUtils.isEmail(emailController.text)) {
+        Get.snackbar('Validation Error', 'Harap isi nama dan email yang valid.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white);
+        return;
+      }
+      if (phoneController.text.isEmpty || phoneController.text.length < 10) {
+        Get.snackbar('Validation Error', 'Harap isi nomor WhatsApp yang valid (min. 10 digit).',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white);
+        return;
+      }
+    }
+    
     if (currentStep.value < 3) {
       currentStep.value++;
     }
@@ -120,6 +139,14 @@ class PublicVacancyController extends GetxController {
         emailController.text.isEmpty || 
         !GetUtils.isEmail(emailController.text)) {
       Get.snackbar('Validation Error', 'Please fill all required fields with valid email.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: Colors.white);
+      return false;
+    }
+
+    if (phoneController.text.isEmpty || phoneController.text.length < 10) {
+      Get.snackbar('Validation Error', 'Please enter a valid WhatsApp number (min. 10 digits).',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.error,
           colorText: Colors.white);
@@ -154,15 +181,6 @@ class PublicVacancyController extends GetxController {
         return;
       }
       */
-
-      // Final field validation
-      if (phoneController.text.length < 10) {
-        Get.snackbar('Validation Error', 'Please enter a valid phone number.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: Colors.white);
-        return;
-      }
 
       // Generate Ticket
       final year = DateTime.now().year;

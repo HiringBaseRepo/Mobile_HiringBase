@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 
-class JobPublishSuccessView extends StatelessWidget {
+import '../../controllers/jobs_controller.dart';
+
+class JobPublishSuccessView extends GetView<JobsController> {
   const JobPublishSuccessView({super.key});
 
   @override
@@ -36,7 +38,10 @@ class JobPublishSuccessView extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Reset to first step and go back to jobs list
+                    controller.currentStep.value = 1;
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.cardBackground,
