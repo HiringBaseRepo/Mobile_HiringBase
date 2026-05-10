@@ -19,7 +19,7 @@ class PublicVacancyController extends GetxController {
       salary: r'$5,000 - $8,000',
       description: 'We are looking for a Senior Software Engineer to join our core team...',
       requirements: ['Dart/Flutter', 'GetX', 'Node.js', 'PostgreSQL'],
-      docs: ['CV', 'Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
+      docs: ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
     ),
     const Vacancy(
       id: 'VAC-002',
@@ -30,7 +30,7 @@ class PublicVacancyController extends GetxController {
       salary: r'$4,000 - $6,500',
       description: 'Join our design team to create beautiful and intuitive user experiences...',
       requirements: ['Figma', 'Prototyping', 'User Research', 'Design Systems'],
-      docs: ['CV', 'Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
+      docs: ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'],
     )
   ].obs;
 
@@ -100,6 +100,25 @@ class PublicVacancyController extends GetxController {
   }
 
   void nextStep() {
+    if (currentStep.value == 2) {
+      if (fullNameController.text.isEmpty || 
+          emailController.text.isEmpty || 
+          !GetUtils.isEmail(emailController.text)) {
+        Get.snackbar('Validation Error', 'Harap isi nama dan email yang valid.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white);
+        return;
+      }
+      if (phoneController.text.isEmpty || phoneController.text.length < 10) {
+        Get.snackbar('Validation Error', 'Harap isi nomor WhatsApp yang valid (min. 10 digit).',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white);
+        return;
+      }
+    }
+    
     if (currentStep.value < 3) {
       currentStep.value++;
     }
@@ -120,6 +139,14 @@ class PublicVacancyController extends GetxController {
         emailController.text.isEmpty || 
         !GetUtils.isEmail(emailController.text)) {
       Get.snackbar('Validation Error', 'Please fill all required fields with valid email.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: Colors.white);
+      return false;
+    }
+
+    if (phoneController.text.isEmpty || phoneController.text.length < 10) {
+      Get.snackbar('Validation Error', 'Please enter a valid WhatsApp number (min. 10 digits).',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.error,
           colorText: Colors.white);
@@ -154,15 +181,6 @@ class PublicVacancyController extends GetxController {
         return;
       }
       */
-
-      // Final field validation
-      if (phoneController.text.length < 10) {
-        Get.snackbar('Validation Error', 'Please enter a valid phone number.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: Colors.white);
-        return;
-      }
 
       // Generate Ticket
       final year = DateTime.now().year;
