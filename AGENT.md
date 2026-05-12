@@ -1,6 +1,6 @@
 # Project: SmartScreen AI (Mobile Frontend)
 
-This document serves as the primary context for AI agents working on the SmartScreen AI mobile application. It outlines the project's architecture, design system, and coding standards to ensure consistency and scalability across all developments.
+This document serves as the primary context for AI agents working on the SmartScreen AI mobile application. It outlines the project's architecture, design system, and coding standards to ensure consistency and scalability across all developments. okeh
 
 ## 🚀 Tech Stack
 - **Framework**: Flutter (latest stable)
