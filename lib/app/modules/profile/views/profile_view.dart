@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../app/core/values/app_colors.dart';
-import '../../../../app/core/values/app_text_styles.dart';
-import '../controllers/profile_controller.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/modules/profile/controllers/profile_controller.dart';
 import 'package:uifrontendmobile/app/core/widgets/app_bottom_nav.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -28,6 +28,11 @@ class ProfileView extends GetView<ProfileController> {
                     items: [
                       _SettingsItem(icon: Icons.person_outline, label: 'Personal Info'),
                       _SettingsItem(icon: Icons.security_outlined, label: 'Security & Password'),
+                      _SettingsItem(
+                        icon: Icons.history_outlined, 
+                        label: 'Aktivitas Saya',
+                        onTap: () => Get.toNamed('/aktivitas'),
+                      ),
                       _SettingsItem(icon: Icons.notifications_none_outlined, label: 'Notifications'),
                     ],
                   ),
@@ -62,7 +67,7 @@ class ProfileView extends GetView<ProfileController> {
           end: Alignment.bottomCenter,
           colors: [
             AppColors.primary,
-            AppColors.primary.withValues(alpha: 0.8),
+            AppColors.primary.withOpacity(0.8),
           ],
         ),
         borderRadius: const BorderRadius.only(
@@ -83,7 +88,7 @@ class ProfileView extends GetView<ProfileController> {
                   border: Border.all(color: Colors.white, width: 4),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Colors.black.withOpacity(0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -116,13 +121,13 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 4),
           Text(
             'Talent Acquisition Lead',
-            style: AppTextStyles.bodyM.copyWith(color: Colors.white.withValues(alpha: 0.8)),
+            style: AppTextStyles.bodyM.copyWith(color: Colors.white.withOpacity(0.8)),
           ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
+              color: Colors.white.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -160,7 +165,7 @@ class ProfileView extends GetView<ProfileController> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: AppColors.error.withValues(alpha: 0.2)),
+            side: BorderSide(color: AppColors.error.withOpacity(0.2)),
           ),
         ),
       ),
@@ -206,10 +211,10 @@ class ProfileView extends GetView<ProfileController> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity(0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -222,11 +227,15 @@ class ProfileView extends GetView<ProfileController> {
             children: [
               Icon(icon, size: 16, color: AppColors.primary),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTextStyles.caption.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.caption.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -240,10 +249,14 @@ class ProfileView extends GetView<ProfileController> {
                 const Icon(Icons.trending_up, size: 14, color: AppColors.primary),
                 const SizedBox(width: 4),
               ],
-              Text(
-                subValue,
-                style: AppTextStyles.bodyS.copyWith(
-                  color: subValueColor ?? AppColors.textTertiary,
+              Expanded(
+                child: Text(
+                  subValue,
+                  style: AppTextStyles.bodyS.copyWith(
+                    color: subValueColor ?? AppColors.textTertiary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
@@ -258,7 +271,7 @@ class ProfileView extends GetView<ProfileController> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +292,7 @@ class ProfileView extends GetView<ProfileController> {
                 leading: Icon(item.icon, color: AppColors.textSecondary),
                 title: Text(item.label, style: AppTextStyles.button.copyWith(color: AppColors.textPrimary)),
                 trailing: const Icon(Icons.chevron_right, size: 20, color: AppColors.textTertiary),
-                onTap: () {},
+                onTap: item.onTap ?? () {},
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               );
             },
@@ -293,6 +306,7 @@ class ProfileView extends GetView<ProfileController> {
 class _SettingsItem {
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
-  _SettingsItem({required this.icon, required this.label});
+  _SettingsItem({required this.icon, required this.label, this.onTap});
 }

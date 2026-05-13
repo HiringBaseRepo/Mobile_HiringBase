@@ -21,6 +21,7 @@ abstract class Routes {
   static const MANUAL_OVERRIDE = _Paths.MANUAL_OVERRIDE;
   static const SCHEDULE_INTERVIEW = _Paths.SCHEDULE_INTERVIEW;
   static const INTERVIEW_DETAIL = _Paths.INTERVIEW_DETAIL;
+  static const AKTIVITAS = _Paths.AKTIVITAS;
 }
 
 abstract class _Paths {
@@ -43,4 +44,5 @@ abstract class _Paths {
   static const MANUAL_OVERRIDE = '/manual-override';
   static const SCHEDULE_INTERVIEW = '/schedule-interview';
   static const INTERVIEW_DETAIL = '/interview-detail';
+  static const AKTIVITAS = '/aktivitas';
 }
