@@ -9,11 +9,11 @@ class AppColors {
   static const Color outlineVariant = Color(0xFFC3C6D7);
 
   // Brand Colors
-  static const Color primary = Color(0xFF2563EB);
-  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color primary = Color(0xFF991B1B);
+  static const Color primaryDark = Color(0xFF7F1D1D);
   static const Color secondary = Color(0xFF8B5CF6);
-  static const Color accent = Color(0xFFEEF2FF);
-  static const Color accentText = Color(0xFF4F46E5);
+  static const Color accent = Color(0xFFFEF2F2);
+  static const Color accentText = Color(0xFF991B1B);
 
   // Status Colors
   static const Color success = Color(0xFF4CAF50);
@@ -28,6 +28,6 @@ class AppColors {
   static const Color textTertiary = Color(0xFF94A3B8);
 
   // Chart Colors
-  static const Color chartPrimary = Color(0xFF2563EB);
-  static const Color chartSecondary = Color(0xFFBFDBFE);
+  static const Color chartPrimary = Color(0xFF991B1B);
+  static const Color chartSecondary = Color(0xFFFEE2E2);
 }

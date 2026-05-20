@@ -12,6 +12,7 @@ import '../modules/analytics/bindings/analytics_binding.dart';
 import '../modules/analytics/views/analytics_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/profile/views/aktivitas_view.dart';
 import '../modules/selection/bindings/selection_binding.dart';
 import '../modules/selection/views/selection_view.dart';
 import '../modules/public_vacancy/bindings/public_vacancy_binding.dart';
@@ -150,6 +151,12 @@ class AppPages {
       name: _Paths.INTERVIEW_DETAIL,
       page: () => const InterviewDetailView(),
       binding: InterviewDetailBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.AKTIVITAS,
+      page: () => const AktivitasView(),
+      binding: ProfileBinding(),
       middlewares: [AuthMiddleware()],
     ),
   ];
