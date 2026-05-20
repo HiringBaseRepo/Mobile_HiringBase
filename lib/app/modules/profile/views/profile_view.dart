@@ -26,23 +26,47 @@ class ProfileView extends GetView<ProfileController> {
                   _buildSettingsGroup(
                     title: 'Account Settings',
                     items: [
-                      _SettingsItem(icon: Icons.person_outline, label: 'Personal Info'),
-                      _SettingsItem(icon: Icons.security_outlined, label: 'Security & Password'),
+                      _SettingsItem(
+                        icon: Icons.person_outline, 
+                        label: 'Personal Info',
+                        onTap: () => _showBottomSheet(context, 'Personal Info', _buildPersonalInfoContent()),
+                      ),
+                      _SettingsItem(
+                        icon: Icons.security_outlined, 
+                        label: 'Security & Password',
+                        onTap: () => _showBottomSheet(context, 'Security & Password', _buildSecurityContent()),
+                      ),
                       _SettingsItem(
                         icon: Icons.history_outlined, 
                         label: 'Aktivitas Saya',
                         onTap: () => Get.toNamed('/aktivitas'),
                       ),
-                      _SettingsItem(icon: Icons.notifications_none_outlined, label: 'Notifications'),
+                      _SettingsItem(
+                        icon: Icons.notifications_none_outlined, 
+                        label: 'Notifications',
+                        onTap: () => _showBottomSheet(context, 'Notifications', _buildNotificationContent()),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
                   _buildSettingsGroup(
                     title: 'System Preferences',
                     items: [
-                      _SettingsItem(icon: Icons.language_outlined, label: 'Language'),
-                      _SettingsItem(icon: Icons.dark_mode_outlined, label: 'Appearance'),
-                      _SettingsItem(icon: Icons.help_outline, label: 'Help & Support'),
+                      _SettingsItem(
+                        icon: Icons.language_outlined, 
+                        label: 'Language',
+                        onTap: () => _showBottomSheet(context, 'Language', _buildLanguageContent()),
+                      ),
+                      _SettingsItem(
+                        icon: Icons.dark_mode_outlined, 
+                        label: 'Appearance',
+                        onTap: () => _showBottomSheet(context, 'Appearance', _buildAppearanceContent()),
+                      ),
+                      _SettingsItem(
+                        icon: Icons.help_outline, 
+                        label: 'Help & Support',
+                        onTap: () => _showBottomSheet(context, 'Help & Support', _buildHelpContent()),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -289,7 +313,14 @@ class ProfileView extends GetView<ProfileController> {
             itemBuilder: (context, index) {
               final item = items[index];
               return ListTile(
-                leading: Icon(item.icon, color: AppColors.textSecondary),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(item.icon, color: AppColors.primary, size: 20),
+                ),
                 title: Text(item.label, style: AppTextStyles.button.copyWith(color: AppColors.textPrimary)),
                 trailing: const Icon(Icons.chevron_right, size: 20, color: AppColors.textTertiary),
                 onTap: item.onTap ?? () {},
@@ -298,6 +329,227 @@ class ProfileView extends GetView<ProfileController> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context, String title, Widget content) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (_, scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.textTertiary.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Text(title, style: AppTextStyles.h2),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close),
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.cardBackground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(24),
+                    child: content,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPersonalInfoContent() {
+    return Column(
+      children: [
+        _buildInfoTile(Icons.person_outlined, 'Full Name', 'Alex Rivers'),
+        _buildInfoTile(Icons.email_outlined, 'Email', 'alex.rivers@example.com'),
+        _buildInfoTile(Icons.phone_outlined, 'Phone', '+62 812 3456 7890'),
+        _buildInfoTile(Icons.location_on_outlined, 'Location', 'Jakarta, Indonesia'),
+        _buildInfoTile(Icons.work_outlined, 'Position', 'Talent Acquisition Lead'),
+        const SizedBox(height: 32),
+        _buildSheetButton('Edit Profile', Icons.edit_outlined, isPrimary: true),
+      ],
+    );
+  }
+
+  Widget _buildSecurityContent() {
+    return Column(
+      children: [
+        _buildInfoTile(Icons.lock_outlined, 'Password', 'Last changed 3 months ago'),
+        _buildInfoTile(Icons.phonelink_lock_outlined, 'Two-Factor Auth', 'Enabled'),
+        _buildInfoTile(Icons.devices_outlined, 'Active Sessions', '2 Devices'),
+        const SizedBox(height: 32),
+        _buildSheetButton('Change Password', Icons.key_outlined, isPrimary: true),
+        const SizedBox(height: 12),
+        _buildSheetButton('Privacy Settings', Icons.privacy_tip_outlined, isPrimary: false),
+      ],
+    );
+  }
+
+  Widget _buildNotificationContent() {
+    return Column(
+      children: [
+        _buildSwitchTile('Email Notifications', 'Receive updates via email', true),
+        _buildSwitchTile('Push Notifications', 'Real-time alerts on device', true),
+        _buildSwitchTile('Job Alerts', 'Notify when new candidates apply', false),
+        _buildSwitchTile('Weekly Reports', 'Summary of recruitment activity', true),
+      ],
+    );
+  }
+
+  Widget _buildLanguageContent() {
+    return Column(
+      children: [
+        _buildRadioTile('English (US)', true),
+        _buildRadioTile('Bahasa Indonesia', false),
+        _buildRadioTile('English (UK)', false),
+        _buildRadioTile('Français', false),
+        _buildRadioTile('Deutsch', false),
+        _buildRadioTile('Español', false),
+      ],
+    );
+  }
+
+  Widget _buildAppearanceContent() {
+    return Column(
+      children: [
+        _buildRadioTile('Light Mode', false),
+        _buildRadioTile('Dark Mode', true),
+        _buildRadioTile('System Default', false),
+      ],
+    );
+  }
+
+  Widget _buildHelpContent() {
+    return Column(
+      children: [
+        _buildInfoTile(Icons.help_center_outlined, 'Help Center', 'Browse our FAQ'),
+        _buildInfoTile(Icons.support_agent_outlined, 'Contact Support', 'Get help from our team'),
+        _buildInfoTile(Icons.description_outlined, 'Terms of Service', 'Read our policies'),
+        _buildInfoTile(Icons.info_outlined, 'About App', 'Version 1.0.4'),
+        const SizedBox(height: 32),
+        _buildSheetButton('Send Feedback', Icons.feedback_outlined, isPrimary: true),
+      ],
+    );
+  }
+
+  Widget _buildInfoTile(IconData icon, String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 24),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: AppTextStyles.bodyS),
+              const SizedBox(height: 4),
+              Text(value, style: AppTextStyles.bodyL.copyWith(fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwitchTile(String title, String subtitle, bool value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: SwitchListTile(
+        title: Text(title, style: AppTextStyles.bodyL.copyWith(fontWeight: FontWeight.w600)),
+        subtitle: Text(subtitle, style: AppTextStyles.bodyS),
+        value: value,
+        onChanged: (val) {},
+        activeColor: AppColors.primary,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    );
+  }
+
+  Widget _buildRadioTile(String title, bool selected) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: RadioListTile(
+        title: Text(title, style: AppTextStyles.bodyL.copyWith(fontWeight: FontWeight.w600)),
+        value: true,
+        groupValue: selected,
+        onChanged: (val) {},
+        activeColor: AppColors.primary,
+        controlAffinity: ListTileControlAffinity.trailing,
+      ),
+    );
+  }
+
+  Widget _buildSheetButton(String label, IconData icon, {bool isPrimary = true}) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {},
+        icon: Icon(icon, color: isPrimary ? Colors.white : AppColors.primary),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isPrimary ? AppColors.primary : AppColors.cardBackground,
+          foregroundColor: isPrimary ? Colors.white : AppColors.primary,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: isPrimary ? BorderSide.none : const BorderSide(color: AppColors.primary),
+          ),
+          elevation: 0,
+        ),
       ),
     );
   }
