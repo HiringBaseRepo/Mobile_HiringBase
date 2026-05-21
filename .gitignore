@@ -47,4 +47,5 @@ app.*.map.json
 # AI Agents
 .agents/
 
-
+# Logs
+logs/
