@@ -50,4 +50,6 @@ app.*.map.json
 # Configuration Env files
 .env
 
+# Logs
+logs/
 
