@@ -14,6 +14,7 @@ class HrCandidatesSection extends StatelessWidget {
     final controller = Get.find<HomeController>();
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,11 +46,50 @@ class HrCandidatesSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Obx(
-          () => Column(
-            children: controller.candidates.asMap().entries.map((e) => _HomeCandidateCard(candidate: e.value, index: e.key)).toList(),
-          ),
-        ),
+        Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          if (controller.candidates.isEmpty) {
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.surface, width: 1),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.people_outline, size: 40, color: AppColors.textTertiary),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No candidates applied yet.',
+                    style: AppTextStyles.bodyM.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Column(
+            children: controller.candidates
+                .asMap()
+                .entries
+                .map((e) => _HomeCandidateCard(candidate: e.value, index: e.key))
+                .toList(),
+          );
+        }),
       ],
     );
   }
@@ -66,6 +106,9 @@ class _HomeCandidateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasImg = candidate.imageUrl.isNotEmpty;
+    final colorVal = Color(candidate.statusColor);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(16),
@@ -86,7 +129,14 @@ class _HomeCandidateCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundImage: NetworkImage(candidate.imageUrl),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
+                child: !hasImg
+                    ? Text(
+                        candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                        style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                      )
+                    : null,
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -112,18 +162,14 @@ class _HomeCandidateCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: candidate.status == 'Interview'
-                      ? AppColors.warning.withValues(alpha: 0.1)
-                      : AppColors.primary.withValues(alpha: 0.1),
+                  color: colorVal.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  candidate.status,
+                  candidate.status.toUpperCase(),
                   style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: candidate.status == 'Interview'
-                        ? AppColors.warning
-                        : AppColors.primary,
+                    color: colorVal,
                   ),
                 ),
               ),
@@ -162,7 +208,7 @@ class _HomeCandidateCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'AI Score',
+                  candidate.score > 0 ? candidate.matchText : 'AI Screening Pending',
                   style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textSecondary,

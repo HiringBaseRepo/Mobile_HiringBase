@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/values/app_colors.dart';
-import '../../../../core/values/app_text_styles.dart';
-import '../../../../data/models/vacancy_model.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 
 class JobInfoCard extends StatelessWidget {
   final Vacancy job;
@@ -45,9 +45,9 @@ class JobInfoCard extends StatelessWidget {
           const SizedBox(height: 24),
           _InfoRow(icon: Icons.location_on_outlined, label: job.location),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.access_time_outlined, label: job.type),
+          _InfoRow(icon: Icons.access_time_outlined, label: job.employmentTypeLabel),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.payments_outlined, label: job.salary),
+          _InfoRow(icon: Icons.payments_outlined, label: job.salaryDisplay),
           const SizedBox(height: 24),
           Text('Description', style: AppTextStyles.subHeader2),
           const SizedBox(height: 8),

@@ -47,4 +47,7 @@ app.*.map.json
 # AI Agents
 .agents/
 
+# Configuration Env files
+.env
+
 

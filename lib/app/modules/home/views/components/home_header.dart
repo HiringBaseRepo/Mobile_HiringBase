@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/values/app_colors.dart';
-import '../../../../core/values/app_text_styles.dart';
-import '../../../../routes/app_pages.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/routes/app_pages.dart';
+import 'package:uifrontendmobile/app/services/app_service.dart';
+import 'package:uifrontendmobile/app/services/navigation_service.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final appService = Get.find<AppService>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -53,12 +57,36 @@ class HomeHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 8),
-            const CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(
-                'https://i.pravatar.cc/150?u=sarah_admin',
-              ),
-            ),
+            Obx(() {
+              final user = appService.currentUser.value;
+              final hasImg = user?.imageUrl != null && user!.imageUrl!.isNotEmpty;
+              final name = user?.name ?? '';
+              final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+              return GestureDetector(
+                onTap: () {
+                  try {
+                    Get.find<NavigationService>().changeTo(3);
+                  } catch (_) {
+                    Get.toNamed(Routes.PROFILE);
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                  backgroundImage: hasImg ? NetworkImage(user.imageUrl!) : null,
+                  child: !hasImg
+                      ? Text(
+                          initial,
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        )
+                      : null,
+                ),
+              );
+            }),
           ],
         ),
       ],

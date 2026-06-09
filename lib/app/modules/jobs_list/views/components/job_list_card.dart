@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/values/app_colors.dart';
-import '../../../../core/values/app_text_styles.dart';
-import '../../../../data/models/vacancy_model.dart';
-import '../../../../routes/app_pages.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
+import 'package:uifrontendmobile/app/routes/app_pages.dart';
 
 class JobListCard extends StatelessWidget {
   final Vacancy job;
@@ -71,9 +71,11 @@ class _StatusBadge extends StatelessWidget {
     Color color;
     switch (status.toLowerCase()) {
       case 'published': color = AppColors.success; break;
-      case 'draft': color = AppColors.textTertiary; break;
-      case 'closed': color = AppColors.error; break;
-      default: color = AppColors.primary;
+      case 'draft':     color = AppColors.textTertiary; break;
+      case 'closed':    color = AppColors.error; break;
+      case 'scheduled': color = AppColors.warning; break;
+      case 'private':   color = AppColors.secondary; break;
+      default:          color = AppColors.primary;
     }
 
     return Container(

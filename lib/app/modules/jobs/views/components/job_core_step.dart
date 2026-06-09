@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controllers/jobs_controller.dart';
+import 'package:uifrontendmobile/app/modules/jobs/controllers/jobs_controller.dart';
 import 'job_step_layout.dart';
 import 'job_shared_widgets.dart';
 import 'job_navigation_buttons.dart';
@@ -24,16 +24,25 @@ class JobCoreStep extends StatelessWidget {
             children: [
               const JobCardTitle(icon: Icons.description_outlined, title: "Basic Information"),
               const SizedBox(height: 20),
+
+              // ── Job Title ──────────────────────────────────────────────
               const JobLabel(label: "JOB TITLE"),
-              const JobTextField(hint: "e.g. Senior Software Engineer"),
+              JobTextField(
+                hint: "e.g. Senior Software Engineer",
+                controller: controller.titleController,
+              ),
               const SizedBox(height: 20),
+
+              // ── Department ────────────────────────────────────────────
               const JobLabel(label: "DEPARTMENT"),
               Obx(() => JobDropdown(
-                items: const ["Engineering", "Product", "Design", "Marketing"],
+                items: const ["Engineering", "Product", "Design", "Marketing", "HR", "Finance", "Operations"],
                 value: controller.department.value,
                 onChanged: (v) => controller.department.value = v!,
               )),
               const SizedBox(height: 20),
+
+              // ── Employment Type & Location ────────────────────────────
               Row(
                 children: [
                   Expanded(
@@ -42,7 +51,7 @@ class JobCoreStep extends StatelessWidget {
                       children: [
                         const JobLabel(label: "EMPLOYMENT TYPE"),
                         Obx(() => JobDropdown(
-                          items: const ["Full-time", "Part-time", "Contract"],
+                          items: const ["full_time", "part_time", "contract", "freelance", "intern"],
                           value: controller.employmentType.value,
                           onChanged: (v) => controller.employmentType.value = v!,
                         )),
@@ -66,32 +75,61 @@ class JobCoreStep extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+
+              // ── Salary Range ──────────────────────────────────────────
               const JobLabel(label: "SALARY RANGE (OPTIONAL)"),
-              const Row(
+              Row(
                 children: [
-                  Expanded(child: JobTextField(hint: "\$ Min", prefix: "\$")),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text("to")),
-                  Expanded(child: JobTextField(hint: "\$ Max", prefix: "\$")),
+                  Expanded(child: JobTextField(
+                    hint: "Min",
+                    prefix: "Rp ",
+                    controller: controller.salaryMinController,
+                  )),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text("to"),
+                  ),
+                  Expanded(child: JobTextField(
+                    hint: "Max",
+                    prefix: "Rp ",
+                    controller: controller.salaryMaxController,
+                  )),
                 ],
               ),
             ],
           ),
         ),
         const SizedBox(height: 25),
-        const JobCard(
+
+        // ── Job Content card ────────────────────────────────────────────
+        JobCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              JobCardTitle(icon: Icons.article_outlined, title: "Job Content"),
-              SizedBox(height: 20),
-              JobLabel(label: "JOB DESCRIPTION"),
-              JobTextField(hint: "Describe the role...", isDescription: true),
-              SizedBox(height: 20),
-              JobLabel(label: "RESPONSIBILITIES"),
-              JobTextField(hint: "List key responsibilities...", isDescription: true, height: 100),
-              SizedBox(height: 20),
-              JobLabel(label: "BENEFITS"),
-              JobTextField(hint: "Health insurance, remote work, etc...", isDescription: true, height: 100),
+              const JobCardTitle(icon: Icons.article_outlined, title: "Job Content"),
+              const SizedBox(height: 20),
+              const JobLabel(label: "JOB DESCRIPTION"),
+              JobTextField(
+                hint: "Describe the role...",
+                isDescription: true,
+                controller: controller.descriptionController,
+              ),
+              const SizedBox(height: 20),
+              const JobLabel(label: "RESPONSIBILITIES"),
+              JobTextField(
+                hint: "List key responsibilities...",
+                isDescription: true,
+                height: 100,
+                controller: controller.responsibilitiesController,
+              ),
+              const SizedBox(height: 20),
+              const JobLabel(label: "BENEFITS"),
+              JobTextField(
+                hint: "Health insurance, remote work, etc...",
+                isDescription: true,
+                height: 100,
+                controller: controller.benefitsController,
+              ),
             ],
           ),
         ),

@@ -38,7 +38,13 @@ class JobDetailHrView extends GetView<JobDetailHrController> {
             children: [
               JobInfoCard(job: job),
               const SizedBox(height: 24),
-              JobApplicantStatsCard(total: job.applicantCount),
+              JobApplicantStatsCard(
+                total: controller.totalApplicants.value,
+                newApplicants: controller.newApplicants.value,
+                inInterview: controller.inInterview.value,
+                aiScreeningProgress: controller.aiScreeningProgress.value,
+                technicalTestProgress: controller.technicalTestProgress.value,
+              ),
               const SizedBox(height: 24),
               JobActionButtons(jobId: job.id),
               const SizedBox(height: 40),

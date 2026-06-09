@@ -69,9 +69,9 @@ class PublishControlStep extends StatelessWidget {
               const SizedBox(height: 20),
               const JobLabel(label: "PUBLISH STATUS"),
               Obx(() => JobDropdown(
-                items: const ["Public (Live)", "Private (Link Only)", "Internal Only"],
-                value: controller.publishStatus.value,
-                onChanged: (v) => controller.publishStatus.value = v!,
+                items: const ["public", "private"],
+                value: controller.publishMode.value,
+                onChanged: (v) => controller.publishMode.value = v!,
               )),
               const SizedBox(height: 25),
               Row(
@@ -96,35 +96,6 @@ class PublishControlStep extends StatelessWidget {
                     ],
                   )
                 : const SizedBox.shrink()
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 25),
-        JobCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const JobCardTitle(icon: Icons.qr_code_outlined, title: "Application Controls"),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Icon(Icons.key_outlined, size: 20, color: AppColors.textTertiary),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Text("Generate Apply Code", style: AppTextStyles.subHeader2),
-                  ),
-                  Obx(() => Switch(
-                    value: controller.generateApplyCode.value,
-                    onChanged: (v) => controller.generateApplyCode.value = v,
-                    activeThumbColor: AppColors.primary,
-                  )),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Enabling this will create a unique code that applicants must enter to submit their application.",
-                style: AppTextStyles.bodyS,
               ),
             ],
           ),

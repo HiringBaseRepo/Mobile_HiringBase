@@ -51,6 +51,8 @@ class JobTextField extends StatelessWidget {
   final String? prefix;
   final bool isDescription;
   final double? height;
+  final TextEditingController? controller;
+  final void Function(String)? onSubmitted;
 
   const JobTextField({
     super.key,
@@ -58,6 +60,8 @@ class JobTextField extends StatelessWidget {
     this.prefix,
     this.isDescription = false,
     this.height,
+    this.controller,
+    this.onSubmitted,
   });
 
   @override
@@ -86,6 +90,7 @@ class JobTextField extends StatelessWidget {
               border: Border.all(color: AppColors.surface),
             ),
             child: TextField(
+              controller: controller,
               maxLines: null,
               decoration: InputDecoration(
                 hintText: hint,
@@ -106,12 +111,18 @@ class JobTextField extends StatelessWidget {
         border: Border.all(color: AppColors.surface),
       ),
       child: TextField(
+        controller: controller,
+        onSubmitted: onSubmitted,
+        textInputAction: onSubmitted != null ? TextInputAction.done : TextInputAction.newline,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
           prefixText: prefix,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+          suffixIcon: onSubmitted != null
+              ? const Icon(Icons.keyboard_return, size: 18, color: AppColors.textTertiary)
+              : null,
         ),
       ),
     );

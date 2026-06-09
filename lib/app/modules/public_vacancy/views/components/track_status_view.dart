@@ -28,15 +28,63 @@ class TrackStatusView extends GetView<PublicVacancyController> {
               children: [
                 _buildSearchCard(),
                 const SizedBox(height: 32),
-                _buildStatusTimeline(),
-                const SizedBox(height: 32),
-                _buildAIPulseCard(),
+                Obx(() {
+                  if (controller.isTrackingLoading.value) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  final data = controller.trackedTicketData.value;
+                  if (data == null) {
+                    return _buildEmptyState();
+                  }
+
+                  return Column(
+                    children: [
+                      _buildStatusTimeline(data),
+                      const SizedBox(height: 32),
+                      _buildAIPulseCard(data),
+                    ],
+                  );
+                }),
               ],
             ),
           ),
         ),
       ),
       bottomNavigationBar: const AppBottomNav(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.surface),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.track_changes_outlined, size: 64, color: AppColors.textTertiary),
+          const SizedBox(height: 16),
+          Text(
+            "No Application Selected",
+            style: AppTextStyles.subHeader1,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Enter a ticket code above to track your real-time recruitment progress.",
+            style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -95,7 +143,43 @@ class TrackStatusView extends GetView<PublicVacancyController> {
     );
   }
 
-  Widget _buildStatusTimeline() {
+  Widget _buildStatusTimeline(Map<String, dynamic> data) {
+    final status = (data['application_status'] as String? ?? 'applied').toLowerCase();
+    final statusLabel = data['application_status_label'] as String? ?? 'Applied';
+    final jobTitle = data['job_title'] as String? ?? 'Vacancy';
+    final applicantName = data['applicant_name'] as String? ?? 'Applicant';
+    final createdAt = data['created_at'] as String? ?? '';
+
+    // Parse date safely
+    String dateStr = 'Recently';
+    if (createdAt.isNotEmpty) {
+      try {
+        final dt = DateTime.parse(createdAt);
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        dateStr = '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+      } catch (_) {}
+    }
+
+    // Determine completion states
+    final step1Complete = true;
+    final step2Complete = status != 'applied';
+    final step2Active = status == 'screening';
+
+    final step3Complete = status == 'interview' || status == 'accepted' || status == 'rejected';
+    final step3Active = status == 'interview';
+
+    final step4Complete = status == 'accepted' || status == 'rejected';
+    final step4Active = status == 'accepted' || status == 'rejected';
+
+    Color statusColor;
+    if (status == 'accepted') {
+      statusColor = AppColors.success;
+    } else if (status == 'rejected') {
+      statusColor = AppColors.error;
+    } else {
+      statusColor = AppColors.primary;
+    }
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -109,17 +193,26 @@ class TrackStatusView extends GetView<PublicVacancyController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Application Progress", style: AppTextStyles.h3.copyWith(fontSize: 18)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(jobTitle, style: AppTextStyles.h3.copyWith(fontSize: 18)),
+                    const SizedBox(height: 4),
+                    Text(applicantName, style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  "IN REVIEW",
+                  statusLabel.toUpperCase(),
                   style: AppTextStyles.caption.copyWith(
-                    color: Colors.blue,
+                    color: statusColor,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -129,30 +222,35 @@ class TrackStatusView extends GetView<PublicVacancyController> {
           const SizedBox(height: 32),
           _buildTimelineItem(
             "Application Received",
-            "Submitted on May 10, 2026",
-            isCompleted: true,
+            "Submitted on $dateStr",
+            isCompleted: step1Complete,
             isLast: false,
           ),
           _buildTimelineItem(
             "SmartScreen AI Analysis",
-            "Initial screening completed. Score: 92/100",
-            isCompleted: true,
+            step2Complete 
+              ? "AI Screening analysis completed."
+              : (step2Active ? "Initial screening analysis is in progress..." : "Queueing for AI screening."),
+            isCompleted: step2Complete,
+            isActive: step2Active,
             isLast: false,
           ),
           _buildTimelineItem(
-            "Hiring Manager Review",
-            "Currently being reviewed by the engineering team.",
-            isActive: true,
-            isLast: false,
-          ),
-          _buildTimelineItem(
-            "Technical Interview",
-            "Pending selection.",
+            "Hiring Interview",
+            step3Complete 
+              ? "Hiring Manager interview completed."
+              : (step3Active ? "Interview scheduled! Recruiter will contact you shortly." : "Pending selection review."),
+            isCompleted: step3Complete,
+            isActive: step3Active,
             isLast: false,
           ),
           _buildTimelineItem(
             "Final Decision",
-            "Expected in 3-5 business days.",
+            status == 'accepted' 
+              ? "Congratulations! You have been accepted for this role."
+              : (status == 'rejected' ? "Application closed. Thank you for your time." : "Awaiting final recruitment decision."),
+            isCompleted: step4Complete,
+            isActive: step4Active,
             isLast: true,
           ),
         ],
@@ -220,7 +318,20 @@ class TrackStatusView extends GetView<PublicVacancyController> {
     );
   }
 
-  Widget _buildAIPulseCard() {
+  Widget _buildAIPulseCard(Map<String, dynamic> data) {
+    final status = (data['application_status'] as String? ?? 'applied').toLowerCase();
+    
+    String message = "Your profile is queued for processing. Good luck!";
+    if (status == 'screening') {
+      message = "SmartScreen AI is currently scoring your CV and skills matching.";
+    } else if (status == 'interview') {
+      message = "Congratulations! Your profile has qualified for the next interview step.";
+    } else if (status == 'accepted') {
+      message = "You have been matched successfully! HR will contact you with the offer letter.";
+    } else if (status == 'rejected') {
+      message = "We appreciate your interest. We will keep your CV for future matching roles.";
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -251,7 +362,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
                   style: AppTextStyles.bodyM.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Your profile is in the top 10% of applicants for this role. Good luck!",
+                  message,
                   style: AppTextStyles.bodyS.copyWith(color: Colors.white.withValues(alpha: 0.9)),
                 ),
               ],
