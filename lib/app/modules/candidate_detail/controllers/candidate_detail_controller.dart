@@ -1,105 +1,99 @@
 import 'package:get/get.dart';
-import 'package:uifrontendmobile/app/modules/candidates/controllers/candidates_controller.dart';
-import 'package:uifrontendmobile/app/modules/home/controllers/home_controller.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
+import 'package:uifrontendmobile/app/services/application_service.dart';
+import 'package:uifrontendmobile/app/modules/candidates/controllers/candidates_controller.dart';
 
 class CandidateDetailController extends GetxController {
+  final _service = Get.find<ApplicationService>();
+
   final candidate = Rxn<Candidate>();
-  int? candidateIndex;
+  final isLoading = false.obs;
+  final isUpdatingStatus = false.obs;
+  final isScreening = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     final args = Get.arguments;
-    
-    if (args != null) {
-      if (args is Candidate) {
-        candidate.value = args;
-      } else if (args is Map) {
-        if (args.containsKey('candidate')) {
-          if (args['candidate'] is Candidate) {
-            candidate.value = args['candidate'] as Candidate;
-          } else if (args['candidate'] is Map) {
-            candidate.value = Candidate.fromJson(Map<String, dynamic>.from(args['candidate'] as Map));
-          }
-          candidateIndex = args['index'] as int?;
-        } else {
-          candidate.value = Candidate.fromJson(Map<String, dynamic>.from(args));
+
+    if (args is Candidate) {
+      candidate.value = args;
+      _fetchDetail(args.id);
+    } else if (args is Map && args.containsKey('candidate')) {
+      final c = args['candidate'];
+      candidate.value = c is Candidate ? c : Candidate.fromJson(Map<String, dynamic>.from(c as Map));
+      _fetchDetail(candidate.value!.id);
+    } else if (args is Map) {
+      candidate.value = Candidate.fromJson(Map<String, dynamic>.from(args));
+      _fetchDetail(candidate.value!.id);
+    }
+  }
+
+  /// Fetch full detail from server to get name, email, answers, score.
+  Future<void> _fetchDetail(String applicationId) async {
+    try {
+      isLoading.value = true;
+      final response = await _service.getApplicationDetail(applicationId);
+      if (response.statusCode == 200 && response.body != null) {
+        final data = response.body!['data'];
+        if (data != null) {
+          candidate.value = Candidate.fromDetail(Map<String, dynamic>.from(data as Map));
         }
       }
+    } catch (_) {
+      // Keep whatever partial data we have from the list
+    } finally {
+      isLoading.value = false;
     }
-    
-    // Final check to ensure we have at least basic data
-    if (candidate.value == null) {
-      candidate.value = const Candidate(
-        id: '0',
-        name: 'Unknown Candidate',
-        role: 'No Role Specified',
-        status: 'NEW',
-        score: 0,
-        matchText: 'N/A',
-        appliedAt: '',
-        imageUrl: 'https://i.pravatar.cc/150?u=unknown',
-        statusColor: 0xFF64748B,
+  }
+
+  /// Update status via PATCH /applications/{id}/status.
+  Future<void> updateStatus(String newStatus, {String? reason}) async {
+    final c = candidate.value;
+    if (c == null) return;
+    try {
+      isUpdatingStatus.value = true;
+      final response = await _service.updateApplicationStatus(
+        c.id,
+        newStatus,
+        reason: reason,
       );
-    }
-  }
 
-  final isScreening = false.obs;
+      if (response.statusCode == 200 && response.body != null) {
+        final data = response.body!['data'];
+        final updated = (data?['new_status'] as String?) ?? newStatus;
+        candidate.value = c.copyWith(status: updated);
 
-  Future<void> runScreening() async {
-    if (candidate.value == null) return;
-    
-    isScreening.value = true;
-    
-    // POST /api/v1/screening/applications/{id}/run
-    // Response is quick (queue system)
-    await Future.delayed(const Duration(milliseconds: 800));
-    Get.snackbar('Screening', 'Proses screening telah dimasukkan dalam antrean');
-    
-    // Polling simulation
-    _startPolling();
-  }
+        // Sync back to candidates list
+        try {
+          Get.find<CandidatesController>().updateCandidateStatus(c.id, updated);
+        } catch (_) {}
 
-  void updateStatus(String status) {
-    if (candidate.value == null) return;
-    candidate.value = candidate.value!.copyWith(status: status.toUpperCase());
-
-    // Sync back to controllers if index is available
-    if (candidateIndex != null) {
-      // Sync with CandidatesController
-      try {
-        final candidatesCtrl = Get.find<CandidatesController>();
-        candidatesCtrl.updateCandidateStatus(candidateIndex!, status);
-      } catch (_) {}
-
-      // Sync with HomeController (Home has its own list)
-      try {
-        final homeCtrl = Get.find<HomeController>();
-        if (candidateIndex! < homeCtrl.candidates.length) {
-          homeCtrl.candidates[candidateIndex!] = homeCtrl.candidates[candidateIndex!].copyWith(
-            status: status,
-          );
-        }
-      } catch (_) {}
-    }
-  }
-
-  void _startPolling() async {
-    // Sequence: applied -> doc_check -> ai_processing -> result
-    final sequence = ['DOC_CHECK', 'AI_PROCESSING', 'AI_PASSED'];
-    
-    for (var nextStatus in sequence) {
-      await Future.delayed(const Duration(seconds: 4));
-      updateStatus(nextStatus);
-      
-      if (nextStatus == 'AI_PASSED') {
-        isScreening.value = false;
-        // Mock score update from background worker
-        candidate.value = candidate.value!.copyWith(score: 85);
-        Get.snackbar('Screening Selesai', 'Kandidat telah selesai di-screening dengan skor 85');
-        break;
+        Get.snackbar(
+          'Status Updated',
+          'Status changed to ${data?['new_status_label'] ?? updated}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          response.body?['message']?.toString() ?? 'Failed to update status.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
+    } catch (_) {
+      Get.snackbar('Error', 'Connection error.', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isUpdatingStatus.value = false;
     }
   }
+
+  /// Available status transitions — presented in UI action sheet.
+  static const statusOptions = [
+    {'value': 'under_review', 'label': 'Under Review'},
+    {'value': 'interview', 'label': 'Invite to Interview'},
+    {'value': 'offered', 'label': 'Send Offer'},
+    {'value': 'hired', 'label': 'Mark as Hired'},
+    {'value': 'rejected', 'label': 'Reject'},
+  ];
 }

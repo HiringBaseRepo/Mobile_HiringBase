@@ -10,6 +10,9 @@ class CandidateProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasImg = candidate.imageUrl.isNotEmpty;
+    final colorVal = Color(candidate.statusColor);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -26,36 +29,25 @@ class CandidateProfileCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    width: 4,
-                  ),
-                ),
-                child: CircleAvatar(
-                  radius: 48,
-                  backgroundImage: NetworkImage(candidate.imageUrl),
-                  backgroundColor: AppColors.surface,
-                ),
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: colorVal.withValues(alpha: 0.2),
+                width: 4,
               ),
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: AppColors.success,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                ),
-              ),
-            ],
+            ),
+            child: CircleAvatar(
+              radius: 48,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
+              child: !hasImg
+                  ? Text(
+                      candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                      style: AppTextStyles.h1.copyWith(color: AppColors.primary, fontSize: 32),
+                    )
+                  : null,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -71,9 +63,11 @@ class CandidateProfileCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildBadge(candidate.status, AppColors.primary.withValues(alpha: 0.1), AppColors.primary),
-              const SizedBox(width: 8),
-              _buildBadge('Remote', AppColors.surface, AppColors.textSecondary),
+              _buildBadge(
+                candidate.status,
+                colorVal.withValues(alpha: 0.1),
+                colorVal,
+              ),
             ],
           ),
         ],

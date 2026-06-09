@@ -156,7 +156,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
             ),
           ),
           const SizedBox(height: 16),
-          Container(
+          Obx(() => Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
               color: AppColors.background,
@@ -200,7 +200,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
                 ),
               ],
             ),
-          ),
+          )),
         ],
       ),
     );
@@ -284,10 +284,10 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
   }
 
   Widget _buildFooterText() {
-    return Text(
+    return Obx(() => Text(
       "A confirmation email has been sent to ${controller.emailController.text}",
       textAlign: TextAlign.center,
       style: AppTextStyles.bodyS.copyWith(color: AppColors.textTertiary),
-    );
+    ));
   }
 }

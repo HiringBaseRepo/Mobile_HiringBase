@@ -1,96 +1,99 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
+import 'package:uifrontendmobile/app/services/application_service.dart';
 import 'package:uifrontendmobile/app/services/navigation_service.dart';
-import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 
 class CandidatesController extends GetxController {
   final _navService = Get.find<NavigationService>();
+  final _appService = Get.find<ApplicationService>();
 
-  final candidates = <Candidate>[
-    const Candidate(
-      id: '1',
-      name: 'Alex Rivera',
-      role: 'Senior Developer',
-      status: 'INTERVIEW',
-      score: 92,
-      matchText: 'Top 5% Match',
-      appliedAt: '2h ago',
-      imageUrl: 'https://i.pravatar.cc/150?u=alex',
-      statusColor: 0xFF3B82F6,
-    ),
-    const Candidate(
-      id: '2',
-      name: 'Sarah Chen',
-      role: 'UX Architect',
-      status: 'REVIEWED',
-      score: 86,
-      matchText: 'Strong Fit',
-      appliedAt: '5h ago',
-      imageUrl: 'https://i.pravatar.cc/150?u=sarah',
-      statusColor: 0xFF64748B,
-    ),
-    const Candidate(
-      id: '3',
-      name: 'Marcus Thorne',
-      role: 'Product Manager',
-      status: 'APPLIED',
-      score: 0,
-      matchText: 'Pending Screening',
-      appliedAt: '12h ago',
-      imageUrl: 'https://i.pravatar.cc/150?u=marcus',
-      statusColor: 0xFFF97316,
-    ),
-    const Candidate(
-      id: '4',
-      name: 'Elena Novak',
-      role: 'Data Scientist',
-      status: 'ACCEPTED',
-      score: 96,
-      matchText: 'Expert Match',
-      appliedAt: '1d ago',
-      imageUrl: 'https://i.pravatar.cc/150?u=elena',
-      statusColor: 0xFF10B981,
-    ),
-    const Candidate(
-      id: '5',
-      name: 'Jordan Smyth',
-      role: 'DevOps Engineer',
-      status: 'INTERVIEW',
-      score: 81,
-      matchText: 'Strong Match',
-      appliedAt: '2d ago',
-      imageUrl: 'https://i.pravatar.cc/150?u=jordan_s',
-      statusColor: 0xFF3B82F6,
-    ),
-  ].obs;
+  // ── State ──────────────────────────────────────────────────────────
+  final candidates = <Candidate>[].obs;
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+  final searchQuery = ''.obs;
 
+  /// Active status filter tab ('all' | server status string).
+  final activeFilter = 'all'.obs;
+
+  final statusTabs = const [
+    'all',
+    'applied',
+    'under_review',
+    'interview',
+    'hired',
+    'rejected',
+  ];
+
+  // ── Getters ────────────────────────────────────────────────────────
   int get selectedNavIndex => _navService.selectedIndex.value;
 
-  void updateCandidateStatus(int index, String status) {
-    Color statusColor = AppColors.textSecondary;
-    
-    switch (status.toUpperCase()) {
-      case 'REVIEW':
-        statusColor = AppColors.textSecondary;
-        break;
-      case 'INTERVIEW':
-        statusColor = AppColors.info;
-        break;
-      case 'DITERIMA':
-      case 'ACCEPTED':
-        statusColor = AppColors.success;
-        break;
-      case 'DITOLAK':
-      case 'REJECTED':
-        statusColor = AppColors.error;
-        break;
-    }
+  List<Candidate> get filteredCandidates {
+    if (searchQuery.value.isEmpty) return candidates;
+    final q = searchQuery.value.toLowerCase();
+    return candidates.where((c) {
+      return c.name.toLowerCase().contains(q) ||
+          c.role.toLowerCase().contains(q) ||
+          c.status.contains(q);
+    }).toList();
+  }
 
-    candidates[index] = candidates[index].copyWith(
-      status: status.toUpperCase(),
-      statusColor: statusColor.toARGB32(),
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    fetchCandidates();
+  }
+
+  Future<void> fetchCandidates({bool refresh = false}) async {
+    if (isLoading.value && !refresh) return;
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final response = await _appService.listApplications(
+        statusFilter: activeFilter.value == 'all' ? null : activeFilter.value,
+        q: searchQuery.value.isEmpty ? null : searchQuery.value,
+      );
+
+      if (response.statusCode != 200 || response.body == null) {
+        errorMessage.value = response.body?['message']?.toString() ??
+            'Failed to load candidates.';
+        return;
+      }
+
+      final outer = response.body!['data'];
+      List<dynamic> items = [];
+      if (outer is Map) {
+        final raw = outer['data'] ?? outer['items'] ?? [];
+        items = raw is List ? raw : [];
+      }
+
+      candidates.assignAll(
+        items.map((j) => Candidate.fromListItem(j as Map<String, dynamic>)),
+      );
+    } catch (e) {
+      errorMessage.value = 'Connection error. Please check your internet.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void changeFilter(String filter) {
+    activeFilter.value = filter;
+    fetchCandidates(refresh: true);
+  }
+
+  void onSearchChanged(String q) {
+    searchQuery.value = q;
+    fetchCandidates(refresh: true);
+  }
+
+  /// Updates status locally (called from detail after successful API update).
+  void updateCandidateStatus(String id, String newStatus) {
+    final idx = candidates.indexWhere((c) => c.id == id);
+    if (idx != -1) {
+      candidates[idx] = candidates[idx].copyWith(status: newStatus);
+    }
   }
 
   void changeNavIndex(int index) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import '../controllers/login_controller.dart';
 import 'components/login_form.dart';
 

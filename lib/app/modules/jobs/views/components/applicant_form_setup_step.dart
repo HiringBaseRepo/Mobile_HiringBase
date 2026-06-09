@@ -48,10 +48,10 @@ class ApplicantFormSetupStep extends StatelessWidget {
                         textCancel: "Cancel",
                         confirmTextColor: Colors.white,
                         buttonColor: AppColors.primary,
-                        onConfirm: () {
-                          controller.addCustomField(textController.text);
-                          Get.back();
-                        },
+                         onConfirm: () {
+                          controller.formFieldsPreview.add({'label': textController.text, 'is_required': false});
+                           Get.back();
+                         },
                       );
                     },
                     icon: const Icon(Icons.add, size: 18),
@@ -61,7 +61,7 @@ class ApplicantFormSetupStep extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Obx(() => Column(
-                children: controller.customFields.asMap().entries.map((e) => _buildFormFieldItem(e.key, e.value, controller)).toList(),
+                children: controller.formFieldsPreview.asMap().entries.map((e) => _buildFormFieldItem(e.key, e.value, controller)).toList(),
               )),
             ],
           ),
@@ -73,6 +73,8 @@ class ApplicantFormSetupStep extends StatelessWidget {
   }
 
   Widget _buildFormFieldItem(int index, Map<String, dynamic> field, JobsController controller) {
+    final bool isRequired = field['is_required'] as bool? ?? false;
+    final String label = field['label']?.toString() ?? '';
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -81,16 +83,14 @@ class ApplicantFormSetupStep extends StatelessWidget {
         children: [
           const Icon(Icons.drag_indicator, color: AppColors.textTertiary, size: 20),
           const SizedBox(width: 12),
-          Expanded(child: Text(field['name'].toString(), style: AppTextStyles.subHeader2)),
-          if (field['locked'] == true) 
-            const Icon(Icons.lock_outline, color: AppColors.textTertiary, size: 18)
-          else ...[
-            Switch(value: field['required'] as bool, onChanged: (_) => controller.toggleFieldRequired(index), activeThumbColor: AppColors.primary),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
-              onPressed: () => controller.removeCustomField(index),
-            ),
-          ],
+          Expanded(child: Text(label, style: AppTextStyles.subHeader2)),
+          Switch(value: isRequired, onChanged: (_) => controller.toggleFieldRequired(index), activeThumbColor: AppColors.primary),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+            onPressed: () {
+              controller.formFieldsPreview.removeAt(index);
+            },
+          ),
         ],
       ),
     );

@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
-import '../../../../core/values/app_colors.dart';
-import '../../../../core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 
+/// Displays applicant statistics for a job.
+///
+/// All values default to 0 because the server's `GET /jobs/{id}` endpoint
+/// does not yet return applicant stats. They will be populated once the
+/// applicant management feature is integrated.
 class JobApplicantStatsCard extends StatelessWidget {
   final int total;
-  const JobApplicantStatsCard({super.key, required this.total});
+  final int newApplicants;
+  final int inInterview;
+  final double aiScreeningProgress;
+  final double technicalTestProgress;
+
+  const JobApplicantStatsCard({
+    super.key,
+    this.total = 0,
+    this.newApplicants = 0,
+    this.inInterview = 0,
+    this.aiScreeningProgress = 0.0,
+    this.technicalTestProgress = 0.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +36,47 @@ class JobApplicantStatsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Applicant Statistics', style: AppTextStyles.subHeader1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Applicant Statistics', style: AppTextStyles.subHeader1),
+              if (total == 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.textTertiary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'No applicants yet',
+                    style: AppTextStyles.caption.copyWith(color: AppColors.textTertiary),
+                  ),
+                ),
+            ],
+          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _StatCircle(label: 'Total', value: total.toString(), color: AppColors.primary),
-              _StatCircle(label: 'New', value: '12', color: AppColors.secondary),
-              _StatCircle(label: 'Interview', value: '4', color: AppColors.warning),
+              _StatCircle(label: 'New', value: newApplicants.toString(), color: AppColors.secondary),
+              _StatCircle(label: 'Interview', value: inInterview.toString(), color: AppColors.warning),
             ],
           ),
           const SizedBox(height: 24),
-          const _StatusProgress(label: 'AI Screening', progress: 0.65, color: Colors.purple),
+          _StatusProgress(
+            label: 'AI Screening',
+            progress: aiScreeningProgress,
+            color: Colors.purple,
+            count: (aiScreeningProgress * total).toInt(),
+          ),
           const SizedBox(height: 12),
-          const _StatusProgress(label: 'Technical Test', progress: 0.30, color: Colors.blue),
+          _StatusProgress(
+            label: 'Technical Test',
+            progress: technicalTestProgress,
+            color: Colors.blue,
+            count: (technicalTestProgress * total).toInt(),
+          ),
         ],
       ),
     );
@@ -71,11 +115,18 @@ class _StatusProgress extends StatelessWidget {
   final String label;
   final double progress;
   final Color color;
+  final int count;
 
-  const _StatusProgress({required this.label, required this.progress, required this.color});
+  const _StatusProgress({
+    required this.label,
+    required this.progress,
+    required this.color,
+    this.count = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final pct = (progress * 100).toInt();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -83,7 +134,13 @@ class _StatusProgress extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: AppTextStyles.bodyS),
-            Text('${(progress * 100).toInt()}%', style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              count > 0 ? '$count applicants ($pct%)' : '0 applicants',
+              style: AppTextStyles.bodyS.copyWith(
+                fontWeight: FontWeight.bold,
+                color: count > 0 ? color : AppColors.textTertiary,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -92,7 +149,9 @@ class _StatusProgress extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             backgroundColor: AppColors.surface,
-            valueColor: AlwaysStoppedAnimation<Color>(color),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              count > 0 ? color : AppColors.surface,
+            ),
             minHeight: 6,
           ),
         ),

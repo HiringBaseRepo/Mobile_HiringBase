@@ -58,19 +58,46 @@ class VacancyListView extends GetView<PublicVacancyController> {
               ),
             ),
           ),
-          Obx(() => SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final vacancy = controller.vacancies[index];
-                      return _buildVacancyCard(vacancy);
-                    },
-                    childCount: controller.vacancies.length,
+          Obx(() {
+            if (controller.isLoading.value && controller.vacancies.isEmpty) {
+              return const SliverFillRemaining(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            if (controller.vacancies.isEmpty) {
+              return SliverFillRemaining(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.work_off_outlined, size: 64, color: AppColors.textTertiary),
+                      const SizedBox(height: 16),
+                      Text(
+                        "No public openings available",
+                        style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ],
                   ),
                 ),
-              )),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              );
+            }
+
+            return SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final vacancy = controller.vacancies[index];
+                    return _buildVacancyCard(vacancy);
+                  },
+                  childCount: controller.vacancies.length,
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -237,7 +264,7 @@ class VacancyListView extends GetView<PublicVacancyController> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _buildTag(vacancy.type.toUpperCase()),
+                    _buildTag(vacancy.employmentTypeLabel.toUpperCase()),
                     _buildTagWithIcon(Icons.public_rounded, vacancy.location),
                   ],
                 ),

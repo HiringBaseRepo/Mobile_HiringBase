@@ -6,7 +6,7 @@ class SettingsController extends GetxController {
   final _appService = Get.find<AppService>();
 
   void logout() {
-    _appService.setRole('');
+    _appService.logout();
     Get.offAllNamed(Routes.SELECTION);
   }
 }

@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ScoringService extends GetConnect {
-  // Base URL should ideally be from .env
-  static const String apiBaseUrl = 'http://api.hiringbase.com/api/v1'; 
-
   @override
   void onInit() {
-    httpClient.baseUrl = apiBaseUrl;
+    httpClient.baseUrl = dotenv.env['API_BASE_URL'];
     super.onInit();
   }
 

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../routes/app_pages.dart';
+import '../../controllers/job_detail_hr_controller.dart';
 
 class JobActionButtons extends StatelessWidget {
   final String jobId;
@@ -10,6 +11,8 @@ class JobActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<JobDetailHrController>();
+
     return Column(
       children: [
         SizedBox(
@@ -56,7 +59,58 @@ class JobActionButtons extends StatelessWidget {
             ),
           ],
         ),
+        Obx(() {
+          final isClosed = controller.job.value?.status.toLowerCase() == 'closed';
+          if (isClosed) return const SizedBox.shrink();
+
+          return Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _showCloseConfirmation(context, controller),
+                icon: const Icon(Icons.block, size: 20, color: AppColors.error),
+                label: const Text('Close Vacancy'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  foregroundColor: AppColors.error,
+                  side: const BorderSide(color: AppColors.error, width: 1.5),
+                  shape: _roundedRectangle32(),
+                ),
+              ),
+            ),
+          );
+        }),
       ],
+    );
+  }
+
+  void _showCloseConfirmation(BuildContext context, JobDetailHrController controller) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Close Vacancy?'),
+        content: const Text(
+          'Are you sure you want to close this job vacancy? Applicants will no longer be able to submit their applications.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              controller.closeJob();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
+            child: const Text('Close Job'),
+          ),
+        ],
+      ),
     );
   }
 }

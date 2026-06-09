@@ -31,17 +31,22 @@ class JobPublishSuccessView extends GetView<JobsController> {
                 style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary, height: 1.5),
               ),
               const SizedBox(height: 40),
-              const _SuccessCard(title: "PUBLIC APPLICATION LINK", value: "recruit.ai/j/sr-dev-2026", icon: Icons.copy),
-              const SizedBox(height: 20),
-              const _SuccessCard(title: "PRIVATE ACCESS CODE", value: "JOB-2026-X821", icon: Icons.lock_outline),
+              Obx(() {
+                final code = controller.publishedApplyCode.value;
+                final link = code != null ? 'hiringbase.app/apply/$code' : 'No link generated';
+                return Column(
+                  children: [
+                    _SuccessCard(title: "PUBLIC APPLICATION LINK", value: link, icon: Icons.copy_outlined),
+                    const SizedBox(height: 20),
+                    _SuccessCard(title: "APPLY CODE", value: code ?? '-', icon: Icons.lock_outline),
+                  ],
+                );
+              }),
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Reset to first step and go back to jobs list
-                    controller.currentStep.value = 1;
-                  },
+                  onPressed: () => controller.goToJobsList(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.cardBackground,
@@ -119,8 +124,15 @@ class _SuccessCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(value, style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary)),
-                const SizedBox(width: 15),
+                Flexible(
+                  child: Text(
+                    value,
+                    style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+                const SizedBox(width: 10),
                 Icon(icon, size: 18, color: AppColors.textTertiary),
               ],
             ),

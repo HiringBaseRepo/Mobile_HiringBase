@@ -176,7 +176,7 @@ class ApplyFormView extends GetView<PublicVacancyController> {
   }
 
   Widget _buildDocumentUpload() {
-    final docs = controller.selectedVacancy.value!.docs;
+    final docs = controller.uploadedDocs.keys.toList();
     return Column(
       children: [
         Padding(

@@ -37,26 +37,19 @@ class CandidateCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(candidate.imageUrl),
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.cardBackground, width: 2),
-                      ),
-                    ),
-                  ),
-                ],
+              // show avatar initials if no image URL
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                backgroundImage: candidate.imageUrl.isNotEmpty
+                    ? NetworkImage(candidate.imageUrl) as ImageProvider
+                    : null,
+                child: candidate.imageUrl.isEmpty
+                    ? Text(
+                        candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                        style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
+                      )
+                    : null,
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -77,12 +70,12 @@ class CandidateCard extends StatelessWidget {
                 ),
               ),
               PopupMenuButton<String>(
-                onSelected: (status) => controller.updateCandidateStatus(index, status),
+                onSelected: (status) => controller.updateCandidateStatus(candidate.id, status),
                 itemBuilder: (context) => [
-                  _buildPopupItem('REVIEW', AppColors.textTertiary),
-                  _buildPopupItem('INTERVIEW', AppColors.primary),
-                  _buildPopupItem('DITERIMA', AppColors.success),
-                  _buildPopupItem('DITOLAK', AppColors.error),
+                  _buildPopupItem('under_review', AppColors.textTertiary),
+                  _buildPopupItem('interview', AppColors.primary),
+                  _buildPopupItem('hired', AppColors.success),
+                  _buildPopupItem('rejected', AppColors.error),
                 ],
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

@@ -39,41 +39,37 @@ class StatusControlCard extends GetView<CandidateDetailController> {
             style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-          Obx(() => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.surface, width: 1),
+          Obx(() {
+            final c = controller.candidate.value;
+            final currentStatus = c?.status.toLowerCase() ?? 'applied';
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.surface, width: 1),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: CandidateDetailController.statusOptions.any((opt) => opt['value'] == currentStatus) ? currentStatus : 'under_review',
+                  isExpanded: true,
+                  icon: const Icon(Icons.expand_more, color: AppColors.textSecondary),
+                  items: CandidateDetailController.statusOptions
+                      .map((opt) => _buildDropItem(opt['value']!, label: opt['label']!))
+                      .toList(),
+                  onChanged: (val) {
+                    if (val != null) controller.updateStatus(val);
+                  },
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: controller.candidate.value?.status.toUpperCase(),
-                    isExpanded: true,
-                    icon: const Icon(Icons.expand_more, color: AppColors.textSecondary),
-                    items: [
-                      _buildDropItem('APPLIED'),
-                      _buildDropItem('NEW'),
-                      _buildDropItem('DOC_CHECK'),
-                      _buildDropItem('AI_PROCESSING'),
-                      _buildDropItem('AI_PASSED'),
-                      _buildDropItem('REVIEW'),
-                      _buildDropItem('INTERVIEW'),
-                      _buildDropItem('DITERIMA'),
-                      _buildDropItem('DITOLAK'),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) controller.updateStatus(val);
-                    },
-                  ),
-                ),
-              )),
+              ),
+            );
+          }),
           const SizedBox(height: 12),
           Obx(() {
             final candidate = controller.candidate.value;
             if (candidate == null) return const SizedBox();
             
-            final status = candidate.status.toUpperCase();
+            final status = candidate.status.toLowerCase();
             final isScreening = controller.isScreening.value;
             
             if (isScreening) {
@@ -97,15 +93,19 @@ class StatusControlCard extends GetView<CandidateDetailController> {
               );
             }
 
-            if (status == 'APPLIED' || status == 'NEW') {
+            if (status == 'applied' || status == 'doc_check') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: SizedBox(
+                child: Obx(() => SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: controller.runScreening,
-                    icon: const Icon(Icons.psychology, size: 18),
-                    label: const Text('Run AI Screening'),
+                    onPressed: controller.isUpdatingStatus.value ? null : () {
+                      controller.updateStatus('under_review');
+                    },
+                    icon: controller.isUpdatingStatus.value
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.rate_review_outlined, size: 18),
+                    label: const Text('Move to Review'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -114,11 +114,11 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                       elevation: 0,
                     ),
                   ),
-                ),
+                )),
               );
             }
             
-            if (status == 'INTERVIEW') {
+            if (status == 'interview') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: SizedBox(
@@ -177,11 +177,11 @@ class StatusControlCard extends GetView<CandidateDetailController> {
     );
   }
 
-  DropdownMenuItem<String> _buildDropItem(String value) {
+  DropdownMenuItem<String> _buildDropItem(String value, {String? label}) {
     return DropdownMenuItem(
       value: value,
       child: Text(
-        value,
+        label ?? value,
         style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.w600),
       ),
     );
