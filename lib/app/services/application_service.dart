@@ -16,7 +16,9 @@ class ApplicationService extends GetConnect {
       if (token.isNotEmpty) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      request.headers['Content-Type'] = 'application/json';
+      if (!request.url.path.contains('public/apply') && !request.headers.containsKey('Content-Type')) {
+        request.headers['Content-Type'] = 'application/json';
+      }
       return request;
     });
     super.onInit();
@@ -94,13 +96,9 @@ class ApplicationService extends GetConnect {
   ///
   /// Expects multi-part FormData.
   Future<Response> publicApply(FormData formData) {
-    // We override content-type header to multipart/form-data for uploads.
     return post(
       '/public/apply',
       formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
     );
   }
 

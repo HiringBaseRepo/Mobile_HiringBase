@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io' as io;
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
@@ -37,6 +39,7 @@ class PublicVacancyController extends GetxController {
   
   // Document Upload Status
   final uploadedDocs = <String, bool>{}.obs;
+  final selectedFiles = <String, PlatformFile?>{}.obs;
   
   // Ticket Generation
   final generatedTicket = ''.obs;
@@ -190,10 +193,12 @@ class PublicVacancyController extends GetxController {
     selectedVacancy.value = vacancy;
     currentStep.value = 1;
     uploadedDocs.clear();
+    selectedFiles.clear();
     // Default required documents for all vacancies
-    const defaultDocs = ['CV', 'Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'];
+    const defaultDocs = ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'];
     for (var doc in defaultDocs) {
       uploadedDocs[doc] = false;
+      selectedFiles[doc] = null;
     }
   }
 
@@ -228,8 +233,47 @@ class PublicVacancyController extends GetxController {
     }
   }
 
-  void toggleDocUpload(String doc) {
-    uploadedDocs[doc] = !(uploadedDocs[doc] ?? false);
+  Future<void> pickDocument(String docLabel) async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+        withData: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        
+        // 5MB limit
+        const maxSizeBytes = 5 * 1024 * 1024;
+        if (file.size > maxSizeBytes) {
+          Get.snackbar(
+            'File Terlalu Besar',
+            'Ukuran file ${file.name} melebihi batas 5MB.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        selectedFiles[docLabel] = file;
+        uploadedDocs[docLabel] = true;
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Upload Error',
+        'Gagal memilih file: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void removeDocument(String docLabel) {
+    selectedFiles[docLabel] = null;
+    uploadedDocs[docLabel] = false;
   }
 
   bool validateForm() {
@@ -250,16 +294,6 @@ class PublicVacancyController extends GetxController {
           colorText: Colors.white);
       return false;
     }
-    
-    // Check if at least CV/Portfolio is uploaded
-    if (!(uploadedDocs['CV'] ?? false)) {
-      Get.snackbar('Validation Error', 'Please upload your CV.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: Colors.white);
-      return false;
-    }
-    
     return true;
   }
 
@@ -283,20 +317,46 @@ class PublicVacancyController extends GetxController {
         'answers_json': jsonEncode(answers),
       });
 
-      // Attach mock PDF files for selected documents to pass server rules validation
-      uploadedDocs.forEach((docLabel, isUploaded) {
-        if (isUploaded) {
+      // Helper function to map mime type / extension
+      String getContentTypeForFile(String filename) {
+        final ext = filename.split('.').last.toLowerCase();
+        switch (ext) {
+          case 'pdf':
+            return 'application/pdf';
+          case 'jpg':
+          case 'jpeg':
+            return 'image/jpeg';
+          case 'png':
+            return 'image/png';
+          default:
+            return 'application/octet-stream';
+        }
+      }
+
+      // Attach actual picked files to formData
+      selectedFiles.forEach((docLabel, file) {
+        if (file != null) {
           final serverType = _docTypeMapping[docLabel];
           if (serverType != null) {
-            final mockPdfBytes = List<int>.from([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a]); // %PDF header
-            formData.files.add(MapEntry(
-              'file_$serverType',
-              MultipartFile(
-                mockPdfBytes,
-                filename: '${docLabel.toLowerCase().replaceAll(' ', '_')}_mock.pdf',
-                contentType: 'application/pdf',
-              ),
-            ));
+            if (file.bytes != null) {
+              formData.files.add(MapEntry(
+                'file_$serverType',
+                MultipartFile(
+                  file.bytes!,
+                  filename: file.name,
+                  contentType: getContentTypeForFile(file.name),
+                ),
+              ));
+            } else if (file.path != null) {
+              formData.files.add(MapEntry(
+                'file_$serverType',
+                MultipartFile(
+                  io.File(file.path!),
+                  filename: file.name,
+                  contentType: getContentTypeForFile(file.name),
+                ),
+              ));
+            }
           }
         }
       });

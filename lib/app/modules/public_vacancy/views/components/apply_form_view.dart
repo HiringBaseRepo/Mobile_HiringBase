@@ -242,8 +242,9 @@ class ApplyFormView extends GetView<PublicVacancyController> {
   }
 
   Widget _buildUploadCard(String label, bool isUploaded) {
+    final fileName = controller.selectedFiles[label]?.name;
     return GestureDetector(
-      onTap: () => controller.toggleDocUpload(label),
+      onTap: () => isUploaded ? null : controller.pickDocument(label),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -261,7 +262,7 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                isUploaded ? Icons.check_circle_rounded : Icons.cloud_upload_outlined,
+                isUploaded ? Icons.description_outlined : Icons.cloud_upload_outlined,
                 color: isUploaded ? AppColors.success : AppColors.textTertiary,
                 size: 24,
               ),
@@ -273,14 +274,25 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                 children: [
                   Text(label, style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.bold)),
                   Text(
-                    isUploaded ? "Berhasil diunggah" : "Ketuk untuk memilih file",
-                    style: AppTextStyles.caption.copyWith(color: isUploaded ? AppColors.success : AppColors.textTertiary),
+                    isUploaded ? (fileName ?? "Berhasil diunggah") : "Ketuk untuk memilih file (PDF, JPG, PNG)",
+                    style: AppTextStyles.caption.copyWith(
+                      color: isUploaded ? AppColors.success : AppColors.textTertiary,
+                      fontWeight: isUploaded ? FontWeight.w500 : FontWeight.normal,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
             if (isUploaded)
-              const Icon(Icons.check_circle, color: AppColors.success, size: 20)
+              GestureDetector(
+                onTap: () => controller.removeDocument(label),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Icon(Icons.delete_outline_rounded, color: AppColors.error.withValues(alpha: 0.8), size: 22),
+                ),
+              )
             else
               const Icon(Icons.add_rounded, color: AppColors.textTertiary, size: 24),
           ],

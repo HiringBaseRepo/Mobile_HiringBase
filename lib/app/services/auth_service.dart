@@ -41,6 +41,27 @@ class AuthService extends GetConnect {
     return await get<Map<String, dynamic>>('/auth/me', headers: _authHeaders);
   }
 
+  /// Request OTP for resetting password.
+  Future<Response<Map<String, dynamic>>> requestPasswordReset(String email) async {
+    return await post<Map<String, dynamic>>('/auth/password-reset/request', {
+      'email': email,
+    });
+  }
+
+  /// Confirm password reset using OTP.
+  Future<Response<Map<String, dynamic>>> confirmPasswordReset(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    return await post<Map<String, dynamic>>('/auth/password-reset/confirm', {
+      'email': email,
+      'otp': otp,
+      'new_password': newPassword,
+    });
+  }
+
+
   /// Calls `POST /auth/logout` to invalidate the refresh-token cookie.
   Future<void> logout() async {
     try {

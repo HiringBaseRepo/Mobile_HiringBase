@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 
+import 'package:uifrontendmobile/app/services/navigation_service.dart';
 import '../../controllers/jobs_controller.dart';
 
 class JobPublishSuccessView extends GetView<JobsController> {
@@ -61,7 +62,7 @@ class JobPublishSuccessView extends GetView<JobsController> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () => Get.offAllNamed('/home'),
+                  onPressed: () => Get.find<NavigationService>().changeTo(0),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
                     side: const BorderSide(color: AppColors.surface),
