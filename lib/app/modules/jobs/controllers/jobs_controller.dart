@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/routes/app_pages.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
+import 'package:uifrontendmobile/app/services/navigation_service.dart';
 
 /// Controller for the 4-step Create Job wizard.
 ///
@@ -254,7 +255,7 @@ class JobsController extends GetxController {
 
   /// Navigates back to the jobs list after a successful creation.
   void goToJobsList() {
-    Get.offAllNamed(Routes.JOBS_LIST);
+    Get.find<NavigationService>().changeTo(1);
   }
 
   void _showError(String message) {

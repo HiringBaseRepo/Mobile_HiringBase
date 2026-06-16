@@ -11,7 +11,7 @@
 It serves two distinct user roles:
 
 - **HR** — Full dashboard access: job vacancy management, candidate review, AI-powered ranking, manual score override, interview scheduling, and analytics.
-- **Applicant (Public)** — No login required. Applicants browse vacancies, submit form-based applications (no CV required), upload 6 required documents, and track their application via a Ticket ID.
+- **Applicant (Public)** — No login required. Applicants browse vacancies, submit form-based applications (no CV required), upload 5 required documents, and track their application via a Ticket ID.
 
 The application connects to a FastAPI backend (`api.hiringbase.com`) that handles authentication, AI candidate scoring, and data persistence.
 
@@ -109,8 +109,10 @@ All weights must sum to a meaningful total. The score is an integer (0–100).
 ### Public Applicant Flow (Ticket-Based)
 1. **Job Detail** → Bento-style with Hero Card and Benefits Grid
 2. **Personal Info Form** → Name, Email, WhatsApp (all required)
-3. **Document Upload** → 6 mandatory docs: CV, Ijazah, KTP, SKCK, Surat Sehat, Sertifikat (visual feedback per item)
+3. **Document Upload** → 5 mandatory docs: Ijazah, KTP, SKCK, Surat Sehat, Sertifikat (visual feedback per item). CV is optional/portfolio.
 4. **Success Screen** → Display generated Ticket ID (format: `TKT-YYYY-XXXXX`)
+
+**Private Vacancy Access**: Applicants can access private vacancies by searching with the exact job/apply code.
 
 **Duplicate prevention**: Mock check by Email + Vacancy ID.
 
@@ -138,8 +140,18 @@ All weights must sum to a meaningful total. The score is an integer (0–100).
 
 ### API
 - Base URL: `http://api.hiringbase.com/api/v1`
-- HTTP client configured in `ScoringService` via `GetConnect`.
-- [PERLU DIISI] — Full API auth header strategy (Bearer token, etc.)
+- HTTP client configured in service classes (e.g. `ScoringService`, `AuthService`, `JobService`) via `GetConnect`.
+- **API Authentication Header Strategy**:
+  - Authenticated HR user requests must include the `Authorization` header with the format `'Bearer <accessToken>'`.
+  - The token is retrieved from `AppService` (`Get.find<AppService>().accessToken.value`).
+  - Some services automatically inject this header via `httpClient.addRequestModifier` (e.g., `ApplicationService`), while others fetch and pass it manually using the `_authHeaders` getter helper (e.g., `JobService`, `AuthService`).
+- **Standard Response Structure**:
+  - All API responses are standard JSON payloads in the following format:
+    `{ "success": bool, "message": String, "data": dynamic, "errors": List, "meta": Map }`
+  - Controllers must verify `response.statusCode == 200` and `body['success'] == true` before using data.
+- **Global Error & Response Handling**:
+  - Failed request validation or connection timeouts are handled via `try-catch` blocks in controllers.
+  - User-facing error feedback is displayed using `Get.snackbar(...)` styled with preset design tokens (e.g., `AppColors.error` background, white text).
 
 ### Development Commands
 ```bash

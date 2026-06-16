@@ -66,6 +66,7 @@ class JobDetailHrController extends GetxController {
       if (job.value != null) {
         job.value = job.value!.copyWith(
           description: data['description'] as String? ?? job.value!.description,
+          applyCode: data['apply_code'] as String? ?? job.value!.applyCode,
           applicantCount: totalApplicants.value,
         );
       } else {
