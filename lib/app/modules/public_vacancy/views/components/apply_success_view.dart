@@ -284,10 +284,10 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
   }
 
   Widget _buildFooterText() {
-    return Obx(() => Text(
+    return Text(
       "A confirmation email has been sent to ${controller.emailController.text}",
       textAlign: TextAlign.center,
       style: AppTextStyles.bodyS.copyWith(color: AppColors.textTertiary),
-    ));
+    );
   }
 }

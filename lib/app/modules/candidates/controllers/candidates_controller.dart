@@ -38,9 +38,18 @@ class CandidatesController extends GetxController {
     }).toList();
   }
 
+  final jobId = RxnInt();
+
   @override
   void onInit() {
     super.onInit();
+    if (Get.arguments != null) {
+      if (Get.arguments is int) {
+        jobId.value = Get.arguments as int;
+      } else if (Get.arguments is String) {
+        jobId.value = int.tryParse(Get.arguments as String);
+      }
+    }
     fetchCandidates();
   }
 
@@ -51,6 +60,7 @@ class CandidatesController extends GetxController {
       errorMessage.value = '';
 
       final response = await _appService.listApplications(
+        jobId: jobId.value,
         statusFilter: activeFilter.value == 'all' ? null : activeFilter.value,
         q: searchQuery.value.isEmpty ? null : searchQuery.value,
       );

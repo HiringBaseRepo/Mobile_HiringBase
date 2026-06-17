@@ -88,6 +88,45 @@ class CandidateDetailController extends GetxController {
     }
   }
 
+  /// Trigger AI screening via POST /screening/applications/{id}/run.
+  Future<void> runScreening() async {
+    final c = candidate.value;
+    if (c == null) return;
+    try {
+      isScreening.value = true;
+      final response = await _service.runScreening(c.id);
+
+      if (response.statusCode == 200 && response.body != null) {
+        Get.snackbar(
+          'AI Screening Queued',
+          response.body?['message']?.toString() ?? 'Screening has been queued successfully.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        // Refresh candidate detail to fetch updated score & status
+        await _fetchDetail(c.id);
+        
+        // Sync status back to candidates list
+        final updatedStatus = candidate.value?.status;
+        if (updatedStatus != null) {
+          try {
+            Get.find<CandidatesController>().updateCandidateStatus(c.id, updatedStatus);
+          } catch (_) {}
+        }
+      } else {
+        Get.snackbar(
+          'Error',
+          response.body?['message']?.toString() ?? 'Failed to start AI screening.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (_) {
+      Get.snackbar('Error', 'Connection error.', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isScreening.value = false;
+    }
+  }
+
+
   /// Available status transitions — presented in UI action sheet.
   static const statusOptions = [
     {'value': 'under_review', 'label': 'Under Review'},

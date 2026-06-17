@@ -27,6 +27,7 @@ class PublicVacancyController extends GetxController {
   final phoneController = TextEditingController();
   final linkedinController = TextEditingController();
   final experienceController = TextEditingController();
+  final educationController = TextEditingController();
   final skillInputController = TextEditingController();
   
   // Track status tab
@@ -43,6 +44,44 @@ class PublicVacancyController extends GetxController {
   
   // Ticket Generation
   final generatedTicket = ''.obs;
+
+  // Dynamic Form Fields
+  final customFormFields = <Map<String, dynamic>>[].obs;
+  final customControllers = <String, TextEditingController>{}.obs;
+  final requiredDocLabels = <String>[].obs;
+
+  bool _isDocumentField(String key, String label) {
+    final k = key.toLowerCase();
+    final l = label.toLowerCase();
+    return k.contains('ijazah') || k.contains('ktp') || k.contains('skck') || 
+           k.contains('sehat') || k.contains('sertifikat') || k.contains('cv') || 
+           k.contains('portfolio') || k.contains('file') || k.contains('document') || 
+           k.contains('dokumen') || k.contains('berkas') || k.contains('vaksin') || 
+           k.contains('foto') || k.contains('card');
+  }
+
+  String _getServerDocType(String label) {
+    final l = label.toLowerCase();
+    if (l.contains('cv') || l.contains('portfolio') || l.contains('portofolio')) {
+      return 'portfolio';
+    }
+    if (l.contains('ijazah') || l.contains('degree')) {
+      return 'degree';
+    }
+    if (l.contains('ktp') || l.contains('card') || l.contains('identitas')) {
+      return 'identity_card';
+    }
+    if (l.contains('skck') || l.contains('criminal')) {
+      return 'criminal_record';
+    }
+    if (l.contains('sehat') || l.contains('health')) {
+      return 'health_certificate';
+    }
+    if (l.contains('sertifikat') || l.contains('certificate') || l.contains('vaksin')) {
+      return 'certificate';
+    }
+    return 'portfolio'; // Default fallback
+  }
 
   static const Map<String, String> _docTypeMapping = {
     'CV': 'portfolio',
@@ -116,6 +155,10 @@ class PublicVacancyController extends GetxController {
 
     try {
       final response = await _appService.trackTicket(ticketCode);
+      print("Track Ticket Status Code: ${response.statusCode}");
+      print("Track Ticket Body: ${response.body}");
+      print("Track Ticket Status Text: ${response.statusText}");
+      
       if (response.statusCode == 200 && response.body != null) {
         final body = response.body!;
         if (body['success'] == true && body['data'] != null) {
@@ -127,13 +170,14 @@ class PublicVacancyController extends GetxController {
               colorText: Colors.white);
         }
       } else {
-        Get.snackbar('Error', 'Invalid ticket code or server error.',
+        Get.snackbar('Error', 'Invalid ticket code or server error. Status: ${response.statusCode}, Msg: ${response.statusText}',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: AppColors.error,
             colorText: Colors.white);
       }
-    } catch (_) {
-      Get.snackbar('Connection Error', 'Please check your internet.',
+    } catch (e) {
+      print("Track Ticket Exception: $e");
+      Get.snackbar('Connection Error', 'Please check your internet. Exception: $e',
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isTrackingLoading.value = false;
@@ -189,14 +233,66 @@ class PublicVacancyController extends GetxController {
     }
   }
 
-  void selectVacancy(Vacancy vacancy) {
+  void selectVacancy(Vacancy vacancy) async {
     selectedVacancy.value = vacancy;
     currentStep.value = 1;
     uploadedDocs.clear();
     selectedFiles.clear();
-    // Default required documents for all vacancies
-    const defaultDocs = ['Ijazah', 'KTP', 'SKCK', 'Surat Sehat', 'Sertifikat'];
-    for (var doc in defaultDocs) {
+    customFormFields.clear();
+    requiredDocLabels.clear();
+    
+    // Dispose old custom controllers
+    customControllers.forEach((_, c) => c.dispose());
+    customControllers.clear();
+
+    final docList = <String>[];
+
+    // Fetch details to get form_fields
+    try {
+      final response = await _appService.publicJobDetail(int.parse(vacancy.id));
+      if (response.statusCode == 200 && response.body != null) {
+        final body = response.body!;
+        if (body['success'] == true && body['data'] != null) {
+          final data = body['data'] as Map<String, dynamic>;
+          final fields = data['form_fields'] as List? ?? [];
+          
+          final standardKeys = {
+            'full_name', 'email', 'email_address', 'phone', 
+            'phone_number', 'whatsapp', 'education', 
+            'work_experience', 'experience', 'linkedin', 'skills'
+          };
+          
+          for (var f in fields) {
+            if (f is Map<String, dynamic>) {
+              final label = f['label']?.toString() ?? '';
+              final key = f['field_key']?.toString();
+              
+              if (key != null) {
+                final isDoc = _isDocumentField(key, label);
+                if (isDoc) {
+                  if (!docList.contains(label)) {
+                    docList.add(label);
+                  }
+                  if (f['is_required'] == true) {
+                    requiredDocLabels.add(label);
+                  }
+                } else {
+                  customFormFields.add(f);
+                  if (!standardKeys.contains(key.toLowerCase())) {
+                    customControllers[key] = TextEditingController();
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // Ignore
+    }
+
+    // Initialize uploaded docs
+    for (var doc in docList) {
       uploadedDocs[doc] = false;
       selectedFiles[doc] = null;
     }
@@ -294,6 +390,56 @@ class PublicVacancyController extends GetxController {
           colorText: Colors.white);
       return false;
     }
+
+    // Validate custom required fields
+    for (var field in customFormFields) {
+      final key = field['field_key']?.toString();
+      final isRequired = field['is_required'] as bool? ?? false;
+      final label = field['label']?.toString() ?? 'Field';
+      
+      if (isRequired) {
+        if (key == 'linkedin' && linkedinController.text.trim().isEmpty) {
+          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error,
+              colorText: Colors.white);
+          return false;
+        } else if ((key == 'experience' || key == 'work_experience') && experienceController.text.trim().isEmpty) {
+          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error,
+              colorText: Colors.white);
+          return false;
+        } else if (key == 'education' && educationController.text.trim().isEmpty) {
+          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error,
+              colorText: Colors.white);
+          return false;
+        } else if (key != null && customControllers.containsKey(key)) {
+          final controller = customControllers[key]!;
+          if (controller.text.trim().isEmpty) {
+            Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: AppColors.error,
+                colorText: Colors.white);
+            return false;
+          }
+        }
+      }
+    }
+
+    // Validate required documents
+    for (var docLabel in requiredDocLabels) {
+      if (uploadedDocs[docLabel] != true || selectedFiles[docLabel] == null) {
+        Get.snackbar('Validation Error', 'Dokumen \'$docLabel\' wajib diunggah.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: Colors.white);
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -306,8 +452,14 @@ class PublicVacancyController extends GetxController {
       final answers = <String, dynamic>{
         'linkedin': linkedinController.text.trim(),
         'experience': experienceController.text.trim(),
+        'education': educationController.text.trim(),
         'skills': skills.join(', '),
       };
+
+      // Add other custom fields dynamically
+      customControllers.forEach((key, controller) {
+        answers[key] = controller.text.trim();
+      });
 
       final formData = FormData({
         'job_id': selectedVacancy.value!.id,
@@ -336,27 +488,25 @@ class PublicVacancyController extends GetxController {
       // Attach actual picked files to formData
       selectedFiles.forEach((docLabel, file) {
         if (file != null) {
-          final serverType = _docTypeMapping[docLabel];
-          if (serverType != null) {
-            if (file.bytes != null) {
-              formData.files.add(MapEntry(
-                'file_$serverType',
-                MultipartFile(
-                  file.bytes!,
-                  filename: file.name,
-                  contentType: getContentTypeForFile(file.name),
-                ),
-              ));
-            } else if (file.path != null) {
-              formData.files.add(MapEntry(
-                'file_$serverType',
-                MultipartFile(
-                  io.File(file.path!),
-                  filename: file.name,
-                  contentType: getContentTypeForFile(file.name),
-                ),
-              ));
-            }
+          final serverType = _getServerDocType(docLabel);
+          if (file.bytes != null) {
+            formData.files.add(MapEntry(
+              'file_$serverType',
+              MultipartFile(
+                file.bytes!,
+                filename: file.name,
+                contentType: getContentTypeForFile(file.name),
+              ),
+            ));
+          } else if (file.path != null) {
+            formData.files.add(MapEntry(
+              'file_$serverType',
+              MultipartFile(
+                io.File(file.path!),
+                filename: file.name,
+                contentType: getContentTypeForFile(file.name),
+              ),
+            ));
           }
         }
       });
@@ -375,6 +525,7 @@ class PublicVacancyController extends GetxController {
           phoneController.clear();
           linkedinController.clear();
           experienceController.clear();
+          educationController.clear();
           skills.assignAll(['React', 'Node.js', 'TypeScript']);
 
           currentStep.value = 4; // Move to Success screen
@@ -393,5 +544,11 @@ class PublicVacancyController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    customControllers.forEach((_, c) => c.dispose());
+    super.onClose();
   }
 }

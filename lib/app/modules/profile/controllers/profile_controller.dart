@@ -24,15 +24,8 @@ class ProfileController extends GetxController {
   final activeJobsCount = 0.obs;
   final isLoadingStats = false.obs;
 
-  // ── Activities (local, no server endpoint yet) ──────────────────────
-  final activities = <Map<String, String>>[
-    {
-      'title': 'Login Berhasil',
-      'subtitle': 'Anda baru saja login ke sistem',
-      'time': 'Baru saja',
-      'type': 'login',
-    },
-  ].obs;
+  // ── Activities (dynamically loaded from server) ─────────────────────
+  final activities = <Map<String, String>>[].obs;
 
   // ── Getters proxying AppService ──────────────────────────────────────
   User? get user => _app.currentUser.value;
@@ -67,6 +60,95 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     _fetchStats();
+    fetchActivities();
+  }
+
+  Future<void> fetchActivities() async {
+    try {
+      final response = await _jobService.listAuditLogs();
+      if (response.statusCode == 200 && response.body != null) {
+        final outer = response.body!['data'];
+        if (outer is Map) {
+          final listRaw = outer['data'] as List?;
+          if (listRaw != null) {
+            final mapped = listRaw.map((log) {
+              final action = log['action'] as String? ?? '';
+              final actionLabel = log['action_label'] as String? ?? action;
+              final createdAt = log['created_at'] as String? ?? '';
+
+              String timeStr = 'Baru saja';
+              if (createdAt.isNotEmpty) {
+                try {
+                  final dt = DateTime.parse(createdAt).toLocal();
+                  final diff = DateTime.now().difference(dt);
+                  if (diff.inMinutes < 60) {
+                    timeStr = '${diff.inMinutes}m ago';
+                  } else if (diff.inHours < 24) {
+                    timeStr = '${diff.inHours}h ago';
+                  } else if (diff.inDays < 7) {
+                    timeStr = '${diff.inDays}d ago';
+                  } else {
+                    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    timeStr = '${dt.day} ${months[dt.month - 1]}';
+                  }
+                } catch (_) {}
+              }
+
+              String type = 'default';
+              if (action.contains('login') || action.contains('auth')) {
+                type = 'login';
+              } else if (action.contains('job')) {
+                type = 'job';
+              } else if (action.contains('candidate') || action.contains('application') || action.contains('status') || action.contains('screen') || action.contains('override')) {
+                type = 'candidate';
+              } else if (action.contains('email') || action.contains('mail')) {
+                type = 'email';
+              }
+
+              String subtitle = '';
+              final newVals = log['new_values'] as Map?;
+              if (newVals != null) {
+                if (action.contains('publish') && newVals.containsKey('job_id')) {
+                  subtitle = 'Mempublikasikan lowongan kerja #${newVals['job_id']}';
+                } else if (action.contains('create') && newVals.containsKey('title')) {
+                  subtitle = 'Membuat lowongan baru: ${newVals['title']}';
+                } else if (action.contains('status') && newVals.containsKey('new_status')) {
+                  subtitle = 'Mengubah status pelamar #${newVals['application_id'] ?? ''} menjadi ${newVals['new_status']}';
+                } else if (action.contains('schedule') && newVals.containsKey('scheduled_at')) {
+                  subtitle = 'Menjadwalkan wawancara untuk pelamar #${newVals['application_id'] ?? ''}';
+                } else {
+                  subtitle = 'Melakukan aksi: $actionLabel';
+                }
+              } else {
+                subtitle = 'Aksi $actionLabel berhasil dicatat';
+              }
+
+              return {
+                'title': actionLabel,
+                'subtitle': subtitle,
+                'time': timeStr,
+                'type': type,
+              };
+            }).toList();
+
+            activities.assignAll(List<Map<String, String>>.from(mapped));
+            return;
+          }
+        }
+      }
+    } catch (_) {}
+    
+    // Fallback if empty or error
+    if (activities.isEmpty) {
+      activities.assignAll([
+        {
+          'title': 'Login Berhasil',
+          'subtitle': 'Anda baru saja login ke sistem',
+          'time': 'Baru saja',
+          'type': 'login',
+        },
+      ]);
+    }
   }
 
   Future<void> _fetchStats() async {

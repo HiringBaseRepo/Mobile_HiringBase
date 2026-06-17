@@ -22,24 +22,32 @@ class InterviewDetailView extends GetView<InterviewDetailController> {
         title: Text('Interview Detail', style: AppTextStyles.subHeader1),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            _MainInfoCard(data: controller.interviewData),
-            const SizedBox(height: 24),
-            _LinkCard(link: controller.interviewData['link'] ?? ''),
-            const SizedBox(height: 48),
-            TextButton(
-              onPressed: controller.cancelInterview,
-              child: Text(
-                'Cancel Interview',
-                style: AppTextStyles.button.copyWith(color: AppColors.error),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              _MainInfoCard(data: controller.interviewData),
+              const SizedBox(height: 24),
+              _LinkCard(link: controller.interviewData['link'] ?? ''),
+              const SizedBox(height: 48),
+              TextButton(
+                onPressed: controller.cancelInterview,
+                child: Text(
+                  'Cancel Interview',
+                  style: AppTextStyles.button.copyWith(color: AppColors.error),
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

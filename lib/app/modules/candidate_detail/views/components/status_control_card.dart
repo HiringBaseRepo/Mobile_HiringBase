@@ -58,7 +58,12 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                       .map((opt) => _buildDropItem(opt['value']!, label: opt['label']!))
                       .toList(),
                   onChanged: (val) {
-                    if (val != null) controller.updateStatus(val);
+                    if (val == null) return;
+                    if (val == 'rejected') {
+                      _showRejectionDialog(context, controller);
+                    } else {
+                      controller.updateStatus(val);
+                    }
                   },
                 ),
               ),
@@ -96,24 +101,47 @@ class StatusControlCard extends GetView<CandidateDetailController> {
             if (status == 'applied' || status == 'doc_check') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Obx(() => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: controller.isUpdatingStatus.value ? null : () {
-                      controller.updateStatus('under_review');
-                    },
-                    icon: controller.isUpdatingStatus.value
-                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : const Icon(Icons.rate_review_outlined, size: 18),
-                    label: const Text('Move to Review'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
+                child: Obx(() => Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: (controller.isScreening.value || controller.isUpdatingStatus.value)
+                            ? null
+                            : () => controller.runScreening(),
+                        icon: controller.isScreening.value
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.psychology, size: 18),
+                        label: const Text('Run AI Screening'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          elevation: 0,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: (controller.isScreening.value || controller.isUpdatingStatus.value)
+                            ? null
+                            : () => controller.updateStatus('under_review'),
+                        icon: controller.isUpdatingStatus.value
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                            : const Icon(Icons.rate_review_outlined, size: 18),
+                        label: const Text('Move to Review (Manual)'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textPrimary,
+                          side: const BorderSide(color: AppColors.surface),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                    ),
+                  ],
                 )),
               );
             }
@@ -183,6 +211,77 @@ class StatusControlCard extends GetView<CandidateDetailController> {
       child: Text(
         label ?? value,
         style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  void _showRejectionDialog(BuildContext context, CandidateDetailController controller) {
+    final textController = TextEditingController();
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
+        title: Text('Alasan Penolakan', style: AppTextStyles.h3),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Berikan alasan mengapa kandidat ini ditolak.',
+              style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: textController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Tulis alasan di sini...',
+                hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary.withValues(alpha: 0.5)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: AppColors.surface),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: AppColors.primary),
+                ),
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              style: AppTextStyles.bodyM,
+            ),
+          ],
+        ),
+        actionsPadding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Batal', style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final reason = textController.text.trim();
+              if (reason.isEmpty) {
+                Get.snackbar(
+                  'Peringatan',
+                  'Alasan penolakan tidak boleh kosong.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: AppColors.warning.withValues(alpha: 0.1),
+                  colorText: AppColors.warning,
+                );
+                return;
+              }
+              Get.back();
+              controller.updateStatus('rejected', reason: reason);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text('Tolak', style: AppTextStyles.bodyM.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }

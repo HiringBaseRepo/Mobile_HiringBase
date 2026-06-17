@@ -24,6 +24,7 @@ class Candidate {
   final List<Map<String, dynamic>> answers;
   final List<Map<String, dynamic>> documents;
   final Map<String, dynamic>? scoreBreakdown; // full CandidateScoreResponse
+  final String? rejectionReason;
 
   const Candidate({
     required this.id,
@@ -42,6 +43,7 @@ class Candidate {
     this.answers = const [],
     this.documents = const [],
     this.scoreBreakdown,
+    this.rejectionReason,
   });
 
   /// From `ApplicationListItem` — minimal data for list cards.
@@ -49,7 +51,7 @@ class Candidate {
     final status = (json['status'] as String? ?? 'applied').toLowerCase();
     return Candidate(
       id: (json['id'] ?? 0).toString(),
-      name: 'Applicant #${json['id']}',
+      name: json['applicant_name'] as String? ?? 'Applicant #${json['id']}',
       role: json['status_label'] ?? status.toUpperCase(),
       status: status,
       score: 0,
@@ -86,6 +88,7 @@ class Candidate {
       answers: _parseList(json['answers']),
       documents: _parseList(json['documents']),
       scoreBreakdown: scoreJson,
+      rejectionReason: json['rejection_reason'] as String?,
     );
   }
 
@@ -128,6 +131,7 @@ class Candidate {
     List<Map<String, dynamic>>? answers,
     List<Map<String, dynamic>>? documents,
     Map<String, dynamic>? scoreBreakdown,
+    String? rejectionReason,
   }) =>
       Candidate(
         id: id ?? this.id,
@@ -146,6 +150,7 @@ class Candidate {
         answers: answers ?? this.answers,
         documents: documents ?? this.documents,
         scoreBreakdown: scoreBreakdown ?? this.scoreBreakdown,
+        rejectionReason: rejectionReason ?? this.rejectionReason,
       );
 
   // ── Helpers ──────────────────────────────────────────────────────────

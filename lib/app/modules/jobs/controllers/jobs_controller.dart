@@ -47,9 +47,6 @@ class JobsController extends GetxController {
   // ─── Step 3: Applicant Form fields (display only — uses server defaults) ─────
   // The server pre-populates required fields; this is shown for UX feedback only.
   final formFieldsPreview = <Map<String, dynamic>>[
-    {'label': 'Full Name', 'is_required': true},
-    {'label': 'Email Address', 'is_required': true},
-    {'label': 'Phone Number', 'is_required': true},
     {'label': 'Education', 'is_required': false},
     {'label': 'Work Experience', 'is_required': false},
   ].obs;

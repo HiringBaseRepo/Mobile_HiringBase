@@ -104,7 +104,40 @@ class ApplicationService extends GetConnect {
 
   /// GET /tickets/track/{ticketCode} — track ticket status.
   Future<Response> trackTicket(String ticketCode) {
-    // We call an absolute URI because this routes to /api/v1/tickets/track instead of /applications.
-    return get('${dotenv.env['API_BASE_URL']}/tickets/track/$ticketCode');
+    return get('/../tickets/track/$ticketCode');
+  }
+
+  // ─── Interview Endpoints ───────────────────────────────────────────────────
+
+  /// POST /interviews — schedule a new interview
+  Future<Response> scheduleInterview({
+    required int applicationId,
+    required String scheduledAt, // ISO string
+    int durationMinutes = 60,
+    String? location,
+    String? meetingLink,
+    String interviewType = 'video',
+    List<int>? interviewerIds,
+  }) {
+    final body = {
+      'application_id': applicationId,
+      'scheduled_at': scheduledAt,
+      'duration_minutes': durationMinutes,
+      'location': location,
+      'meeting_link': meetingLink,
+      'interview_type': interviewType,
+      'interviewer_ids': interviewerIds ?? [],
+    };
+    return post('/../interviews', body);
+  }
+
+  /// GET /interviews/application/{applicationId} — retrieve interview details
+  Future<Response> getInterview(int applicationId) {
+    return get('/../interviews/application/$applicationId');
+  }
+
+  /// POST /screening/applications/{applicationId}/run — run AI screening manually
+  Future<Response> runScreening(String applicationId) {
+    return post('/../screening/applications/$applicationId/run', {});
   }
 }

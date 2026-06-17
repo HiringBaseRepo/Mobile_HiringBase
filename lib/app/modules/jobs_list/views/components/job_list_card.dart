@@ -4,6 +4,7 @@ import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 import 'package:uifrontendmobile/app/routes/app_pages.dart';
+import '../../controllers/jobs_list_controller.dart';
 
 class JobListCard extends StatelessWidget {
   final Vacancy job;
@@ -12,7 +13,12 @@ class JobListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.toNamed(Routes.JOB_DETAIL_HR, arguments: job),
+      onTap: () async {
+        await Get.toNamed(Routes.JOB_DETAIL_HR, arguments: job);
+        try {
+          Get.find<JobsListController>().fetchJobs();
+        } catch (_) {}
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),

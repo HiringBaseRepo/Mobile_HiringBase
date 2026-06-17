@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../data/models/vacancy_model.dart';
+import '../../../../routes/app_pages.dart';
 import '../../controllers/public_vacancy_controller.dart';
 
 class VacancyListView extends GetView<PublicVacancyController> {
@@ -20,8 +21,14 @@ class VacancyListView extends GetView<PublicVacancyController> {
             pinned: true,
             backgroundColor: AppColors.background,
             elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+              onPressed: () {
+                Get.offAllNamed(Routes.SELECTION);
+              },
+            ),
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
               centerTitle: false,
               title: Text(
                 "Lowongan",

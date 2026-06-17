@@ -55,7 +55,40 @@ class ApplyFormView extends GetView<PublicVacancyController> {
           _buildFieldGroup("Nomor WhatsApp", controller.phoneController, "Contoh: 08123456789", keyboardType: TextInputType.phone),
           const SizedBox(height: 20),
           _buildFieldGroup("LinkedIn URL (Opsional)", controller.linkedinController, "linkedin.com/in/username"),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
+          _buildFieldGroup("Pendidikan Terakhir", controller.educationController, "Contoh: S1 Teknik Informatika / SMA IPA"),
+          const SizedBox(height: 20),
+          Obx(() {
+            final widgets = <Widget>[];
+            final standardKeys = {
+              'full_name', 'email', 'email_address', 'phone', 
+              'phone_number', 'whatsapp', 'education', 
+              'work_experience', 'experience', 'linkedin', 'skills'
+            };
+            
+            for (var field in controller.customFormFields) {
+              final key = field['field_key']?.toString();
+              final label = field['label']?.toString() ?? 'Field';
+              final isRequired = field['is_required'] as bool? ?? false;
+              
+              if (key != null && !standardKeys.contains(key.toLowerCase())) {
+                final textController = controller.customControllers[key];
+                if (textController != null) {
+                  widgets.add(_buildFieldGroup(
+                    "$label${isRequired ? ' *' : ' (Opsional)'}",
+                    textController,
+                    "Masukkan $label...",
+                  ));
+                  widgets.add(const SizedBox(height: 20));
+                }
+              }
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widgets,
+            );
+          }),
+          const SizedBox(height: 12),
           _buildProfessionalExperienceCard(),
         ],
       ),
@@ -176,38 +209,69 @@ class ApplyFormView extends GetView<PublicVacancyController> {
   }
 
   Widget _buildDocumentUpload() {
-    final docs = controller.uploadedDocs.keys.toList();
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Unggah Dokumen", style: AppTextStyles.h2),
-              const SizedBox(height: 8),
-              Text(
-                "Pastikan format file sesuai (PDF/JPG/PNG) dan ukuran maksimal 5MB.",
-                style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
-              ),
-            ],
+    return Obx(() {
+      final docs = controller.uploadedDocs.keys.toList();
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Unggah Dokumen", style: AppTextStyles.h2),
+                const SizedBox(height: 8),
+                Text(
+                  docs.isEmpty
+                      ? "Tidak ada berkas wajib yang perlu diunggah untuk lowongan ini."
+                      : "Pastikan format file sesuai (PDF/JPG/PNG) dan ukuran maksimal 5MB.",
+                  style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final docName = docs[index];
-              return Obx(() {
-                final isUploaded = controller.uploadedDocs[docName] ?? false;
-                return _buildUploadCard(docName, isUploaded);
-              });
-            },
+          Expanded(
+            child: docs.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.assignment_turned_in_outlined,
+                            size: 64,
+                            color: AppColors.primary.withValues(alpha: 0.5),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Semua Persyaratan Terpenuhi",
+                            style: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Anda bisa langsung mengirim lamaran tanpa mengunggah berkas tambahan.",
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      final docName = docs[index];
+                      return Obx(() {
+                        final isUploaded = controller.uploadedDocs[docName] ?? false;
+                        return _buildUploadCard(docName, isUploaded);
+                      });
+                    },
+                  ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildFieldGroup(String label, TextEditingController textController, String hint, {TextInputType? keyboardType}) {
