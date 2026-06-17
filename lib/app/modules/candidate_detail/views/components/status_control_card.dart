@@ -214,11 +214,11 @@ class StatusControlCard extends GetView<CandidateDetailController> {
       ),
     );
   }
-
   void _showRejectionDialog(BuildContext context, CandidateDetailController controller) {
     final textController = TextEditingController();
-    Get.dialog(
-      AlertDialog(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: Colors.white,
         title: Text('Alasan Penolakan', style: AppTextStyles.h3),
@@ -254,7 +254,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
         actionsPadding: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Navigator.of(context).pop(),
             child: Text('Batal', style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
@@ -270,7 +270,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                 );
                 return;
               }
-              Get.back();
+              Navigator.of(context).pop();
               controller.updateStatus('rejected', reason: reason);
             },
             style: ElevatedButton.styleFrom(
