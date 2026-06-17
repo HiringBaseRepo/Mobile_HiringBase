@@ -62,7 +62,10 @@ class CandidateDetailController extends GetxController {
       if (response.statusCode == 200 && response.body != null) {
         final data = response.body!['data'];
         final updated = (data?['new_status'] as String?) ?? newStatus;
-        candidate.value = c.copyWith(status: updated);
+        candidate.value = c.copyWith(
+          status: updated,
+          rejectionReason: updated == 'rejected' ? reason : null,
+        );
 
         // Sync back to candidates list
         try {
