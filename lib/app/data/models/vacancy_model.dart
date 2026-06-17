@@ -3,6 +3,35 @@
 /// Used for displaying jobs in the list view and passing to the detail page.
 /// Server fields: id (int), title, department, employment_type (enum), status (enum),
 /// location, apply_code, published_at, created_at, status_label, employment_type_label.
+class VacancyRequirement {
+  final String category;
+  final String name;
+  final String value;
+  final bool isRequired;
+
+  const VacancyRequirement({
+    required this.category,
+    required this.name,
+    required this.value,
+    required this.isRequired,
+  });
+
+  factory VacancyRequirement.fromJson(Map<String, dynamic> json) =>
+      VacancyRequirement(
+        category: json['category'] ?? '',
+        name: json['name'] ?? '',
+        value: json['value'] ?? '',
+        isRequired: json['is_required'] ?? false,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'category': category,
+        'name': name,
+        'value': value,
+        'is_required': isRequired,
+      };
+}
+
 class Vacancy {
   final String id;           // parsed from server int
   final String title;
@@ -23,6 +52,7 @@ class Vacancy {
   final int? salaryMin;
   final int? salaryMax;
   final int applicantCount;
+  final List<VacancyRequirement> requirements;
 
   const Vacancy({
     required this.id,
@@ -42,6 +72,7 @@ class Vacancy {
     this.salaryMin,
     this.salaryMax,
     this.applicantCount = 0,
+    this.requirements = const [],
   });
 
   /// Deserialises from the server's `JobListItem` JSON response.
@@ -63,6 +94,10 @@ class Vacancy {
         salaryMin: json['salary_min'] as int?,
         salaryMax: json['salary_max'] as int?,
         applicantCount: json['applicant_count'] as int? ?? 0,
+        requirements: (json['requirements'] as List?)
+                ?.map((r) => VacancyRequirement.fromJson(r as Map<String, dynamic>))
+                .toList() ??
+            const [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -78,6 +113,7 @@ class Vacancy {
         'description': description,
         'salary_min': salaryMin,
         'salary_max': salaryMax,
+        'requirements': requirements.map((r) => r.toJson()).toList(),
       };
 
   Vacancy copyWith({
@@ -98,6 +134,7 @@ class Vacancy {
     int? salaryMin,
     int? salaryMax,
     int? applicantCount,
+    List<VacancyRequirement>? requirements,
   }) =>
       Vacancy(
         id: id ?? this.id,
@@ -117,6 +154,7 @@ class Vacancy {
         salaryMin: salaryMin ?? this.salaryMin,
         salaryMax: salaryMax ?? this.salaryMax,
         applicantCount: applicantCount ?? this.applicantCount,
+        requirements: requirements ?? this.requirements,
       );
 
   /// Returns a display-friendly salary string, e.g. "Rp 5.000.000 - Rp 8.000.000".

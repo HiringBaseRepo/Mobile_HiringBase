@@ -254,6 +254,8 @@ class PublicVacancyController extends GetxController {
         final body = response.body!;
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'] as Map<String, dynamic>;
+          final updated = Vacancy.fromJson(data);
+          selectedVacancy.value = updated;
           final fields = data['form_fields'] as List? ?? [];
           
           final standardKeys = {

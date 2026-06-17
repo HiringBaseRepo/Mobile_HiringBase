@@ -25,10 +25,14 @@ class JobDetailView extends GetView<PublicVacancyController> {
                   _buildBentoHero(vacancy),
                   const SizedBox(height: 32),
                   _buildAboutSection(vacancy.description),
+                  if (vacancy.responsibilities != null && vacancy.responsibilities!.trim().isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    _buildResponsibilitiesSection(vacancy.responsibilities),
+                  ],
                   const SizedBox(height: 32),
-                  _buildRequirementsSection(const ['Relevant experience', 'Strong communication skills']),
+                  _buildRequirementsSection(vacancy.requirements),
                   const SizedBox(height: 32),
-                  _buildBenefitsSection(),
+                  _buildBenefitsSection(vacancy.benefits),
                   const SizedBox(height: 32),
                   _buildActionCard(),
                   const SizedBox(height: 32),
@@ -164,49 +168,142 @@ class JobDetailView extends GetView<PublicVacancyController> {
     );
   }
 
-  Widget _buildRequirementsSection(List<String> requirements) {
+  String _formatRequirement(VacancyRequirement req) {
+    final name = req.name;
+    final val = req.value;
+    final isReq = req.isRequired ? ' (Wajib)' : '';
+    
+    if (req.category.toLowerCase() == 'skill') {
+      return '$name$isReq';
+    }
+    if (req.category.toLowerCase() == 'education') {
+      return 'Pendidikan: $val$isReq';
+    }
+    if (req.category.toLowerCase() == 'experience') {
+      return 'Pengalaman: $val$isReq';
+    }
+    return '$name: $val$isReq';
+  }
+
+  Widget _buildResponsibilitiesSection(String? responsibilities) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(Icons.assignment_outlined, "Responsibilities"),
+        const SizedBox(height: 16),
+        Text(
+          responsibilities ?? '',
+          style: AppTextStyles.bodyM.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.6,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRequirementsSection(List<VacancyRequirement> requirements) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(Icons.fact_check_outlined, "Requirements"),
         const SizedBox(height: 16),
-        ...requirements.map((req) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+        if (requirements.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, size: 12, color: AppColors.primary),
                 ),
-                child: const Icon(Icons.check, size: 12, color: AppColors.primary),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  req,
-                  style: AppTextStyles.bodyM.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Kualifikasi umum yang relevan dengan posisi.",
+                    style: AppTextStyles.bodyM.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        )),
+              ],
+            ),
+          )
+        else
+          ...requirements.map((req) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, size: 12, color: AppColors.primary),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _formatRequirement(req),
+                    style: AppTextStyles.bodyM.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )),
       ],
     );
   }
 
-  Widget _buildBenefitsSection() {
-    final benefits = [
-      {'icon': Icons.medical_services_outlined, 'label': 'Health & Dental', 'color': Colors.green},
-      {'icon': Icons.beach_access_outlined, 'label': 'Flexible PTO', 'color': Colors.purple},
-      {'icon': Icons.school_outlined, 'label': 'Learning Budget', 'color': Colors.amber},
-      {'icon': Icons.home_work_outlined, 'label': 'Home Office', 'color': Colors.blue},
+  Widget _buildBenefitsSection(String? benefitsText) {
+    final List<String> list = [];
+    if (benefitsText != null && benefitsText.trim().isNotEmpty) {
+      list.addAll(
+        benefitsText
+            .split(RegExp(r'[\n\r,;]'))
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+      );
+    }
+    
+    // Fallback default benefits if none specified
+    if (list.isEmpty) {
+      list.addAll([
+        'Asuransi Kesehatan',
+        'Waktu Kerja Fleksibel',
+        'Pengembangan Karir',
+        'Lingkungan Kerja Suportif'
+      ]);
+    }
+
+    final icons = [
+      Icons.medical_services_outlined,
+      Icons.beach_access_outlined,
+      Icons.school_outlined,
+      Icons.home_work_outlined,
+      Icons.payments_outlined,
+      Icons.work_outline,
+    ];
+    final colors = [
+      Colors.green,
+      Colors.purple,
+      Colors.amber,
+      Colors.blue,
+      Colors.orange,
+      Colors.teal,
     ];
 
     return Column(
@@ -223,9 +320,11 @@ class JobDetailView extends GetView<PublicVacancyController> {
             mainAxisSpacing: 12,
             childAspectRatio: 2.5,
           ),
-          itemCount: benefits.length,
+          itemCount: list.length,
           itemBuilder: (context, index) {
-            final benefit = benefits[index];
+            final benefitLabel = list[index];
+            final icon = icons[index % icons.length];
+            final color = colors[index % colors.length];
             return Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -238,16 +337,18 @@ class JobDetailView extends GetView<PublicVacancyController> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: (benefit['color'] as Color).withValues(alpha: 0.1),
+                      color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(benefit['icon'] as IconData, size: 18, color: benefit['color'] as Color),
+                    child: Icon(icon, size: 18, color: color),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      benefit['label'] as String,
+                      benefitLabel,
                       style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
