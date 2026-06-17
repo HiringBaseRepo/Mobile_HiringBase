@@ -95,7 +95,7 @@ class Candidate {
   /// Legacy fromJson (keeps backward compatibility).
   factory Candidate.fromJson(Map<String, dynamic> json) {
     // Detect if it's a detail response
-    if (json.containsKey('applicant_name') || json.containsKey('job_title')) {
+    if (json.containsKey('job_title') || json.containsKey('answers')) {
       return Candidate.fromDetail(json);
     }
     return Candidate.fromListItem(json);
