@@ -1,10 +1,22 @@
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uifrontendmobile/app/services/app_service.dart';
 
 class ScoringService extends GetConnect {
   @override
   void onInit() {
     httpClient.baseUrl = dotenv.env['API_BASE_URL'];
+    httpClient.timeout = const Duration(seconds: 30);
+    httpClient.addRequestModifier<dynamic>((request) {
+      final token = Get.find<AppService>().accessToken.value;
+      if (token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      if (!request.headers.containsKey('Content-Type')) {
+        request.headers['Content-Type'] = 'application/json';
+      }
+      return request;
+    });
     super.onInit();
   }
 

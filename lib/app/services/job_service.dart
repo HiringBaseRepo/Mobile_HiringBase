@@ -147,4 +147,38 @@ class JobService extends GetConnect {
       headers: _authHeaders,
     );
   }
+
+  // ─── Audit/Activity Logs ────────────────────────────────────────────────────
+
+  /// Fetches audit/activity logs.
+  Future<Response<Map<String, dynamic>>> listAuditLogs({
+    String? entityType,
+    int? entityId,
+    String? search,
+    int page = 1,
+    int limit = 20,
+  }) {
+    final queryParams = <String, dynamic>{
+      'page': page,
+      'limit': limit,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityId != null) 'entity_id': entityId,
+      if (search != null && search.isNotEmpty) 'search': search,
+    };
+    return get<Map<String, dynamic>>(
+      '/audit-logs',
+      query: queryParams.map((k, v) => MapEntry(k, v.toString())),
+      headers: _authHeaders,
+    );
+  }
+
+  // ─── Candidate Ranking ───────────────────────────────────────────────────────
+
+  /// Fetches the list of candidates ranked by AI score for a given job.
+  Future<Response<Map<String, dynamic>>> getJobRanking(int jobId) {
+    return get<Map<String, dynamic>>(
+      '/ranking/jobs/$jobId',
+      headers: _authHeaders,
+    );
+  }
 }

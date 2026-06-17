@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/services/application_service.dart';
+import 'package:uifrontendmobile/app/modules/candidate_detail/controllers/candidate_detail_controller.dart';
 import '../../../data/models/candidate_model.dart';
 
 class ScheduleInterviewController extends GetxController {
+  final _appService = Get.find<ApplicationService>();
+
   final candidate = Rxn<Candidate>();
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -19,16 +24,125 @@ class ScheduleInterviewController extends GetxController {
 
   Future<void> submitSchedule() async {
     if (dateController.text.isEmpty || timeController.text.isEmpty) {
-      Get.snackbar('Error', 'Please select date and time');
+      Get.snackbar(
+        'Validation Error',
+        'Please select date and time',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
       return;
     }
 
+    final c = candidate.value;
+    if (c == null) return;
+
     isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1));
-    isLoading.value = false;
-    
-    Get.back();
-    Get.snackbar('Success', 'Interview scheduled and invitation sent');
+    try {
+      // 1. Parse date and time
+      final dateParts = dateController.text.split('-');
+      final yr = int.parse(dateParts[0]);
+      final mn = int.parse(dateParts[1]);
+      final dy = int.parse(dateParts[2]);
+
+      final timeStr = timeController.text;
+      int hr = 9;
+      int min = 0;
+      
+      if (timeStr.contains('AM') || timeStr.contains('PM')) {
+        final isPM = timeStr.contains('PM');
+        final cleanTime = timeStr.replaceAll(RegExp(r'[AP]M'), '').trim();
+        final parts = cleanTime.split(':');
+        hr = int.parse(parts[0]);
+        min = int.parse(parts[1]);
+        if (isPM && hr < 12) hr += 12;
+        if (!isPM && hr == 12) hr = 0;
+      } else {
+        final parts = timeStr.split(':');
+        hr = int.parse(parts[0]);
+        min = int.parse(parts[1]);
+      }
+
+      final scheduledDateTime = DateTime(yr, mn, dy, hr, min);
+      final scheduledAtIso = scheduledDateTime.toUtc().toIso8601String();
+
+      // 2. Map platform to enum & meeting details
+      String interviewType = 'video';
+      String? meetingLink;
+      String? location;
+
+      switch (selectedPlatform.value) {
+        case 'Google Meet':
+          interviewType = 'video';
+          meetingLink = 'https://meet.google.com/abc-defg-hij';
+          break;
+        case 'Zoom':
+          interviewType = 'video';
+          meetingLink = 'https://zoom.us/j/123456789';
+          break;
+        case 'WhatsApp':
+          interviewType = 'phone';
+          location = c.email ?? 'WhatsApp Call';
+          break;
+        case 'In-Person':
+          interviewType = 'in_person';
+          location = 'Kantor Utama Hirebase';
+          break;
+      }
+
+      // 3. Post to /interviews
+      final response = await _appService.scheduleInterview(
+        applicationId: int.parse(c.id),
+        scheduledAt: scheduledAtIso,
+        durationMinutes: 60,
+        interviewType: interviewType,
+        meetingLink: meetingLink,
+        location: location,
+      );
+
+      if (response.status.hasError || response.body?['success'] != true) {
+        final msg = response.body?['message']?.toString() ?? 'Failed to schedule interview.';
+        Get.snackbar(
+          'Error',
+          msg,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error.withValues(alpha: 0.1),
+          colorText: AppColors.error,
+        );
+        return;
+      }
+
+      // 4. Update application status to interview
+      await _appService.updateApplicationStatus(c.id, 'interview');
+
+      // 5. Success
+      Get.back();
+      // Try to reload candidate detail
+      try {
+        if (Get.isRegistered<CandidateDetailController>()) {
+          final detailCtrl = Get.find<CandidateDetailController>();
+          detailCtrl.onInit();
+        }
+      } catch (_) {}
+
+      Get.snackbar(
+        'Success',
+        'Interview scheduled and invitation sent',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success.withValues(alpha: 0.1),
+        colorText: AppColors.success,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error.withValues(alpha: 0.1),
+        colorText: AppColors.error,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override

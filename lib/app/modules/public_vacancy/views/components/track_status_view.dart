@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../core/widgets/app_bottom_nav.dart';
+import '../../../../routes/app_pages.dart';
 import '../../controllers/public_vacancy_controller.dart';
 
 class TrackStatusView extends GetView<PublicVacancyController> {
@@ -15,6 +16,12 @@ class TrackStatusView extends GetView<PublicVacancyController> {
       appBar: AppBar(
         backgroundColor: AppColors.cardBackground,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          onPressed: () {
+            Get.offAllNamed(Routes.SELECTION);
+          },
+        ),
         title: Text("Track Application", style: AppTextStyles.h3),
         centerTitle: true,
       ),

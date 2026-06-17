@@ -34,7 +34,7 @@ class HrStatsRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  IconData(stat['icon'] as int, fontFamily: 'MaterialIcons'),
+                  stat['icon'] as IconData,
                   color: Color(stat['color'] as int),
                   size: 28,
                 ),

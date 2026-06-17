@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
@@ -11,9 +12,9 @@ class HomeController extends GetxController {
 
   // ── State ──────────────────────────────────────────────────────────
   final stats = <Map<String, dynamic>>[
-    {'title': 'Total Applicants', 'value': '0', 'icon': 0xe491, 'color': 0xFF3B82F6},
-    {'title': 'Active Listings', 'value': '0', 'icon': 0xe11e, 'color': 0xFF8B5CF6},
-    {'title': 'Passed Screen', 'value': '0', 'icon': 0xe156, 'color': 0xFF10B981},
+    {'title': 'Total Applicants', 'value': '0', 'icon': Icons.people_outline_rounded, 'color': 0xFF3B82F6},
+    {'title': 'Active Listings', 'value': '0', 'icon': Icons.work_outline_rounded, 'color': 0xFF8B5CF6},
+    {'title': 'Passed Screen', 'value': '0', 'icon': Icons.fact_check_outlined, 'color': 0xFF10B981},
   ].obs;
 
   final candidates = <Candidate>[].obs;

@@ -66,6 +66,41 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
           child: Column(
             children: [
               CandidateProfileCard(candidate: candidate),
+              if (candidate.status.toLowerCase() == 'rejected' && candidate.rejectionReason != null && candidate.rejectionReason!.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Alasan Ditolak',
+                            style: AppTextStyles.subHeader1.copyWith(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        candidate.rejectionReason!,
+                        style: AppTextStyles.bodyM.copyWith(color: AppColors.textPrimary),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               AiInsightsCard(
                 score: candidate.score,
