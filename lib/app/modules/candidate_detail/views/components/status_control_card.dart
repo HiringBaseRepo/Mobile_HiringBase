@@ -73,76 +73,62 @@ class StatusControlCard extends GetView<CandidateDetailController> {
           Obx(() {
             final candidate = controller.candidate.value;
             if (candidate == null) return const SizedBox();
+
+            final isScreening = controller.isScreening.value;
+            final isUpdating = controller.isUpdatingStatus.value;
+            
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: (isScreening || isUpdating)
+                      ? null
+                      : () => controller.runScreening(),
+                  icon: isScreening
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.psychology, size: 18),
+                  label: Text(isScreening ? 'Processing AI Screening...' : 'Run AI Screening'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            );
+          }),
+          Obx(() {
+            final candidate = controller.candidate.value;
+            if (candidate == null) return const SizedBox();
             
             final status = candidate.status.toLowerCase();
+            final isUpdating = controller.isUpdatingStatus.value;
             final isScreening = controller.isScreening.value;
-            
-            if (isScreening) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                    const SizedBox(width: 12),
-                    Text('Processing: $status...', style: AppTextStyles.bodyM.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              );
-            }
 
             if (status == 'applied' || status == 'doc_check') {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Obx(() => Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: (controller.isScreening.value || controller.isUpdatingStatus.value)
-                            ? null
-                            : () => controller.runScreening(),
-                        icon: controller.isScreening.value
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Icon(Icons.psychology, size: 18),
-                        label: const Text('Run AI Screening'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          elevation: 0,
-                        ),
-                      ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: (isScreening || isUpdating)
+                        ? null
+                        : () => controller.updateStatus('under_review'),
+                    icon: isUpdating
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                        : const Icon(Icons.rate_review_outlined, size: 18),
+                    label: const Text('Move to Review (Manual)'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textPrimary,
+                      side: const BorderSide(color: AppColors.surface),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: (controller.isScreening.value || controller.isUpdatingStatus.value)
-                            ? null
-                            : () => controller.updateStatus('under_review'),
-                        icon: controller.isUpdatingStatus.value
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                            : const Icon(Icons.rate_review_outlined, size: 18),
-                        label: const Text('Move to Review (Manual)'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textPrimary,
-                          side: const BorderSide(color: AppColors.surface),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                      ),
-                    ),
-                  ],
-                )),
+                  ),
+                ),
               );
             }
             
@@ -152,7 +138,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () => Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: controller.candidate.value),
+                    onPressed: () => Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: candidate),
                     icon: const Icon(Icons.info_outline, size: 18),
                     label: const Text('View Interview Detail'),
                     style: ElevatedButton.styleFrom(
