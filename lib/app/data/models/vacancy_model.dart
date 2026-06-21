@@ -95,7 +95,7 @@ class Vacancy {
         salaryMax: json['salary_max'] as int?,
         applicantCount: json['applicant_count'] as int? ?? 0,
         requirements: (json['requirements'] as List?)
-                ?.map((r) => VacancyRequirement.fromJson(r as Map<String, dynamic>))
+                ?.map((r) => VacancyRequirement.fromJson(Map<String, dynamic>.from(r as Map)))
                 .toList() ??
             const [],
       );
