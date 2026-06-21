@@ -10,42 +10,51 @@ class JobDetailView extends GetView<PublicVacancyController> {
 
   @override
   Widget build(BuildContext context) {
-    final vacancy = controller.selectedVacancy.value!;
-    
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          _buildAppBar(),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildBentoHero(vacancy),
-                  const SizedBox(height: 32),
-                  _buildAboutSection(vacancy.description),
-                  if (vacancy.responsibilities != null && vacancy.responsibilities!.trim().isNotEmpty) ...[
+    return Obx(() {
+      final vacancy = controller.selectedVacancy.value;
+      if (vacancy == null) {
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: CustomScrollView(
+          slivers: [
+            _buildAppBar(),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildBentoHero(vacancy),
                     const SizedBox(height: 32),
-                    _buildResponsibilitiesSection(vacancy.responsibilities),
+                    _buildAboutSection(vacancy.description),
+                    if (vacancy.responsibilities != null && vacancy.responsibilities!.trim().isNotEmpty) ...[
+                      const SizedBox(height: 32),
+                      _buildResponsibilitiesSection(vacancy.responsibilities),
+                    ],
+                    const SizedBox(height: 32),
+                    _buildRequirementsSection(vacancy.requirements),
+                    const SizedBox(height: 32),
+                    _buildBenefitsSection(vacancy.benefits),
+                    const SizedBox(height: 32),
+                    _buildActionCard(),
+                    const SizedBox(height: 32),
+                    _buildCompanySnapshot(),
+                    const SizedBox(height: 100),
                   ],
-                  const SizedBox(height: 32),
-                  _buildRequirementsSection(vacancy.requirements),
-                  const SizedBox(height: 32),
-                  _buildBenefitsSection(vacancy.benefits),
-                  const SizedBox(height: 32),
-                  _buildActionCard(),
-                  const SizedBox(height: 32),
-                  _buildCompanySnapshot(),
-                  const SizedBox(height: 100),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildAppBar() {
@@ -275,7 +284,13 @@ class JobDetailView extends GetView<PublicVacancyController> {
       list.addAll(
         benefitsText
             .split(RegExp(r'[\n\r,;]'))
-            .map((s) => s.trim())
+            .map((s) {
+              var trimmed = s.trim();
+              if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•')) {
+                trimmed = trimmed.substring(1).trim();
+              }
+              return trimmed;
+            })
             .where((s) => s.isNotEmpty)
       );
     }
