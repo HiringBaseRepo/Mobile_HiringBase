@@ -234,7 +234,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
             isLast: false,
           ),
           _buildTimelineItem(
-            "SmartScreen AI Analysis",
+            "HiringBase AI Analysis",
             step2Complete 
               ? "AI Screening analysis completed."
               : (step2Active ? "Initial screening analysis is in progress..." : "Queueing for AI screening."),
@@ -276,23 +276,23 @@ class TrackStatusView extends GetView<PublicVacancyController> {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: isCompleted ? Colors.green : (isActive ? AppColors.primary : AppColors.surface),
+                  color: isCompleted ? AppColors.success : (isActive ? AppColors.primary : AppColors.surface),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isActive ? AppColors.primary.withValues(alpha: 0.2) : Colors.transparent,
+                    color: isActive ? AppColors.primary.withValues(alpha: 0.2) : AppColors.transparent,
                     width: 4,
                     strokeAlign: BorderSide.strokeAlignOutside,
                   ),
                 ),
                 child: isCompleted
-                    ? const Icon(Icons.check, color: Colors.white, size: 14)
-                    : (isActive ? Container(margin: const EdgeInsets.all(6), decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)) : null),
+                    ? const Icon(Icons.check, color: AppColors.white, size: 14)
+                    : (isActive ? Container(margin: const EdgeInsets.all(6), decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle)) : null),
               ),
               if (!isLast)
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isCompleted ? Colors.green : AppColors.surface,
+                    color: isCompleted ? AppColors.success : AppColors.surface,
                   ),
                 ),
             ],
@@ -330,7 +330,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
     
     String message = "Your profile is queued for processing. Good luck!";
     if (status == 'screening') {
-      message = "SmartScreen AI is currently scoring your CV and skills matching.";
+      message = "HiringBase AI is currently scoring your CV and skills matching.";
     } else if (status == 'interview') {
       message = "Congratulations! Your profile has qualified for the next interview step.";
     } else if (status == 'accepted') {
@@ -358,19 +358,19 @@ class TrackStatusView extends GetView<PublicVacancyController> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 32),
+          const Icon(Icons.auto_awesome_rounded, color: AppColors.white, size: 32),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "SmartScreen Insights",
-                  style: AppTextStyles.bodyM.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  "HiringBase Insights",
+                  style: AppTextStyles.bodyM.copyWith(color: AppColors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   message,
-                  style: AppTextStyles.bodyS.copyWith(color: Colors.white.withValues(alpha: 0.9)),
+                  style: AppTextStyles.bodyS.copyWith(color: AppColors.white.withValues(alpha: 0.9)),
                 ),
               ],
             ),

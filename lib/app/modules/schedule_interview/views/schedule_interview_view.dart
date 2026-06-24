@@ -10,9 +10,9 @@ class ScheduleInterviewView extends GetView<ScheduleInterviewController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
@@ -71,7 +71,11 @@ class ScheduleInterviewView extends GetView<ScheduleInterviewController> {
               children: ['Google Meet', 'Zoom', 'WhatsApp', 'In-Person'].map((p) {
                 final isSelected = controller.selectedPlatform.value == p;
                 return GestureDetector(
-                  onTap: () => controller.selectedPlatform.value = p,
+                  onTap: () {
+                    controller.selectedPlatform.value = p;
+                    controller.linkController.clear();
+                    controller.locationController.clear();
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
@@ -81,7 +85,7 @@ class ScheduleInterviewView extends GetView<ScheduleInterviewController> {
                     child: Text(
                       p,
                       style: AppTextStyles.bodyM.copyWith(
-                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                        color: isSelected ? AppColors.white : AppColors.textSecondary,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
@@ -89,6 +93,34 @@ class ScheduleInterviewView extends GetView<ScheduleInterviewController> {
                 );
               }).toList(),
             )),
+            const SizedBox(height: 24),
+            Obx(() {
+              final platform = controller.selectedPlatform.value;
+              if (platform == 'In-Person') {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Label('Location'),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: controller.locationController,
+                      decoration: _inputDecoration(Icons.location_on_outlined, 'e.g. Kantor Utama Jl. Sudirman'),
+                    ),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Label(platform == 'WhatsApp' ? 'WhatsApp Link (optional)' : 'Meeting Link'),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: controller.linkController,
+                    decoration: _inputDecoration(Icons.link, 'e.g. https://meet.google.com/abc-defg-hij'),
+                  ),
+                ],
+              );
+            }),
             const SizedBox(height: 48),
             Obx(() => SizedBox(
               width: double.infinity,
@@ -96,13 +128,13 @@ class ScheduleInterviewView extends GetView<ScheduleInterviewController> {
                 onPressed: controller.isLoading.value ? null : controller.submitSchedule,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                 ),
                 child: controller.isLoading.value 
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2))
                   : Text('Send Invitation', style: AppTextStyles.button),
               ),
             )),

@@ -104,13 +104,11 @@ class AppPages {
       name: _Paths.PUBLIC_VACANCY,
       page: () => const PublicVacancyView(),
       binding: PublicVacancyBinding(),
-      middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: _Paths.TRACK_STATUS,
       page: () => const TrackStatusView(),
       binding: PublicVacancyBinding(),
-      middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: _Paths.SETTINGS,

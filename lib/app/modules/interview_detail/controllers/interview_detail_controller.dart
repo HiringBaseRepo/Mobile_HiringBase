@@ -1,22 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
+import 'package:uifrontendmobile/app/data/models/interview_model.dart';
 import '../../../data/models/candidate_model.dart';
 
 class InterviewDetailController extends GetxController {
   final _appService = Get.find<ApplicationService>();
 
   final candidate = Rxn<Candidate>();
-  final interviewData = <String, String>{
-    'candidateName': 'Sarah Jenkins',
-    'role': 'Senior UI Designer',
-    'date': 'Friday, 12 May 2026',
-    'time': '10:00 AM - 11:00 AM',
-    'platform': 'Google Meet',
-    'link': 'https://meet.google.com/abc-defg-hij',
-    'status': 'Scheduled',
-  }.obs;
-
+  final interviewData = Rx<Interview>(Interview.empty());
   final isLoading = false.obs;
 
   @override
@@ -24,6 +15,7 @@ class InterviewDetailController extends GetxController {
     super.onInit();
     if (Get.arguments is Candidate) {
       candidate.value = Get.arguments as Candidate;
+      interviewData.value = Interview.fromCandidate(candidate.value);
       _fetchInterviewDetail();
     }
   }
@@ -48,37 +40,21 @@ class InterviewDetailController extends GetxController {
             timeStr = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
           }
 
-          interviewData.assignAll({
-            'candidateName': c.name,
-            'role': c.role,
-            'date': dateStr,
-            'time': '$timeStr (${data['duration']} mins)',
-            'platform': data['location'] != null && data['location'].isNotEmpty ? data['location'] : 'Online (Video)',
-            'link': data['meeting_link'] ?? '-',
-            'status': data['result'] ?? 'Scheduled',
-          });
+          interviewData.value = interviewData.value.copyWith(
+            candidateName: c.name,
+            role: c.role,
+            date: dateStr,
+            time: '$timeStr (${data['duration']} mins)',
+            platform: data['location'] != null && data['location'].isNotEmpty ? data['location'] : 'Online (Video)',
+            link: data['meeting_link'] ?? '-',
+            status: data['result'] ?? 'Scheduled',
+          );
         }
       }
     } catch (_) {
-      // Fallback to initial mock if error
+      // Keep name/role if fetch fails
     } finally {
       isLoading.value = false;
     }
   }
-
-  void cancelInterview() {
-    Get.defaultDialog(
-      title: 'Cancel Interview',
-      middleText: 'Are you sure you want to cancel this interview? This will notify the candidate.',
-      textConfirm: 'Yes, Cancel',
-      textCancel: 'Dismiss',
-      confirmTextColor: Colors.white,
-      onConfirm: () {
-        Get.back();
-        Get.back();
-        Get.snackbar('Cancelled', 'Interview has been cancelled.');
-      },
-    );
-  }
 }
-

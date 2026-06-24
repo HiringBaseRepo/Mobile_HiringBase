@@ -169,9 +169,8 @@ class ProfileController extends GetxController {
     }
   }
 
-  void logout() {
-    _app.logout();
-    Get.offAllNamed(Routes.SELECTION);
+  void logout() async {
+    await _authService.logout();
   }
 
   // ── Password Reset Operations ───────────────────────────────────────

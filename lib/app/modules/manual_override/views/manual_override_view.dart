@@ -12,7 +12,7 @@ class ManualOverrideView extends GetView<ManualOverrideController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.primary),
@@ -28,14 +28,14 @@ class ManualOverrideView extends GetView<ManualOverrideController> {
           children: [
             _CandidateSummary(candidate: controller.candidate.value),
             const SizedBox(height: 32),
-            _SectionTitle(title: 'Adjustment Categories (Delta)'),
+            _SectionTitle(title: 'Set Target Scores'),
             const SizedBox(height: 12),
-            _AdjustmentSlider(label: 'Skill Adjustment', value: controller.skillAdj),
-            _AdjustmentSlider(label: 'Experience Adjustment', value: controller.expAdj),
-            _AdjustmentSlider(label: 'Education Adjustment', value: controller.eduAdj),
-            _AdjustmentSlider(label: 'Portfolio Adjustment', value: controller.portAdj),
-            _AdjustmentSlider(label: 'Soft Skill Adjustment', value: controller.softAdj),
-            _AdjustmentSlider(label: 'Admin Adjustment', value: controller.adminAdj),
+            _AdjustmentSlider(label: 'Skill Match', value: controller.skillVal),
+            _AdjustmentSlider(label: 'Experience', value: controller.expVal),
+            _AdjustmentSlider(label: 'Education', value: controller.eduVal),
+            _AdjustmentSlider(label: 'Portfolio', value: controller.portVal),
+            _AdjustmentSlider(label: 'Soft Skill', value: controller.softVal),
+            _AdjustmentSlider(label: 'Administrative', value: controller.adminVal),
             
             const SizedBox(height: 32),
             _ScorePreviewCard(),
@@ -55,13 +55,13 @@ class ManualOverrideView extends GetView<ManualOverrideController> {
                 onPressed: controller.isLoading.value ? null : controller.submitOverride,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                 ),
                 child: controller.isLoading.value 
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2))
                   : Text('Save Changes', style: AppTextStyles.button),
               ),
             )),
@@ -75,7 +75,7 @@ class ManualOverrideView extends GetView<ManualOverrideController> {
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: AppColors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: AppColors.surface),
@@ -108,10 +108,10 @@ class _AdjustmentSlider extends StatelessWidget {
           children: [
             Text(label, style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.w500)),
             Obx(() => Text(
-              value.value >= 0 ? '+${value.value.toStringAsFixed(1)}' : value.value.toStringAsFixed(1),
+              value.value.toStringAsFixed(0),
               style: AppTextStyles.bodyM.copyWith(
                 fontWeight: FontWeight.bold,
-                color: value.value > 0 ? Colors.green : (value.value < 0 ? Colors.red : AppColors.textSecondary),
+                color: value.value > 70 ? AppColors.success : (value.value < 40 ? AppColors.error : AppColors.textSecondary),
               ),
             )),
           ],
@@ -124,9 +124,9 @@ class _AdjustmentSlider extends StatelessWidget {
           ),
           child: Slider(
             value: value.value,
-            min: -100,
+            min: 0,
             max: 100,
-            divisions: 200,
+            divisions: 100,
             activeColor: AppColors.primary,
             inactiveColor: AppColors.surface,
             onChanged: (val) => value.value = val,
@@ -160,15 +160,15 @@ class _ScorePreviewCard extends GetView<ManualOverrideController> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('PREVIEW SCORE', style: AppTextStyles.caption.copyWith(color: Colors.white70, fontWeight: FontWeight.bold)),
+              Text('PREVIEW SCORE', style: AppTextStyles.caption.copyWith(color: AppColors.white70, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('Final recalculation result', style: AppTextStyles.caption.copyWith(color: Colors.white60, fontSize: 10)),
+              Text('Final recalculation result', style: AppTextStyles.caption.copyWith(color: AppColors.white60, fontSize: 10)),
             ],
           ),
           Obx(() => Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(

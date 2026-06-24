@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
+import 'package:uifrontendmobile/app/data/models/dashboard_stat.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import 'package:uifrontendmobile/app/services/navigation_service.dart';
@@ -11,10 +13,10 @@ class HomeController extends GetxController {
   final _jobService = Get.find<JobService>();
 
   // ── State ──────────────────────────────────────────────────────────
-  final stats = <Map<String, dynamic>>[
-    {'title': 'Total Applicants', 'value': '0', 'icon': Icons.people_outline_rounded, 'color': 0xFF3B82F6},
-    {'title': 'Active Listings', 'value': '0', 'icon': Icons.work_outline_rounded, 'color': 0xFF8B5CF6},
-    {'title': 'Passed Screen', 'value': '0', 'icon': Icons.fact_check_outlined, 'color': 0xFF10B981},
+  final stats = <DashboardStat>[
+    const DashboardStat(title: 'Total Applicants', value: '0', icon: Icons.people_outline_rounded, color: AppColors.info),
+    const DashboardStat(title: 'Active Listings', value: '0', icon: Icons.work_outline_rounded, color: AppColors.secondary),
+    const DashboardStat(title: 'Passed Screen', value: '0', icon: Icons.fact_check_outlined, color: AppColors.success),
   ].obs;
 
   final candidates = <Candidate>[].obs;
@@ -30,6 +32,7 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchDashboardData() async {
+    if (isLoading.value) return;
     try {
       isLoading.value = true;
 
@@ -50,10 +53,7 @@ class HomeController extends GetxController {
         );
 
         // Update Total Applicants stat
-        stats[0] = {
-          ...stats[0],
-          'value': totalApps.toString(),
-        };
+        stats[0] = stats[0].copyWith(value: totalApps.toString());
       }
 
       // 2. Fetch active job listings count
@@ -65,14 +65,10 @@ class HomeController extends GetxController {
           totalJobs = (outer['total'] as int?) ?? (outer['data'] as List?)?.length ?? 0;
         }
 
-        stats[1] = {
-          ...stats[1],
-          'value': totalJobs.toString(),
-        };
+        stats[1] = stats[1].copyWith(value: totalJobs.toString());
       }
 
       // 3. Estimate Passed Screen (doc_check/ai_passed status)
-      // Since backend doesn't have an aggregation, we count how many in the loaded candidates are review/interview/hired/ai_passed
       final screenPassedResponse = await _appService.listApplications(statusFilter: 'ai_passed');
       if (screenPassedResponse.statusCode == 200 && screenPassedResponse.body != null) {
         final outer = screenPassedResponse.body!['data'];
@@ -80,10 +76,7 @@ class HomeController extends GetxController {
         if (outer is Map) {
           totalPassed = (outer['total'] as int?) ?? 0;
         }
-        stats[2] = {
-          ...stats[2],
-          'value': totalPassed.toString(),
-        };
+        stats[2] = stats[2].copyWith(value: totalPassed.toString());
       }
     } catch (_) {
       // Keep defaults

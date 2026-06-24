@@ -41,12 +41,16 @@ class NotificationCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        notification.title,
-                        style: AppTextStyles.subHeader2.copyWith(
-                          fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.w700,
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          style: AppTextStyles.subHeader2.copyWith(
+                            fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.w700,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Text(notification.createdAt, style: AppTextStyles.caption),
                     ],
                   ),

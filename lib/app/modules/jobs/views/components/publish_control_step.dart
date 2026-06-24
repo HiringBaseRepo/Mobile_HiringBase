@@ -101,7 +101,10 @@ class PublishControlStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 30),
-        const JobNavigationButtons(nextText: "Publish Vacancy"),
+        Obx(() => JobNavigationButtons(
+          nextText: "Publish Vacancy",
+          isNextEnabled: controller.totalWeight == 100.0,
+        )),
       ],
     );
   }

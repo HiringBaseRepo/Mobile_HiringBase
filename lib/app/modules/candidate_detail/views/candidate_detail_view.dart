@@ -8,6 +8,7 @@ import 'components/ai_insights_card.dart';
 import 'components/application_data_card.dart';
 import 'components/document_card.dart';
 import 'components/status_control_card.dart';
+import 'components/screening_progress_card.dart';
 
 class CandidateDetailView extends GetView<CandidateDetailController> {
   const CandidateDetailView({super.key});
@@ -66,6 +67,20 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
           child: Column(
             children: [
               CandidateProfileCard(candidate: candidate),
+              // Screening in-progress states
+              if (['applied', 'doc_check', 'ai_processing'].contains(candidate.status.toLowerCase())) ...[
+                const SizedBox(height: 24),
+                ScreeningProgressCard(status: candidate.status.toLowerCase()),
+              ],
+              // Screening failure states
+              if (['doc_failed', 'knockout'].contains(candidate.status.toLowerCase())) ...[
+                const SizedBox(height: 24),
+                ScreeningProgressCard(
+                  status: candidate.status.toLowerCase(),
+                  rejectionReason: candidate.rejectionReason,
+                ),
+              ],
+              // Rejection reason (rejected status)
               if (candidate.status.toLowerCase() == 'rejected' && candidate.rejectionReason != null && candidate.rejectionReason!.isNotEmpty) ...[
                 const SizedBox(height: 24),
                 Container(
@@ -101,14 +116,13 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
-              AiInsightsCard(
-                score: candidate.score,
-                isManualOverride: candidate.isManualOverride,
-                reasoning: candidate.matchText.isNotEmpty 
-                    ? candidate.matchText 
-                    : "Matches technical requirements but slightly lacks specific industry experience in fintech, though overall engineering maturity is exceptional.",
-              ),
+              // AI Insights — only show when score is available
+              if (candidate.score > 0) ...[
+                const SizedBox(height: 24),
+                AiInsightsCard(
+                  scoreData: candidate.scoreData,
+                ),
+              ],
               const SizedBox(height: 24),
               const ApplicationDataCard(),
               const SizedBox(height: 24),

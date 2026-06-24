@@ -11,6 +11,8 @@ class ScheduleInterviewController extends GetxController {
   final candidate = Rxn<Candidate>();
   final dateController = TextEditingController();
   final timeController = TextEditingController();
+  final linkController = TextEditingController();
+  final locationController = TextEditingController();
   final selectedPlatform = 'Google Meet'.obs;
   final isLoading = false.obs;
 
@@ -73,20 +75,41 @@ class ScheduleInterviewController extends GetxController {
 
       switch (selectedPlatform.value) {
         case 'Google Meet':
-          interviewType = 'video';
-          meetingLink = 'https://meet.google.com/abc-defg-hij';
-          break;
         case 'Zoom':
           interviewType = 'video';
-          meetingLink = 'https://zoom.us/j/123456789';
+          final link = linkController.text.trim();
+          if (link.isEmpty) {
+            Get.snackbar(
+              'Validation Error',
+              'Please enter the meeting link',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error.withValues(alpha: 0.1),
+              colorText: AppColors.error,
+            );
+            isLoading.value = false;
+            return;
+          }
+          meetingLink = link;
           break;
         case 'WhatsApp':
           interviewType = 'phone';
-          location = c.email ?? 'WhatsApp Call';
+          meetingLink = linkController.text.trim();
           break;
         case 'In-Person':
           interviewType = 'in_person';
-          location = 'Kantor Utama Hirebase';
+          final loc = locationController.text.trim();
+          if (loc.isEmpty) {
+            Get.snackbar(
+              'Validation Error',
+              'Please enter the interview location',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error.withValues(alpha: 0.1),
+              colorText: AppColors.error,
+            );
+            isLoading.value = false;
+            return;
+          }
+          location = loc;
           break;
       }
 
@@ -121,7 +144,7 @@ class ScheduleInterviewController extends GetxController {
       try {
         if (Get.isRegistered<CandidateDetailController>()) {
           final detailCtrl = Get.find<CandidateDetailController>();
-          detailCtrl.onInit();
+          detailCtrl.refreshData();
         }
       } catch (_) {}
 
@@ -149,6 +172,8 @@ class ScheduleInterviewController extends GetxController {
   void onClose() {
     dateController.dispose();
     timeController.dispose();
+    linkController.dispose();
+    locationController.dispose();
     super.onClose();
   }
 }

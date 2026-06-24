@@ -45,16 +45,15 @@ class RankingView extends GetView<RankingController> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: controller.candidates.length,
-                  itemBuilder: (context, index) {
+                Column(
+                  children: controller.candidates.asMap().entries.map((e) {
+                    final index = e.key;
+                    final candidate = e.value;
                     return RankingCard(
-                      candidate: controller.candidates[index],
+                      candidate: candidate,
                       rank: index + 1,
                     );
-                  },
+                  }).toList(),
                 ),
                 const SizedBox(height: 40),
               ],

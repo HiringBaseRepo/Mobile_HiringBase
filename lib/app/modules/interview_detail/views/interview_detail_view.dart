@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/data/models/interview_model.dart';
 import '../controllers/interview_detail_controller.dart';
 
 class InterviewDetailView extends GetView<InterviewDetailController> {
@@ -13,7 +14,7 @@ class InterviewDetailView extends GetView<InterviewDetailController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
@@ -33,17 +34,10 @@ class InterviewDetailView extends GetView<InterviewDetailController> {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              _MainInfoCard(data: controller.interviewData),
+              _MainInfoCard(data: controller.interviewData.value),
               const SizedBox(height: 24),
-              _LinkCard(link: controller.interviewData['link'] ?? ''),
+              _LinkCard(link: controller.interviewData.value.link),
               const SizedBox(height: 48),
-              TextButton(
-                onPressed: controller.cancelInterview,
-                child: Text(
-                  'Cancel Interview',
-                  style: AppTextStyles.button.copyWith(color: AppColors.error),
-                ),
-              ),
             ],
           ),
         );
@@ -53,7 +47,7 @@ class InterviewDetailView extends GetView<InterviewDetailController> {
 }
 
 class _MainInfoCard extends StatelessWidget {
-  final Map<String, String> data;
+  final Interview data;
   const _MainInfoCard({required this.data});
 
   @override
@@ -62,7 +56,7 @@ class _MainInfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppColors.surface),
       ),
@@ -75,21 +69,21 @@ class _MainInfoCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              data['status']?.toUpperCase() ?? '',
+              data.status.toUpperCase(),
               style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 20),
-          Text(data['candidateName'] ?? '', style: AppTextStyles.h2),
-          Text(data['role'] ?? '', style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary)),
+          Text(data.candidateName, style: AppTextStyles.h2),
+          Text(data.role, style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 32),
           const Divider(),
           const SizedBox(height: 24),
-          _DetailRow(icon: Icons.calendar_today_outlined, label: data['date'] ?? ''),
+          _DetailRow(icon: Icons.calendar_today_outlined, label: data.date),
           const SizedBox(height: 16),
-          _DetailRow(icon: Icons.access_time_outlined, label: data['time'] ?? ''),
+          _DetailRow(icon: Icons.access_time_outlined, label: data.time),
           const SizedBox(height: 16),
-          _DetailRow(icon: Icons.videocam_outlined, label: data['platform'] ?? ''),
+          _DetailRow(icon: Icons.videocam_outlined, label: data.platform),
         ],
       ),
     );
@@ -159,7 +153,7 @@ class _LinkCard extends StatelessWidget {
               onPressed: () {}, // Launch URL
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 elevation: 0,

@@ -90,7 +90,10 @@ class LoginController extends GetxController {
       final user = User.fromJson(meData);
       _appService.setUser(user);
 
-      // ── Step 5: Navigate to home ───────────────────────────────────────
+      // ── Step 5: Persist session for cold-start restore ─────────────────
+      await _appService.persistSession();
+
+      // ── Step 6: Navigate to home ───────────────────────────────────────
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
       _showError('An unexpected error occurred. Please try again.');

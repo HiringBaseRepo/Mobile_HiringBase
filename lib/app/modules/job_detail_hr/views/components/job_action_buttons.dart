@@ -30,34 +30,18 @@ class JobActionButtons extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => Get.toNamed(Routes.RANKING, arguments: jobId),
-                icon: const Icon(Icons.leaderboard_outlined, size: 20),
-                label: const Text('Ranking'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: BorderSide(color: AppColors.surface),
-                  shape: _roundedRectangle32(),
-                ),
-              ),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => Get.toNamed(Routes.RANKING, arguments: jobId),
+            icon: const Icon(Icons.leaderboard_outlined, size: 20),
+            label: const Text('Ranking'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: BorderSide(color: AppColors.surface),
+              shape: _roundedRectangle32(),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => Get.toNamed(Routes.CREATE_JOB, arguments: jobId),
-                icon: const Icon(Icons.edit_outlined, size: 20),
-                label: const Text('Edit Job'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: BorderSide(color: AppColors.surface),
-                  shape: _roundedRectangle32(),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
         Obx(() {
           final isClosed = controller.job.value?.status.toLowerCase() == 'closed';
