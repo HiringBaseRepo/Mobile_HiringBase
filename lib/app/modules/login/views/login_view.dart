@@ -47,21 +47,18 @@ class LoginView extends GetView<LoginController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.psychology,
-                          color: AppColors.primary,
-                          size: 32,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/logo.jpg',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'RecruitAI',
+                        'Hiringbase',
                         style: GoogleFonts.outfit(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
