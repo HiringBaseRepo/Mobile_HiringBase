@@ -67,14 +67,14 @@ class JobApplicantStatsCard extends StatelessWidget {
           _StatusProgress(
             label: 'AI Screening',
             progress: aiScreeningProgress,
-            color: Colors.purple,
+            color: AppColors.secondary,
             count: (aiScreeningProgress * total).toInt(),
           ),
           const SizedBox(height: 12),
           _StatusProgress(
             label: 'Technical Test',
             progress: technicalTestProgress,
-            color: Colors.blue,
+            color: AppColors.info,
             count: (technicalTestProgress * total).toInt(),
           ),
         ],

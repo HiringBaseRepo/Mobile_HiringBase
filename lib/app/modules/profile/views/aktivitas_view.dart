@@ -36,19 +36,19 @@ class AktivitasView extends GetView<ProfileController> {
             switch (activity['type']) {
               case 'login':
                 icon = Icons.login_outlined;
-                color = Colors.blue;
+                color = AppColors.info;
                 break;
               case 'job':
                 icon = Icons.work_outline;
-                color = Colors.orange;
+                color = AppColors.interview;
                 break;
               case 'candidate':
                 icon = Icons.person_search_outlined;
-                color = Colors.green;
+                color = AppColors.success;
                 break;
               case 'email':
                 icon = Icons.email_outlined;
-                color = Colors.purple;
+                color = AppColors.secondary;
                 break;
               default:
                 icon = Icons.notifications_none_outlined;
@@ -62,10 +62,10 @@ class AktivitasView extends GetView<ProfileController> {
                 decoration: BoxDecoration(
                   color: AppColors.cardBackground,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.black.withOpacity(0.05)),
+                  border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.05)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: AppColors.textPrimary.withValues(alpha: 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -77,7 +77,7 @@ class AktivitasView extends GetView<ProfileController> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(icon, color: color, size: 20),
