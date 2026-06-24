@@ -16,12 +16,12 @@ class NotificationModel {
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) => NotificationModel(
-        id: json['id'] ?? '',
+        id: json['id']?.toString() ?? '',
         title: json['title'] ?? '',
-        body: json['body'] ?? '',
+        body: json['message'] ?? json['body'] ?? '',
         type: json['type'] ?? 'new_application',
-        isRead: json['isRead'] ?? false,
-        createdAt: json['createdAt'] ?? '',
+        isRead: json['is_read'] ?? json['isRead'] ?? false,
+        createdAt: json['created_at'] ?? json['createdAt'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

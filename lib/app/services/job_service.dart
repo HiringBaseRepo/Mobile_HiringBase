@@ -118,6 +118,18 @@ class JobService extends GetConnect {
     );
   }
 
+  /// Step 3b — Adds knockout rules for a job (e.g. required document types).
+  Future<Response<Map<String, dynamic>>> addJobKnockoutRules({
+    required int jobId,
+    required List<Map<String, dynamic>> knockoutRules,
+  }) {
+    return post<Map<String, dynamic>>(
+      '/jobs/$jobId/step3-knockout-rules',
+      {'knockout_rules': knockoutRules},
+      headers: _authHeaders,
+    );
+  }
+
   /// Step 4 — Publishes a job draft.
   ///
   /// [mode] — 'public' | 'private' | 'scheduled'

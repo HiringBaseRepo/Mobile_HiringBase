@@ -9,7 +9,7 @@ import 'package:uifrontendmobile/app/services/app_service.dart';
 class ApplicationService extends GetConnect {
   @override
   void onInit() {
-    httpClient.baseUrl = "${dotenv.env['API_BASE_URL']}/applications";
+    httpClient.baseUrl = dotenv.env['API_BASE_URL'];
     httpClient.timeout = const Duration(seconds: 30);
     httpClient.addRequestModifier<dynamic>((request) {
       final token = Get.find<AppService>().accessToken.value;
@@ -43,12 +43,12 @@ class ApplicationService extends GetConnect {
       if (statusFilter != null && statusFilter != 'all') 'status_filter': statusFilter,
       if (q != null && q.isNotEmpty) 'q': q,
     };
-    return get('', query: params.map((k, v) => MapEntry(k, v.toString())));
+    return get('/applications', query: params.map((k, v) => MapEntry(k, v.toString())));
   }
 
   /// GET /applications/{id} — full application detail including score.
   Future<Response> getApplicationDetail(String applicationId) =>
-      get('/$applicationId');
+      get('/applications/$applicationId');
 
   /// PATCH /applications/{id}/status — update application status.
   ///
@@ -63,7 +63,7 @@ class ApplicationService extends GetConnect {
       if (reason != null && reason.isNotEmpty) 'reason': reason,
     };
     return patch(
-      '/$applicationId/status',
+      '/applications/$applicationId/status',
       {},
       query: params,
     );
@@ -84,12 +84,12 @@ class ApplicationService extends GetConnect {
       if (q != null && q.isNotEmpty) 'q': q,
       if (location != null && location.isNotEmpty) 'location': location,
     };
-    return get('/public/jobs', query: params.map((k, v) => MapEntry(k, v.toString())));
+    return get('/applications/public/jobs', query: params.map((k, v) => MapEntry(k, v.toString())));
   }
 
   /// GET /applications/public/jobs/{jobId} — get public job details.
   Future<Response> publicJobDetail(int jobId) {
-    return get('/public/jobs/$jobId');
+    return get('/applications/public/jobs/$jobId');
   }
 
   /// POST /applications/public/apply — submit application form.
@@ -97,14 +97,14 @@ class ApplicationService extends GetConnect {
   /// Expects multi-part FormData.
   Future<Response> publicApply(FormData formData) {
     return post(
-      '/public/apply',
+      '/applications/public/apply',
       formData,
     );
   }
 
   /// GET /tickets/track/{ticketCode} — track ticket status.
   Future<Response> trackTicket(String ticketCode) {
-    return get('/../tickets/track/$ticketCode');
+    return get('/tickets/track/$ticketCode');
   }
 
   // ─── Interview Endpoints ───────────────────────────────────────────────────
@@ -128,16 +128,22 @@ class ApplicationService extends GetConnect {
       'interview_type': interviewType,
       'interviewer_ids': interviewerIds ?? [],
     };
-    return post('/../interviews', body);
+    return post('/interviews', body);
   }
 
   /// GET /interviews/application/{applicationId} — retrieve interview details
   Future<Response> getInterview(int applicationId) {
-    return get('/../interviews/application/$applicationId');
+    return get('/interviews/application/$applicationId');
   }
 
   /// POST /screening/applications/{applicationId}/run — run AI screening manually
   Future<Response> runScreening(String applicationId) {
-    return post('/../screening/applications/$applicationId/run', {});
+    return post('/screening/applications/$applicationId/run', {});
+  }
+
+  /// POST /screening/batch/run — run AI screening for multiple applications.
+  Future<Response> runBatchScreening(List<String> applicationIds) {
+    final ids = applicationIds.map(int.parse).toList();
+    return post('/screening/batch/run', {'application_ids': ids});
   }
 }

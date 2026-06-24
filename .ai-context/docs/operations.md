@@ -81,38 +81,38 @@ flutter pub upgrade
 
 ## API Configuration
 
-- **Base URL**: `http://api.hiringbase.com/api/v1`
-- **Client**: `ScoringService extends GetConnect` (`lib/app/services/scoring_service.dart`)
-- [PERLU DIISI] — Auth token storage (SharedPreferences? SecureStorage?)
-- [PERLU DIISI] — Token refresh strategy
-- [PERLU DIISI] — Request timeout configuration
+- **Base URL**: Dikonfigurasi secara dinamis melalui `.env` (variabel `API_BASE_URL`).
+- **Client**: `GetConnect` digunakan di masing-masing service (`JobService`, `AuthService`, `ApplicationService`, `ScoringService`).
+- **Auth Token Storage**: Token JWT disimpan secara lokal menggunakan `SharedPreferences` melalui perantara `AppService` (`accessToken` state). Session akan dipulihkan secara otomatis pada saat inisiasi aplikasi (cold-start) melalui pemanggilan `AppService.init()`.
+- **Token Refresh Strategy**: Menggunakan masa berlaku JWT standar tanpa auto-refresh di frontend. Jika API mendeteksi token kedaluwarsa (HTTP 401), pengguna (HR) akan diarahkan kembali ke halaman Login.
+- **Request Timeout**: Dikonfigurasi secara seragam sebesar 30 detik (`httpClient.timeout = const Duration(seconds: 30)`) di setiap kelas service.
 
 ---
 
 ## Storage
 
-- [PERLU DIISI] — Document upload target (S3/R2/local server?)
-- [PERLU DIISI] — Upload path format
-- [PERLU DIISI] — File size limits and accepted MIME types for the 6 required documents
+- **Document Upload Target**: Dokumen pelamar diunggah melalui endpoint `/applications/public/apply` (menggunakan data bertipe `FormData` / multipart). Di backend, berkas disimpan di Cloudflare R2 (S3-Compatible) pada bucket `hirebase-storage`.
+- **Upload Path Prefix**: Berkas diunggah di bawah folder prefix `documents/` untuk dokumen persyaratan pelamar, `portfolios/` untuk portfolio, `company-logos/` untuk logo perusahaan, dll.
+- **File Size & Type Limits**:
+  - Ukuran maksimum berkas adalah **10 MB** per dokumen.
+  - Ekstensi file yang diperbolehkan: PDF, JPG, JPEG, PNG, DOC, dan DOCX.
+  - Untuk alur pendaftaran pelamar (Applicant), diwajibkan mengunggah 5 dokumen persyaratan utama: Ijazah, KTP, SKCK, Surat Sehat, dan Sertifikat (CV bersifat opsional/diunggah ke kolom portfolio).
 
 ---
 
 ## Logging
 
-- [PERLU DIISI] — Crash/error reporting tool (Firebase Crashlytics? Sentry?)
-- Debug logs are printed via `print()` or `debugPrint()` during development
-- Remove all debug `print()` calls before production builds
+- **Crash/Error Reporting**: Saat ini belum mengintegrasikan alat pelaporan eksternal (seperti Sentry atau Firebase Crashlytics).
+- **Log System**: Log debug dicetak menggunakan `debugPrint()` selama proses pengembangan. Penggunaan `print()` secara mentah tidak diperbolehkan. Semua log debug harus dipastikan bersih sebelum aplikasi di-build untuk versi rilis produksi.
 
 ---
 
 ## Environment Configuration
 
-- [PERLU DIISI] — Confirm if `.env` / `flutter_dotenv` is used for API URL configuration
-- Currently the API base URL is hardcoded in `ScoringService`:
-  ```dart
-  static const String apiBaseUrl = 'http://api.hiringbase.com/api/v1';
-  ```
-  This should be moved to an environment configuration before production.
+- **Environment Engine**: Menggunakan paket `flutter_dotenv` untuk membaca file konfigurasi `.env`.
+- **File Setup**: File `.env` harus diletakkan di root folder project `Mobile_HiringBase` dan didaftarkan di bagian `assets` pada `pubspec.yaml`.
+- **Variable**:
+  - `API_BASE_URL`: Menentukan alamat endpoint API backend FastAPI (contoh: `http://localhost:8000/api/v1` untuk lokal, atau `https://api.hiringbase.com/api/v1` untuk staging/produksi).
 
 ---
 

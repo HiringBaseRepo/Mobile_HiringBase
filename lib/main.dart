@@ -15,6 +15,7 @@ import 'app/services/job_service.dart';
 import 'app/services/application_service.dart';
 import 'app/services/navigation_service.dart';
 import 'app/services/scoring_service.dart';
+import 'app/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,10 +28,14 @@ void main() async {
   Get.put(ApplicationService(), permanent: true);
   Get.put(NavigationService(), permanent: true);
   Get.put(ScoringService(), permanent: true);
+  Get.put(NotificationService(), permanent: true);
+
+  // Restore persisted session before app starts
+  await Get.find<AppService>().init();
 
   runApp(
     GetMaterialApp(
-      title: "SmartScreen AI",
+      title: "HiringBase",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

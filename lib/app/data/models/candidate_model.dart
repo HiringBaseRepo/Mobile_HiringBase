@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/data/models/candidate_score.dart';
 
 /// Maps to `ApplicationListItem` (for list) and `ApplicationDetailResponse` (for detail).
 ///
@@ -23,7 +24,7 @@ class Candidate {
   final String? jobTitle;
   final List<Map<String, dynamic>> answers;
   final List<Map<String, dynamic>> documents;
-  final Map<String, dynamic>? scoreBreakdown; // full CandidateScoreResponse
+  final CandidateScore? scoreData; // typed score object
   final String? rejectionReason;
 
   const Candidate({
@@ -42,7 +43,7 @@ class Candidate {
     this.jobTitle,
     this.answers = const [],
     this.documents = const [],
-    this.scoreBreakdown,
+    this.scoreData,
     this.rejectionReason,
   });
 
@@ -67,10 +68,11 @@ class Candidate {
   factory Candidate.fromDetail(Map<String, dynamic> json) {
     final status = (json['status'] as String? ?? 'applied').toLowerCase();
     final scoreJson = json['score'] as Map<String, dynamic>?;
-    final finalScore = scoreJson != null
-        ? ((scoreJson['final_score'] as num?) ?? 0).round()
-        : 0;
-    final matchText = _matchTextFromScore(finalScore, scoreJson);
+    final scoreData = scoreJson != null
+        ? CandidateScore.fromJson(scoreJson)
+        : null;
+    final finalScore = scoreData?.finalScore.round() ?? 0;
+    final matchText = _matchTextFromScore(finalScore, scoreData);
 
     return Candidate(
       id: (json['id'] ?? 0).toString(),
@@ -87,7 +89,8 @@ class Candidate {
       jobTitle: json['job_title'] as String?,
       answers: _parseList(json['answers']),
       documents: _parseList(json['documents']),
-      scoreBreakdown: scoreJson,
+      isManualOverride: scoreData?.isManualOverride ?? false,
+      scoreData: scoreData,
       rejectionReason: json['rejection_reason'] as String?,
     );
   }
@@ -130,7 +133,7 @@ class Candidate {
     String? jobTitle,
     List<Map<String, dynamic>>? answers,
     List<Map<String, dynamic>>? documents,
-    Map<String, dynamic>? scoreBreakdown,
+    CandidateScore? scoreData,
     String? rejectionReason,
   }) =>
       Candidate(
@@ -149,7 +152,7 @@ class Candidate {
         jobTitle: jobTitle ?? this.jobTitle,
         answers: answers ?? this.answers,
         documents: documents ?? this.documents,
-        scoreBreakdown: scoreBreakdown ?? this.scoreBreakdown,
+        scoreData: scoreData ?? this.scoreData,
         rejectionReason: rejectionReason ?? this.rejectionReason,
       );
 
@@ -192,8 +195,8 @@ class Candidate {
     }
   }
 
-  static String _matchTextFromScore(int score, Map<String, dynamic>? scoreJson) {
-    if (scoreJson == null || score == 0) return 'Pending Screening';
+  static String _matchTextFromScore(int score, CandidateScore? scoreData) {
+    if (scoreData == null || score == 0) return 'Pending Screening';
     if (score >= 90) return 'Top 5% Match';
     if (score >= 80) return 'Strong Match';
     if (score >= 70) return 'Good Fit';
