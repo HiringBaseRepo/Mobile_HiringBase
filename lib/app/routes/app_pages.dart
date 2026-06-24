@@ -36,6 +36,8 @@ import '../modules/schedule_interview/bindings/schedule_interview_binding.dart';
 import '../modules/schedule_interview/views/schedule_interview_view.dart';
 import '../modules/interview_detail/bindings/interview_detail_binding.dart';
 import '../modules/interview_detail/views/interview_detail_view.dart';
+import '../modules/splash/bindings/splash_binding.dart';
+import '../modules/splash/views/splash_view.dart';
 
 import '../routes/middlewares/auth_middleware.dart';
 
@@ -44,7 +46,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.SELECTION;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
     GetPage(
@@ -156,6 +158,11 @@ class AppPages {
       page: () => const AktivitasView(),
       binding: ProfileBinding(),
       middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.SPLASH,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
     ),
   ];
 }
