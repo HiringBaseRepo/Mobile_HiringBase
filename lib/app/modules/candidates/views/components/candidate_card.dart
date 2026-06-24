@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
@@ -19,12 +20,17 @@ class CandidateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<CandidatesController>();
 
-    return Container(
+    return Obx(() => Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: controller.isSelected(candidate.id) && controller.isSelectionMode.value
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(20),
+        border: controller.isSelected(candidate.id) && controller.isSelectionMode.value
+            ? Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.5)
+            : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -37,12 +43,38 @@ class CandidateCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              if (controller.isSelectionMode.value)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: GestureDetector(
+                    onTap: () => controller.toggleSelection(candidate.id),
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: controller.isSelected(candidate.id)
+                            ? AppColors.primary
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: controller.isSelected(candidate.id)
+                              ? AppColors.primary
+                              : AppColors.textTertiary,
+                          width: 2,
+                        ),
+                      ),
+                      child: controller.isSelected(candidate.id)
+                          ? const Icon(Icons.check, size: 16, color: AppColors.white)
+                          : null,
+                    ),
+                  ),
+                ),
               // show avatar initials if no image URL
               CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                 backgroundImage: candidate.imageUrl.isNotEmpty
-                    ? NetworkImage(candidate.imageUrl) as ImageProvider
+                    ? CachedNetworkImageProvider(candidate.imageUrl)
                     : null,
                 child: candidate.imageUrl.isEmpty
                     ? Text(
@@ -213,7 +245,7 @@ class CandidateCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   PopupMenuItem<String> _buildPopupItem(String value, Color color) {

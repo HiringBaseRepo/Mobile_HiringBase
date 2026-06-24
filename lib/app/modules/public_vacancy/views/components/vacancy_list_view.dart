@@ -4,6 +4,7 @@ import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../data/models/vacancy_model.dart';
 import '../../../../routes/app_pages.dart';
+import '../../../../core/widgets/pagination_footer.dart';
 import '../../controllers/public_vacancy_controller.dart';
 
 class VacancyListView extends GetView<PublicVacancyController> {
@@ -13,99 +14,114 @@ class VacancyListView extends GetView<PublicVacancyController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120,
-            floating: false,
-            pinned: true,
-            backgroundColor: AppColors.background,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
-              onPressed: () {
-                Get.offAllNamed(Routes.SELECTION);
-              },
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-              centerTitle: false,
-              title: Text(
-                "Lowongan",
-                style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+            controller.loadMore();
+          }
+          return true;
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 120,
+              floating: false,
+              pinned: true,
+              backgroundColor: AppColors.background,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+                onPressed: () {
+                  Get.offAllNamed(Routes.SELECTION);
+                },
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
+                centerTitle: false,
+                title: Text(
+                  "Lowongan",
+                  style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Find your next role",
-                    style: AppTextStyles.h1.copyWith(fontSize: 32),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Explore public openings or enter a private code.",
-                    style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSearchBar(),
-                  const SizedBox(height: 24),
-                  _buildPrivateAccessCard(),
-                  const SizedBox(height: 32),
-                  Text(
-                    "Public Openings",
-                    style: AppTextStyles.h3,
-                  ),
-                  const SizedBox(height: 16),
-                ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Find your next role",
+                      style: AppTextStyles.h1.copyWith(fontSize: 32),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Explore public openings or enter a private code.",
+                      style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSearchBar(),
+                    const SizedBox(height: 24),
+                    _buildPrivateAccessCard(),
+                    const SizedBox(height: 32),
+                    Text(
+                      "Public Openings",
+                      style: AppTextStyles.h3,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
-          ),
-          Obx(() {
-            if (controller.isLoading.value && controller.vacancies.isEmpty) {
-              return const SliverFillRemaining(
-                child: Center(
-                  child: CircularProgressIndicator(),
+            Obx(() {
+              if (controller.isLoading.value && controller.vacancies.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              if (controller.vacancies.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.work_off_outlined, size: 64, color: AppColors.textTertiary),
+                        const SizedBox(height: 16),
+                        Text(
+                          "No public openings available",
+                          style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index == controller.vacancies.length) {
+                        return PaginationFooter(
+                          isLoading: controller.isLoadingMore.value,
+                          hasMore: controller.hasMore.value,
+                          noMoreText: 'Semua lowongan telah dimuat',
+                        );
+                      }
+                      final vacancy = controller.vacancies[index];
+                      return _buildVacancyCard(vacancy);
+                    },
+                    childCount: controller.vacancies.length + 1,
+                  ),
                 ),
               );
-            }
-
-            if (controller.vacancies.isEmpty) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.work_off_outlined, size: 64, color: AppColors.textTertiary),
-                      const SizedBox(height: 16),
-                      Text(
-                        "No public openings available",
-                        style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final vacancy = controller.vacancies[index];
-                    return _buildVacancyCard(vacancy);
-                  },
-                  childCount: controller.vacancies.length,
-                ),
-              ),
-            );
-          }),
-        ],
+            }),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
@@ -23,6 +24,7 @@ class AnalyticsController extends GetxController {
   }
 
   Future<void> fetchJobsAndAnalytics() async {
+    if (isLoadingJobs.value) return;
     try {
       isLoadingJobs.value = true;
       final response = await _jobService.listJobs();
@@ -36,24 +38,20 @@ class AnalyticsController extends GetxController {
         }
 
         final List<Map<String, dynamic>> loadedJobs = [];
-        final colors = [0xFF3B82F6, 0xFF8B5CF6, 0xFF10B981, 0xFFF59E0B];
+        final colors = [
+          AppColors.info.toARGB32(),
+          AppColors.secondary.toARGB32(),
+          AppColors.success.toARGB32(),
+          AppColors.warning.toARGB32(),
+        ];
 
         for (int i = 0; i < items.length; i++) {
           final item = items[i];
           final id = item['id']?.toString() ?? '';
           final title = item['title']?.toString() ?? 'Job Opportunity';
           
-          // Get dynamic applicant counts for this job
-          int applicantCount = 0;
-          try {
-            final appRes = await _appService.listApplications(jobId: int.tryParse(id));
-            if (appRes.statusCode == 200 && appRes.body != null) {
-              final appOuter = appRes.body!['data'];
-              if (appOuter is Map) {
-                applicantCount = (appOuter['total'] as int?) ?? 0;
-              }
-            }
-          } catch (_) {}
+          // Ambil langsung applicant_count dari response item (Menghindari N+1 request)
+          final applicantCount = item['applicant_count'] as int? ?? 0;
 
           loadedJobs.add({
             'id': id,
@@ -73,6 +71,7 @@ class AnalyticsController extends GetxController {
   }
 
   Future<void> fetchCandidatesForJob(String jobId) async {
+    if (isLoadingCandidates.value) return;
     try {
       isLoadingCandidates.value = true;
       candidates.clear();

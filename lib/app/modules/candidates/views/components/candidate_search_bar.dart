@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/modules/candidates/controllers/candidates_controller.dart';
 
-class CandidateSearchBar extends StatelessWidget {
+class CandidateSearchBar extends GetView<CandidatesController> {
   const CandidateSearchBar({super.key});
 
   @override
@@ -20,6 +22,7 @@ class CandidateSearchBar extends StatelessWidget {
         ],
       ),
       child: TextField(
+        onChanged: controller.onSearchChanged,
         decoration: InputDecoration(
           hintText: 'Quick find candidate..',
           hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),

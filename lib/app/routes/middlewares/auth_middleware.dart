@@ -10,7 +10,12 @@ class AuthMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final appService = Get.find<AppService>();
-    
+
+    // Not authenticated — redirect to selection
+    if (!appService.isAuthenticated) {
+      return const RouteSettings(name: Routes.SELECTION);
+    }
+
     // If no role is selected, redirect to selection page
     if (appService.currentRole.value.isEmpty) {
       return const RouteSettings(name: Routes.SELECTION);

@@ -34,13 +34,13 @@ class HrStatsRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  stat['icon'] as IconData,
-                  color: Color(stat['color'] as int),
+                  stat.icon,
+                  color: stat.color,
                   size: 28,
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  stat['title'].toString(),
+                  stat.title,
                   style: AppTextStyles.bodyS.copyWith(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
@@ -48,7 +48,7 @@ class HrStatsRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  stat['value'].toString(),
+                  stat.value,
                   style: AppTextStyles.h2,
                 ),
               ],

@@ -10,6 +10,14 @@ class CandidateDetailController extends GetxController {
   final isLoading = false.obs;
   final isUpdatingStatus = false.obs;
   final isScreening = false.obs;
+  final isPolling = false.obs;
+
+  /// Screening in-progress statuses — polling continues while status is one of these.
+  static const _inProgressStatuses = {'applied', 'doc_check', 'ai_processing'};
+
+  /// Polling config: check every 3s, max 20 attempts (60s total).
+  static const _pollInterval = Duration(seconds: 3);
+  static const _maxPollAttempts = 20;
 
   @override
   void onInit() {
@@ -44,6 +52,14 @@ class CandidateDetailController extends GetxController {
       // Keep whatever partial data we have from the list
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Refresh candidate detail from server.
+  Future<void> refreshData() async {
+    final c = candidate.value;
+    if (c != null) {
+      await _fetchDetail(c.id);
     }
   }
 
@@ -91,7 +107,8 @@ class CandidateDetailController extends GetxController {
     }
   }
 
-  /// Trigger AI screening via POST /screening/applications/{id}/run.
+  /// Trigger AI screening via POST /screening/applications/{id}/run,
+  /// then poll until screening completes (status exits in-progress states).
   Future<void> runScreening() async {
     final c = candidate.value;
     if (c == null) return;
@@ -105,9 +122,12 @@ class CandidateDetailController extends GetxController {
           response.body?['message']?.toString() ?? 'Screening has been queued successfully.',
           snackPosition: SnackPosition.BOTTOM,
         );
-        // Refresh candidate detail to fetch updated score & status
+        // Poll until screening completes
+        await _pollUntilDone(c.id);
+
+        // Re-fetch detail after polling ends (in case polling was skipped)
         await _fetchDetail(c.id);
-        
+
         // Sync status back to candidates list
         final updatedStatus = candidate.value?.status;
         if (updatedStatus != null) {
@@ -126,7 +146,21 @@ class CandidateDetailController extends GetxController {
       Get.snackbar('Error', 'Connection error.', snackPosition: SnackPosition.BOTTOM);
     } finally {
       isScreening.value = false;
+      isPolling.value = false;
     }
+  }
+
+  /// Poll [GET /applications/{id}] every [_pollInterval] until status
+  /// exits the in-progress set or [_maxPollAttempts] is reached.
+  Future<void> _pollUntilDone(String applicationId) async {
+    isPolling.value = true;
+    for (var i = 0; i < _maxPollAttempts; i++) {
+      await Future.delayed(_pollInterval);
+      await _fetchDetail(applicationId);
+      final status = candidate.value?.status ?? '';
+      if (!_inProgressStatuses.contains(status)) break;
+    }
+    isPolling.value = false;
   }
 
 

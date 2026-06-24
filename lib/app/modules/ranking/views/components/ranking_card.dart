@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../data/models/candidate_model.dart';
@@ -33,7 +34,7 @@ class RankingCard extends StatelessWidget {
             const SizedBox(width: 16),
             CircleAvatar(
               radius: 24,
-              backgroundImage: NetworkImage(candidate.imageUrl),
+              backgroundImage: CachedNetworkImageProvider(candidate.imageUrl),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -59,16 +60,12 @@ class _RankIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color;
-    if (rank == 1) {
-      color = const Color(0xFFFFD700); // Gold
-    } else if (rank == 2) {
-      color = const Color(0xFFC0C0C0); // Silver
-    } else if (rank == 3) {
-      color = const Color(0xFFCD7F32); // Bronze
-    } else {
-      color = AppColors.textTertiary;
-    }
+    final color = switch (rank) {
+      1 => AppColors.warning,      // gold
+      2 => AppColors.textTertiary, // silver
+      3 => const Color(0xFFCD7F32), // bronze
+      _ => AppColors.textTertiary,
+    };
 
     return Container(
       width: 32,

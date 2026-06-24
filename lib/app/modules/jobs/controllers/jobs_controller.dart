@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
-import 'package:uifrontendmobile/app/routes/app_pages.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import 'package:uifrontendmobile/app/services/navigation_service.dart';
+import 'package:uifrontendmobile/app/services/scoring_service.dart';
 
 /// Controller for the 4-step Create Job wizard.
 ///
@@ -12,6 +12,7 @@ import 'package:uifrontendmobile/app/services/navigation_service.dart';
 /// used for all subsequent steps.
 class JobsController extends GetxController {
   final _jobService = Get.find<JobService>();
+  final _scoringService = Get.find<ScoringService>();
 
   final currentStep = 1.obs;
   final isSubmitting = false.obs;
@@ -36,20 +37,35 @@ class JobsController extends GetxController {
   final preferredSkills = <String>[].obs;
   final minExperience = 'Entry Level'.obs;
   final educationMin = "Bachelor's".obs;
-  final languages = <String>['English'].obs;
 
   // Input controllers for step 2 add fields
   final requiredSkillController = TextEditingController();
   final preferredSkillController = TextEditingController();
-  final certificationController = TextEditingController();
-  final languageController = TextEditingController();
 
-  // ─── Step 3: Applicant Form fields (display only — uses server defaults) ─────
-  // The server pre-populates required fields; this is shown for UX feedback only.
-  final formFieldsPreview = <Map<String, dynamic>>[
-    {'label': 'Education', 'is_required': false},
-    {'label': 'Work Experience', 'is_required': false},
-  ].obs;
+  // ─── Step 3: Applicant Form fields ───────────────────────────────────────────
+  // Custom fields added by HR. Standard fields (Education, Work Experience, etc.)
+  // are built into the public form and don't need to be listed here.
+  final formFieldsPreview = <Map<String, dynamic>>[].obs;
+
+  static const List<Map<String, String>> documentTypes = [
+    {'key': 'ijazah', 'label': 'Ijazah', 'serverType': 'degree'},
+    {'key': 'ktp', 'label': 'KTP', 'serverType': 'identity_card'},
+    {'key': 'skck', 'label': 'SKCK', 'serverType': 'criminal_record'},
+    {'key': 'surat_sehat', 'label': 'Surat Sehat', 'serverType': 'health_certificate'},
+    {'key': 'sertifikat', 'label': 'Sertifikat', 'serverType': 'certificate'},
+  ];
+
+  /// Keys of currently selected document types (e.g. 'ijazah', 'ktp').
+  /// All selected docs are required when publishing the job.
+  final selectedDocs = <String>['ijazah', 'ktp', 'skck', 'surat_sehat', 'sertifikat'].obs;
+
+  void toggleDoc(String key) {
+    if (selectedDocs.contains(key)) {
+      selectedDocs.remove(key);
+    } else {
+      selectedDocs.add(key);
+    }
+  }
 
   // ─── Step 4: Scoring Weights & Publish ──────────────────────────────────────
   final skillMatchWeight = 30.0.obs;
@@ -171,7 +187,7 @@ class JobsController extends GetxController {
 
     isSubmitting.value = true;
     try {
-      // Send the default form fields to the server
+      // Build custom text fields
       final fields = formFieldsPreview.asMap().entries.map((e) => {
         'field_key': e.value['label'].toString().toLowerCase().replaceAll(' ', '_'),
         'field_type': 'text',
@@ -180,6 +196,21 @@ class JobsController extends GetxController {
         'order_index': e.key,
       }).toList();
 
+      // Add document fields for selected docs
+      int docOrder = fields.length;
+      for (final docType in documentTypes) {
+        if (selectedDocs.contains(docType['key'])) {
+          fields.add({
+            'field_key': docType['key'],
+            'field_type': 'file',
+            'label': docType['label'],
+            'is_required': true,
+            'order_index': docOrder++,
+          });
+        }
+      }
+
+      // Step 3a: Submit form fields (text + document)
       final response = await _jobService.setupJobForm(
         jobId: _createdJobId!,
         fields: fields,
@@ -188,6 +219,30 @@ class JobsController extends GetxController {
       if (response.status.hasError || response.body?['success'] != true) {
         _showError(response.body?['message']?.toString() ?? 'Failed to save form fields.');
         return;
+      }
+
+      // Step 3b: Submit knockout rules for required documents
+      final knockoutRules = <Map<String, dynamic>>[];
+      for (final docType in documentTypes) {
+        if (selectedDocs.contains(docType['key'])) {
+          knockoutRules.add({
+            'rule_name': 'Require ${docType['label']}',
+            'rule_type': 'document',
+            'target_value': docType['serverType'],
+            'is_active': true,
+          });
+        }
+      }
+
+      if (knockoutRules.isNotEmpty) {
+        final krResponse = await _jobService.addJobKnockoutRules(
+          jobId: _createdJobId!,
+          knockoutRules: knockoutRules,
+        );
+        if (krResponse.status.hasError || krResponse.body?['success'] != true) {
+          _showError(krResponse.body?['message']?.toString() ?? 'Failed to save document rules.');
+          return;
+        }
       }
 
       currentStep.value = 4;
@@ -200,6 +255,11 @@ class JobsController extends GetxController {
 
   Future<void> _submitStep4() async {
     if (_createdJobId == null) { _showError('Job ID missing. Restart the form.'); return; }
+
+    if (totalWeight != 100.0) {
+      _showError('Total weight must be exactly 100% to publish. Current: ${totalWeight.toInt()}%');
+      return;
+    }
 
     isSubmitting.value = true;
     try {
@@ -217,6 +277,17 @@ class JobsController extends GetxController {
       // Capture apply_code from server response
       publishedApplyCode.value =
           response.body!['data']?['apply_code']?.toString();
+
+      // Save scoring template (non-blocking — job already published)
+      _scoringService.saveTemplate(
+        jobId: _createdJobId!.toString(),
+        skillMatch: skillMatchWeight.value,
+        experience: experienceWeight.value,
+        education: educationWeight.value,
+        portfolio: portfolioWeight.value,
+        softSkill: softSkillWeight.value,
+        administrative: administrativeWeight.value,
+      );
 
       // Success — go to success screen (step 5 is the success view)
       currentStep.value = 5;
@@ -275,8 +346,6 @@ class JobsController extends GetxController {
     salaryMaxController.dispose();
     requiredSkillController.dispose();
     preferredSkillController.dispose();
-    certificationController.dispose();
-    languageController.dispose();
     super.onClose();
   }
 }

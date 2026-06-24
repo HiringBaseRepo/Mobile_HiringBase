@@ -1,4 +1,4 @@
-package com.example.uifrontendmobile
+package com.hiringbase.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 

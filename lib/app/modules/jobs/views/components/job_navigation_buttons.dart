@@ -7,11 +7,13 @@ import '../../controllers/jobs_controller.dart';
 class JobNavigationButtons extends StatelessWidget {
   final bool showBack;
   final String nextText;
+  final bool isNextEnabled;
 
   const JobNavigationButtons({
     super.key,
     this.showBack = true,
     this.nextText = "Continue",
+    this.isNextEnabled = true,
   });
 
   @override
@@ -37,10 +39,10 @@ class JobNavigationButtons extends StatelessWidget {
         Expanded(
           flex: 2,
           child: ElevatedButton(
-            onPressed: () => controller.nextStep(),
+            onPressed: isNextEnabled ? () => controller.nextStep() : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.cardBackground,
+              backgroundColor: isNextEnabled ? AppColors.primary : AppColors.textTertiary,
+              foregroundColor: isNextEnabled ? AppColors.cardBackground : AppColors.textTertiary,
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               padding: const EdgeInsets.symmetric(vertical: 15),

@@ -32,7 +32,7 @@ class HomeHeader extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Text(
-              'SmartScreen AI',
+              'HiringBase',
               style: AppTextStyles.h3.copyWith(color: AppColors.primary),
             ),
           ],

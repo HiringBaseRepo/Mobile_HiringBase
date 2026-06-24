@@ -75,20 +75,29 @@ class StatusControlCard extends GetView<CandidateDetailController> {
             if (candidate == null) return const SizedBox();
 
             final isScreening = controller.isScreening.value;
+            final isPolling = controller.isPolling.value;
             final isUpdating = controller.isUpdatingStatus.value;
+            final hasScore = candidate.score > 0;
+            final isProcessing = isScreening || isPolling;
+            
+            if (hasScore && !isPolling) return const SizedBox();
             
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: (isScreening || isUpdating)
+                  onPressed: (isProcessing || isUpdating)
                       ? null
                       : () => controller.runScreening(),
-                  icon: isScreening
+                  icon: isProcessing
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : const Icon(Icons.psychology, size: 18),
-                  label: Text(isScreening ? 'Processing AI Screening...' : 'Run AI Screening'),
+                  label: Text(isPolling
+                      ? 'AI Screening in Progress...'
+                      : isProcessing
+                          ? 'Processing AI Screening...'
+                          : 'Run AI Screening'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -174,7 +183,10 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                 final hasScore = candidate.score > 0;
                 return Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: !hasScore ? null : () => Get.toNamed(Routes.MANUAL_OVERRIDE, arguments: candidate),
+                    onPressed: !hasScore ? null : () async {
+                      await Get.toNamed(Routes.MANUAL_OVERRIDE, arguments: candidate);
+                      controller.refreshData();
+                    },
                     icon: const Icon(Icons.edit_note, size: 18),
                     label: const Text('Override'),
                     style: OutlinedButton.styleFrom(

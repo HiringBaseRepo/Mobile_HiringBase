@@ -142,29 +142,46 @@ Applicants do **not** create accounts or log in. The flow is:
 
 ## API Response Convention
 
-> [PERLU DIISI] — Confirm the actual API response envelope from the backend team.
-
-Expected pattern (based on HiringBase backend conventions):
+Seluruh respons API dari FastAPI backend dibungkus menggunakan standard envelope structure:
 ```json
 {
   "success": true,
-  "message": "Operation completed",
+  "message": "Success",
   "data": { ... },
   "errors": null,
-  "meta": { "page": 1, "total": 45 }
+  "meta": null
 }
 ```
 
-All `fromJson` factories in models should be written to unwrap `data` before parsing.
+Apabila data berupa daftar/list yang ter-paginasi (paginated), maka isi key `"data"` akan mengikuti format `PaginatedResponse`:
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": {
+    "data": [ ... ],
+    "total": 100,
+    "page": 1,
+    "per_page": 10,
+    "total_pages": 10,
+    "has_next": true,
+    "has_prev": false
+  },
+  "errors": null,
+  "meta": null
+}
+```
+
+Semua factory `fromJson` pada model didesain untuk langsung mengurai isi field `data` yang sesuai.
 
 ---
 
 ## Error Handling Convention
 
-> [PERLU DIISI] — Define a consistent error handling strategy for API failures.
-
-Suggested approach:
-- Services return `Response` objects from `GetConnect`
-- Controllers check `response.status.hasError` before using `response.body`
-- Display errors via `Get.snackbar('Error', response.statusText ?? 'Unknown error')`
-- Do not let uncaught exceptions propagate to views
+Strategi penanganan error yang konsisten di seluruh aplikasi mobile:
+1. **Response Checks**: Service mengembalikan objek `Response` dari `GetConnect`. Controller wajib memeriksa `response.status.hasError` dan memastikan `response.body != null` serta `response.body['success'] == true` sebelum memproses data.
+2. **State Error**: Jika terjadi error (network timeout, status code 4xx/5xx, dll), simpan pesan kesalahan pada state `errorMessage.value` (bertipe `RxString` di Controller).
+3. **Visual Feedback**:
+   - Untuk pemuatan halaman utama (seperti daftar lowongan atau kandidat), jika pemuatan awal gagal, tampilkan `ErrorRetryWidget` di dalam view (reaktif via `Obx`) dengan menyediakan callback `onRetry` yang memicu pemuatan ulang data dengan parameter `refresh: true`.
+   - Untuk error pada aksi instan (seperti gagal melakukan override nilai, menjadwalkan interview, atau mengupdate profil), tampilkan error menggunakan `Get.snackbar()` yang di-style dengan warna background `AppColors.error` dan teks warna putih.
+   - Paginasi menggunakan `PaginationFooter` untuk memberi feedback pemuatan halaman berikutnya (loading/no-more data).

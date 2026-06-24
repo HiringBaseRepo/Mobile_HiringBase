@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import '../../../data/models/candidate_model.dart';
+import '../../../data/models/candidate_score.dart';
 
 class RankingController extends GetxController {
   final _jobService = Get.find<JobService>();
@@ -70,26 +72,26 @@ class RankingController extends GetxController {
                 } catch (_) {}
               }
 
-              int statusColor = 0xFF64748B; // fallback slate
+              int statusColor = AppColors.textSecondary.toARGB32();
               switch (status) {
                 case 'hired':
                 case 'ai_passed':
                 case 'offered':
-                  statusColor = 0xFF10B981; // green
+                  statusColor = AppColors.success.toARGB32();
                   break;
                 case 'interview':
                 case 'under_review':
-                  statusColor = 0xFF3B82F6; // blue
+                  statusColor = AppColors.info.toARGB32();
                   break;
                 case 'applied':
                 case 'doc_check':
                 case 'ai_processing':
-                  statusColor = 0xFFF59E0B; // orange/warning
+                  statusColor = AppColors.warning.toARGB32();
                   break;
                 case 'rejected':
                 case 'doc_failed':
                 case 'knockout':
-                  statusColor = 0xFFEF4444; // red
+                  statusColor = AppColors.error.toARGB32();
                   break;
               }
 
@@ -105,16 +107,16 @@ class RankingController extends GetxController {
                 statusColor: statusColor,
                 email: item['applicant_email'] as String?,
                 jobId: parsedJobId,
-                scoreBreakdown: {
-                  'final_score': finalScore,
-                  'breakdown': {
-                    'skills': item['skill_match'] ?? 0.0,
-                    'experience': item['experience'] ?? 0.0,
-                    'education': item['education'] ?? 0.0,
-                    'portfolio': item['portfolio'] ?? 0.0,
-                  },
-                  'risk_level': item['risk_level'],
-                },
+                scoreData: CandidateScore(
+                  skillMatchScore: (item['skill_match'] as num?)?.toDouble() ?? 0,
+                  experienceScore: (item['experience'] as num?)?.toDouble() ?? 0,
+                  educationScore: (item['education'] as num?)?.toDouble() ?? 0,
+                  portfolioScore: (item['portfolio'] as num?)?.toDouble() ?? 0,
+                  softSkillScore: 0,
+                  administrativeScore: 0,
+                  finalScore: (item['final_score'] as num?)?.toDouble() ?? 0,
+                  riskLevel: item['risk_level'] as String?,
+                ),
               );
             }).toList();
 

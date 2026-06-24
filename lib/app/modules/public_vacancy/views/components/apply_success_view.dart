@@ -58,7 +58,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "RecruitAI",
+              "HiringBase",
               style: AppTextStyles.h1.copyWith(
                 fontSize: 24,
                 color: AppColors.primary,
@@ -88,12 +88,12 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
       width: 96,
       height: 96,
       decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.05),
+        color: AppColors.success.withValues(alpha: 0.05),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 4),
+        border: Border.all(color: AppColors.white, width: 4),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -101,7 +101,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
       ),
       child: const Icon(
         Icons.check_circle_rounded,
-        color: Colors.green,
+        color: AppColors.success,
         size: 48,
       ),
     );
@@ -139,7 +139,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
         border: Border.all(color: AppColors.surface, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.black.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -189,14 +189,14 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
                       "Ticket code copied to clipboard",
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: AppColors.primary,
-                      colorText: Colors.white,
+                      colorText: AppColors.white,
                     );
                   },
                   icon: const Icon(Icons.content_copy_rounded, size: 20),
                   color: AppColors.textSecondary,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  hoverColor: Colors.transparent,
+                  hoverColor: AppColors.transparent,
                 ),
               ],
             ),
@@ -213,7 +213,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
           children: [
             Expanded(child: _buildBentoCard(Icons.info_rounded, "Save your code", "Keep this ticket code to verify your identity when checking status.")),
             const SizedBox(width: 16),
-            Expanded(child: _buildBentoCard(Icons.track_changes_rounded, "AI Screening", "Our SmartScreen AI is now analyzing your resume for the best match.")),
+            Expanded(child: _buildBentoCard(Icons.track_changes_rounded, "AI Screening", "HiringBase AI is now analyzing your resume for the best match.")),
           ],
         ),
       ],
@@ -256,7 +256,7 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
             onPressed: () => controller.currentStep.value = 5,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.white,
               padding: const EdgeInsets.symmetric(vertical: 18),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 4,

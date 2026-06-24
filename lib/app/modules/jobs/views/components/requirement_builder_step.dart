@@ -123,42 +123,7 @@ class RequirementBuilderStep extends StatelessWidget {
                     value: controller.educationMin.value,
                     onChanged: (v) => controller.educationMin.value = v!,
                   )),
-              const SizedBox(height: 20),
 
-              // Certifications
-              const JobLabel(label: "CERTIFICATIONS (OPTIONAL)"),
-              Obx(() {
-                final certs = controller.languages; // reuse languages list for certs
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (certs.isNotEmpty)
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: certs
-                            .map((c) => _SkillChip(
-                                  label: c,
-                                  isRequired: false,
-                                  onRemove: () => controller.languages.remove(c),
-                                ))
-                            .toList(),
-                      ),
-                    const SizedBox(height: 10),
-                    JobTextField(
-                      hint: "e.g. AWS Certified Developer & press Enter…",
-                      controller: controller.certificationController,
-                      onSubmitted: (val) {
-                        final v = val.trim();
-                        if (v.isNotEmpty && !controller.languages.contains(v)) {
-                          controller.languages.add(v);
-                        }
-                        controller.certificationController.clear();
-                      },
-                    ),
-                  ],
-                );
-              }),
             ],
           ),
         ),

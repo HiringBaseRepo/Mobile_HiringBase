@@ -11,6 +11,7 @@
 | **Navigation** | GetX Named Routing + centralized `NavigationService` |
 | **Auth / Session** | Role-based `AuthMiddleware` + `AppService` session state |
 | **UI Components** | Material 3, Bento Design System, Google Fonts (`Outfit`) |
+| **Image Caching** | `cached_network_image ^3.4.1` |
 | **Charts** | `fl_chart ^1.2.0` |
 | **Typography** | `google_fonts ^8.1.0` |
 | **API Client** | `GetConnect` (built-in GetX HTTP client) |
@@ -47,18 +48,24 @@ lib/
 ├── main.dart                          # App entry point
 └── app/
     ├── core/                          # Design system layer
+    │   ├── utils/
+    │   │   └── simple_cache.dart      # Generic in-memory TTL cache helper
     │   ├── values/
     │   │   ├── app_colors.dart        # Color token definitions
     │   │   └── app_text_styles.dart   # Typography token definitions
     │   └── widgets/
-    │       └── app_bottom_nav.dart    # Global bottom navigation
+    │       ├── app_bottom_nav.dart    # Global bottom navigation
+    │       ├── error_retry_widget.dart # Reusable UI for reload/retry operations
+    │       └── pagination_footer.dart # Loading indicator for list pagination
     │
     ├── data/                          # Data layer
     │   └── models/
     │       ├── user_model.dart
     │       ├── vacancy_model.dart
     │       ├── candidate_model.dart
-    │       └── notification_model.dart
+    │       ├── notification_model.dart
+    │       ├── interview_model.dart
+    │       └── dashboard_stat.dart
     │
     ├── services/                      # Global services
     │   ├── app_service.dart           # Session state (currentUser, currentRole)
@@ -87,6 +94,11 @@ lib/
         ├── analytics/                 # Recruitment analytics dashboard
         ├── notifications/             # Notification center
         ├── profile/                   # HR user profile + activity log
+        │   └── views/
+        │       └── components/        # Split UI parts
+        │           ├── profile_header.dart
+        │           ├── profile_info_card.dart
+        │           └── profile_change_password_section.dart
         ├── settings/                  # App settings
         └── public_vacancy/            # Public applicant flow (no login)
             └── views/

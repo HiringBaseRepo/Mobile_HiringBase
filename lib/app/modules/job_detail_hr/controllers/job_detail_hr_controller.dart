@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
+import 'package:uifrontendmobile/app/core/utils/simple_cache.dart';
 import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
@@ -23,6 +24,15 @@ class JobDetailHrController extends GetxController {
   final aiScreeningProgress = 0.0.obs;
   final technicalTestProgress = 0.0.obs;
 
+  static final _detailsCache = <int, SimpleCache<Map<String, dynamic>>>{};
+
+  SimpleCache<Map<String, dynamic>> _getCacheForJob(int jobId) {
+    return _detailsCache.putIfAbsent(
+      jobId,
+      () => SimpleCache<Map<String, dynamic>>(ttl: const Duration(minutes: 5)),
+    );
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -39,7 +49,24 @@ class JobDetailHrController extends GetxController {
   }
 
   /// Fetches full job detail from `GET /jobs/{id}` and updates statistics.
-  Future<void> _fetchDetails(int jobId) async {
+  Future<void> _fetchDetails(int jobId, {bool forceRefresh = false}) async {
+    final cache = _getCacheForJob(jobId);
+
+    if (forceRefresh) {
+      cache.invalidate();
+    }
+
+    if (!forceRefresh && cache.isValid) {
+      final cached = cache.data!;
+      job.value = cached['job'] as Vacancy;
+      totalApplicants.value = cached['totalApplicants'] as int;
+      newApplicants.value = cached['newApplicants'] as int;
+      inInterview.value = cached['inInterview'] as int;
+      aiScreeningProgress.value = cached['aiScreeningProgress'] as double;
+      technicalTestProgress.value = cached['technicalTestProgress'] as double;
+      return;
+    }
+
     isLoading.value = true;
     errorMessage.value = null;
 
@@ -63,17 +90,28 @@ class JobDetailHrController extends GetxController {
       await _fetchApplicantStats(jobId);
 
       // Merge detail data with the existing list-level vacancy if available
+      Vacancy updatedJob;
       if (job.value != null) {
-        job.value = job.value!.copyWith(
+        updatedJob = job.value!.copyWith(
           description: data['description'] as String? ?? job.value!.description,
           applyCode: data['apply_code'] as String? ?? job.value!.applyCode,
           applicantCount: totalApplicants.value,
         );
       } else {
-        job.value = Vacancy.fromJson(data).copyWith(
+        updatedJob = Vacancy.fromJson(data).copyWith(
           applicantCount: totalApplicants.value,
         );
       }
+      job.value = updatedJob;
+
+      cache.set({
+        'job': updatedJob,
+        'totalApplicants': totalApplicants.value,
+        'newApplicants': newApplicants.value,
+        'inInterview': inInterview.value,
+        'aiScreeningProgress': aiScreeningProgress.value,
+        'technicalTestProgress': technicalTestProgress.value,
+      });
     } catch (_) {
       errorMessage.value = 'Connection error. Please try again.';
     } finally {
@@ -177,7 +215,7 @@ class JobDetailHrController extends GetxController {
   /// Refreshes job details.
   Future<void> refresh() async {
     if (job.value != null) {
-      await _fetchDetails(int.parse(job.value!.id));
+      await _fetchDetails(int.parse(job.value!.id), forceRefresh: true);
     }
   }
 }

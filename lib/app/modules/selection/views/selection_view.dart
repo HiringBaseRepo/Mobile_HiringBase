@@ -30,7 +30,7 @@ class SelectionView extends GetView<SelectionController> {
               children: [
                 const SizedBox(height: 60),
                 Text(
-                  "SmartScreen AI",
+                  "HiringBase",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class SelectionView extends GetView<SelectionController> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  "Selamat Datang\ndi Hirebase",
+                  "Selamat Datang\ndi HiringBase",
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w800,
@@ -75,7 +75,7 @@ class SelectionView extends GetView<SelectionController> {
                 const Spacer(),
                 Center(
                   child: Text(
-                    "v1.0.0 • Powered by SmartScreen AI",
+                    "v1.0.0 • Powered by HiringBase",
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textTertiary,

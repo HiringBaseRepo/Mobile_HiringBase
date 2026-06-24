@@ -322,57 +322,77 @@ class JobDetailView extends GetView<PublicVacancyController> {
       Colors.teal,
     ];
 
+    final List<Widget> rows = [];
+    for (var i = 0; i < list.length; i += 2) {
+      final benefit1 = list[i];
+      final icon1 = icons[i % icons.length];
+      final color1 = colors[i % colors.length];
+
+      final hasSecond = i + 1 < list.length;
+      final benefit2 = hasSecond ? list[i + 1] : null;
+      final icon2 = hasSecond ? icons[(i + 1) % icons.length] : null;
+      final color2 = hasSecond ? colors[(i + 1) % colors.length] : null;
+
+      rows.add(
+        Row(
+          children: [
+            Expanded(
+              child: _buildBenefitCard(benefit1, icon1, color1),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: benefit2 != null && icon2 != null && color2 != null
+                  ? _buildBenefitCard(benefit2, icon2, color2)
+                  : const SizedBox(),
+            ),
+          ],
+        ),
+      );
+
+      if (i + 2 < list.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(Icons.card_giftcard_rounded, "Benefits"),
         const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 2.5,
-          ),
-          itemCount: list.length,
-          itemBuilder: (context, index) {
-            final benefitLabel = list[index];
-            final icon = icons[index % icons.length];
-            final color = colors[index % colors.length];
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.surface),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(icon, size: 18, color: color),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      benefitLabel,
-                      style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+        ...rows,
       ],
+    );
+  }
+
+  Widget _buildBenefitCard(String benefitLabel, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.surface),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: color),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              benefitLabel,
+              style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
