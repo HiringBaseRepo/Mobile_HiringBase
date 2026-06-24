@@ -102,14 +102,7 @@ class LoginController extends GetxController {
     }
   }
 
-  /// Placeholder for SSO login — not yet implemented.
-  void loginWithSSO() {
-    Get.snackbar(
-      'SSO',
-      'SSO Login is currently unavailable.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
+
 
   // ─── Private helpers ─────────────────────────────────────────────────────
 

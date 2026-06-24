@@ -55,24 +55,6 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  _buildSettingsGroup(
-                    title: 'System Preferences',
-                    items: [
-                      _SettingsItem(
-                        icon: Icons.language_outlined,
-                        label: 'Language',
-                        onTap: () =>
-                            _showBottomSheet(context, 'Language', _buildLanguageContent()),
-                      ),
-                      _SettingsItem(
-                        icon: Icons.help_outline,
-                        label: 'Help & Support',
-                        onTap: () => _showBottomSheet(
-                            context, 'Help & Support', _buildHelpContent()),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 32),
                   _buildLogoutButton(),
                   const SizedBox(height: 24),
@@ -315,26 +297,6 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildLanguageContent() {
-    return Column(
-      children: [
-        _buildRadioTile('English (US)', true),
-        _buildRadioTile('Bahasa Indonesia', false),
-      ],
-    );
-  }
-
-  Widget _buildHelpContent() {
-    return Column(
-      children: [
-        ProfileInfoTile(
-            icon: Icons.help_center_outlined, label: 'Help Center', value: 'Browse our FAQ'),
-        ProfileInfoTile(icon: Icons.support_agent_outlined, label: 'Contact Support',
-            value: 'Get help from our team'),
-        ProfileInfoTile(icon: Icons.info_outlined, label: 'About App', value: 'Version 1.0.0 (Beta)'),
-      ],
-    );
-  }
 
   // ── Helper Widgets ──────────────────────────────────────────────────
   Widget _buildSwitchTile(String title, String subtitle, bool value) {
@@ -358,25 +320,6 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildRadioTile(String title, bool selected) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outline),
-      ),
-      child: RadioListTile(
-        title: Text(title,
-            style: AppTextStyles.bodyL.copyWith(fontWeight: FontWeight.w600)),
-        value: true,
-        groupValue: selected,
-        onChanged: (val) {},
-        activeColor: AppColors.primary,
-        controlAffinity: ListTileControlAffinity.trailing,
-      ),
-    );
-  }
 }
 
 class _SettingsItem {

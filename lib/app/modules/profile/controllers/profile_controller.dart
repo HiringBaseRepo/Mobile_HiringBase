@@ -1,10 +1,12 @@
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/services/app_service.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import 'package:uifrontendmobile/app/services/auth_service.dart';
 import 'package:uifrontendmobile/app/data/models/user_model.dart';
-import 'package:uifrontendmobile/app/routes/app_pages.dart';
 
 class ProfileController extends GetxController {
   final _app = Get.find<AppService>();
@@ -304,6 +306,111 @@ class ProfileController extends GetxController {
       );
     } finally {
       isResettingPassword.value = false;
+    }
+  }
+
+  Future<void> changeAvatar() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.image,
+        withData: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        
+        // 5MB limit
+        const maxSizeBytes = 5 * 1024 * 1024;
+        if (file.size > maxSizeBytes) {
+          Get.snackbar(
+            'File Terlalu Besar',
+            'Ukuran file ${file.name} melebihi batas 5MB.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.1),
+            colorText: Colors.red,
+          );
+          return;
+        }
+
+        // Show loading indicator
+        Get.dialog(
+          const Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
+          barrierDismissible: false,
+        );
+
+        final bytes = file.bytes;
+        final path = file.path;
+        
+        // Prepare bytes
+        List<int> fileBytes;
+        if (bytes != null) {
+          fileBytes = bytes;
+        } else if (path != null) {
+          fileBytes = await io.File(path).readAsBytes();
+        } else {
+          Get.back(); // close loading dialog
+          Get.snackbar(
+            'Error',
+            'Gagal membaca file gambar.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.1),
+            colorText: Colors.red,
+          );
+          return;
+        }
+
+        final response = await _authService.uploadAvatar(fileBytes, file.name);
+        
+        if (Get.isDialogOpen == true) {
+          Get.back(); // close loading dialog
+        }
+
+        if (response.statusCode == 200 && response.body != null) {
+          final body = response.body!;
+          if (body['success'] == true && body['data'] != null) {
+            final avatarUrl = body['data']['avatar_url'] as String?;
+            if (avatarUrl != null) {
+              // Update user object locally in AppService
+              final updatedUser = user?.copyWith(imageUrl: avatarUrl);
+              if (updatedUser != null) {
+                _app.setUser(updatedUser);
+                await _app.persistSession();
+              }
+
+              Get.snackbar(
+                'Sukses',
+                'Foto profil berhasil diperbarui.',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green.withValues(alpha: 0.1),
+                colorText: Colors.green,
+              );
+              return;
+            }
+          }
+        }
+
+        final errorMsg = response.body?['message'] ?? 'Gagal mengunggah foto profil.';
+        Get.snackbar(
+          'Error',
+          errorMsg,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
+          colorText: Colors.red,
+        );
+      }
+    } catch (e) {
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
+      Get.snackbar(
+        'Error',
+        'Terjadi kesalahan saat memilih atau mengunggah gambar: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+      );
     }
   }
 

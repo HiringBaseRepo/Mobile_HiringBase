@@ -6,6 +6,7 @@ import '../../../../data/models/vacancy_model.dart';
 import '../../../../routes/app_pages.dart';
 import '../../../../core/widgets/pagination_footer.dart';
 import '../../controllers/public_vacancy_controller.dart';
+import 'vacancy_card_skeleton.dart';
 
 class VacancyListView extends GetView<PublicVacancyController> {
   const VacancyListView({super.key});
@@ -35,13 +36,25 @@ class VacancyListView extends GetView<PublicVacancyController> {
                   Get.offAllNamed(Routes.SELECTION);
                 },
               ),
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-                centerTitle: false,
-                title: Text(
-                  "Lowongan",
-                  style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
-                ),
+              flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final settings = context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
+                  final double deltaExtent = settings == null ? 1.0 : (settings.maxExtent - settings.minExtent);
+                  final double currentExtent = settings == null ? 1.0 : (settings.currentExtent - settings.minExtent);
+                  final double percent = deltaExtent == 0.0 ? 0.0 : (currentExtent / deltaExtent).clamp(0.0, 1.0);
+
+                  // 24.0 saat expand penuh (percent = 1.0), 56.0 saat collapse penuh (percent = 0.0)
+                  final double leftPadding = 56.0 - (32.0 * percent);
+
+                  return FlexibleSpaceBar(
+                    titlePadding: EdgeInsets.only(left: leftPadding, bottom: 16),
+                    centerTitle: false,
+                    title: Text(
+                      "Lowongan",
+                      style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
+                    ),
+                  );
+                },
               ),
             ),
             SliverToBoxAdapter(
@@ -75,9 +88,14 @@ class VacancyListView extends GetView<PublicVacancyController> {
             ),
             Obx(() {
               if (controller.isLoading.value && controller.vacancies.isEmpty) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+                return const SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate.fixed([
+                      VacancyCardSkeleton(),
+                      VacancyCardSkeleton(),
+                      VacancyCardSkeleton(),
+                    ]),
                   ),
                 );
               }

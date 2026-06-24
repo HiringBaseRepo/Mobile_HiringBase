@@ -71,36 +71,6 @@ class LoginForm extends GetView<LoginController> {
           isLoading: controller.isLoading.value,
         )),
         
-        const SizedBox(height: 24),
-        
-        // Divider
-        Row(
-          children: [
-            const Expanded(child: Divider(color: AppColors.outline)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'OR',
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textTertiary,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-            const Expanded(child: Divider(color: AppColors.outline)),
-          ],
-        ),
-        
-        const SizedBox(height: 24),
-        
-        // SSO Button
-        _buildSecondaryButton(
-          onPressed: controller.loginWithSSO,
-          text: 'Login with SSO',
-          icon: Icons.domain_rounded,
-        ),
       ],
     );
   }
@@ -208,40 +178,5 @@ class LoginForm extends GetView<LoginController> {
     );
   }
 
-  Widget _buildSecondaryButton({
-    required VoidCallback onPressed,
-    required String text,
-    required IconData icon,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.cardBackground,
-          side: const BorderSide(color: AppColors.outline),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: AppColors.textPrimary, size: 20),
-            const SizedBox(width: 12),
-            Text(
-              text,
-              style: GoogleFonts.outfit(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 }

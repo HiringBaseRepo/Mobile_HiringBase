@@ -8,6 +8,7 @@ import '../controllers/jobs_list_controller.dart';
 import 'components/job_list_header.dart';
 import 'components/job_filter_bar.dart';
 import 'components/job_list_card.dart';
+import 'components/job_list_card_skeleton.dart';
 
 class JobsListView extends GetView<JobsListController> {
   const JobsListView({super.key});
@@ -38,11 +39,12 @@ class JobsListView extends GetView<JobsListController> {
                   const SizedBox(height: 24),
                   Obx(() {
                     if (controller.isLoading.value && controller.jobs.isEmpty) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40.0),
-                          child: CircularProgressIndicator(),
-                        ),
+                      return const Column(
+                        children: [
+                          JobListCardSkeleton(),
+                          JobListCardSkeleton(),
+                          JobListCardSkeleton(),
+                        ],
                       );
                     }
 

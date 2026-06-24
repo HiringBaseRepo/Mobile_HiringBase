@@ -176,6 +176,14 @@ class AuthService extends GetConnect {
     });
   }
 
+  /// Uploads user avatar.
+  Future<Response<Map<String, dynamic>>> uploadAvatar(List<int> bytes, String filename) async {
+    final formData = FormData({
+      'file': MultipartFile(bytes, filename: filename),
+    });
+    return await post<Map<String, dynamic>>('/users/me/avatar', formData);
+  }
+
   /// Calls `POST /auth/logout` to invalidate the refresh-token cookie,
   /// then clears the local session and navigates to the login screen.
   Future<void> logout() async {
