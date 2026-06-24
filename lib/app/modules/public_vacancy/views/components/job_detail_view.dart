@@ -107,15 +107,18 @@ class JobDetailView extends GetView<PublicVacancyController> {
                   color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.terminal_rounded, color: AppColors.primary, size: 24),
+                child: const Icon(Icons.business_rounded, color: AppColors.primary, size: 24),
               ),
               const SizedBox(width: 12),
-              Text(
-                "SMARTSCREEN AI",
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.5,
+              Expanded(
+                child: Text(
+                  (vacancy.companyName ?? "HiringBase Company").toUpperCase(),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
