@@ -52,6 +52,10 @@ class _MainInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNotScheduled = data.status.toLowerCase() == 'not scheduled';
+    final tagColor = isNotScheduled ? AppColors.textSecondary : AppColors.success;
+    final tagBgColor = isNotScheduled ? AppColors.surface : AppColors.success.withValues(alpha: 0.1);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -65,12 +69,12 @@ class _MainInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.success.withValues(alpha: 0.1),
+              color: tagBgColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               data.status.toUpperCase(),
-              style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.bold),
+              style: AppTextStyles.caption.copyWith(color: tagColor, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 20),
@@ -114,13 +118,14 @@ class _LinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasLink = link != '-' && link.isNotEmpty;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
+        color: hasLink ? AppColors.primary.withValues(alpha: 0.05) : AppColors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+        border: Border.all(color: hasLink ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,25 +137,29 @@ class _LinkCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   link,
-                  style: AppTextStyles.bodyM.copyWith(color: AppColors.primary, decoration: TextDecoration.underline),
+                  style: AppTextStyles.bodyM.copyWith(
+                    color: hasLink ? AppColors.primary : AppColors.textSecondary,
+                    decoration: hasLink ? TextDecoration.underline : TextDecoration.none,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.copy, size: 20, color: AppColors.primary),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: link));
-                  Get.snackbar('Copied', 'Meeting link copied to clipboard');
-                },
-              ),
+              if (hasLink)
+                IconButton(
+                  icon: const Icon(Icons.copy, size: 20, color: AppColors.primary),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: link));
+                    Get.snackbar('Copied', 'Meeting link copied to clipboard');
+                  },
+                ),
             ],
           ),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {}, // Launch URL
+              onPressed: hasLink ? () {} : null, // Launch URL
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,

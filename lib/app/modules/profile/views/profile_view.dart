@@ -5,6 +5,7 @@ import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/modules/profile/controllers/profile_controller.dart';
 import 'package:uifrontendmobile/app/core/widgets/app_bottom_nav.dart';
 import 'package:uifrontendmobile/app/routes/app_pages.dart';
+import 'package:uifrontendmobile/app/core/widgets/skeleton_loader.dart';
 import 'components/profile_header.dart';
 import 'components/profile_info_card.dart';
 import 'components/profile_change_password_section.dart';
@@ -73,16 +74,20 @@ class ProfileView extends GetView<ProfileController> {
     return Obx(() => Row(
           children: [
             Expanded(
-              child: ProfileStatCard(
-                icon: Icons.work_outline,
-                label: 'ACTIVE VACANCIES',
-                value: controller.isLoadingStats.value
-                    ? '...'
-                    : controller.activeJobsCount.value.toString(),
-                subValue: 'Published jobs',
-                subValueColor: AppColors.primary,
-                isTrending: controller.activeJobsCount.value > 0,
-              ),
+              child: controller.isLoadingStats.value
+                  ? const ProfileStatCardSkeleton(
+                      icon: Icons.work_outline,
+                      label: 'ACTIVE VACANCIES',
+                      subValue: 'Published jobs',
+                    )
+                  : ProfileStatCard(
+                      icon: Icons.work_outline,
+                      label: 'ACTIVE VACANCIES',
+                      value: controller.activeJobsCount.value.toString(),
+                      subValue: 'Published jobs',
+                      subValueColor: AppColors.primary,
+                      isTrending: controller.activeJobsCount.value > 0,
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -328,4 +333,58 @@ class _SettingsItem {
   final VoidCallback? onTap;
 
   _SettingsItem({required this.icon, required this.label, this.onTap});
+}
+
+class ProfileStatCardSkeleton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String subValue;
+
+  const ProfileStatCardSkeleton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.subValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.black.withValues(alpha: 0.05)),
+      ),
+      child: SkeletonLoader(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 16, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const SkeletonShape.rectangle(width: 50, height: 28, borderRadius: 6),
+            const SizedBox(height: 8),
+            Text(
+              subValue,
+              style: AppTextStyles.bodyS.copyWith(color: AppColors.textTertiary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -8,6 +8,7 @@ import 'components/requirement_builder_step.dart';
 import 'components/applicant_form_setup_step.dart';
 import 'components/publish_control_step.dart';
 import 'components/job_publish_success_view.dart';
+import 'components/create_job_skeleton.dart';
 
 class JobsView extends GetView<JobsController> {
   const JobsView({super.key});
@@ -17,6 +18,9 @@ class JobsView extends GetView<JobsController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Obx(() {
+        if (controller.isSubmitting.value) {
+          return const CreateJobSkeleton();
+        }
         switch (controller.currentStep.value) {
           case 1: return const JobCoreStep();
           case 2: return const RequirementBuilderStep();
@@ -26,7 +30,7 @@ class JobsView extends GetView<JobsController> {
           default: return const JobCoreStep();
         }
       }),
-      bottomNavigationBar: Obx(() => controller.currentStep.value == 5 
+      bottomNavigationBar: Obx(() => (controller.currentStep.value == 5 || controller.isSubmitting.value)
           ? const SizedBox.shrink() 
           : const AppBottomNav()),
     );

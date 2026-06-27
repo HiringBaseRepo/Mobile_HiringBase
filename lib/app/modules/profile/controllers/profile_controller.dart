@@ -25,6 +25,7 @@ class ProfileController extends GetxController {
   // ── Reactive user data ──────────────────────────────────────────────
   final activeJobsCount = 0.obs;
   final isLoadingStats = false.obs;
+  final isLoadingActivities = false.obs;
 
   // ── Activities (dynamically loaded from server) ─────────────────────
   final activities = <Map<String, String>>[].obs;
@@ -67,6 +68,7 @@ class ProfileController extends GetxController {
 
   Future<void> fetchActivities() async {
     try {
+      isLoadingActivities.value = true;
       final response = await _jobService.listAuditLogs();
       if (response.statusCode == 200 && response.body != null) {
         final outer = response.body!['data'];
@@ -138,7 +140,9 @@ class ProfileController extends GetxController {
           }
         }
       }
-    } catch (_) {}
+    } catch (_) {} finally {
+      isLoadingActivities.value = false;
+    }
     
     // Fallback if empty or error
     if (activities.isEmpty) {

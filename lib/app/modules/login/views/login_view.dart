@@ -44,13 +44,22 @@ class LoginView extends GetView<LoginController> {
                   const SizedBox(height: 60),
                   
                   // Brand Header
-                  Text(
-                    'Hiringbase',
-                    style: GoogleFonts.outfit(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                      letterSpacing: -0.5,
+                  Center(
+                    child: Image.asset(
+                      'assets/LOGO.png',
+                      height: 140,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text(
+                          'Hiringbase',
+                          style: GoogleFonts.outfit(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                            letterSpacing: -0.5,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   

@@ -117,51 +117,51 @@ class StatusControlCard extends GetView<CandidateDetailController> {
             final isUpdating = controller.isUpdatingStatus.value;
             final isScreening = controller.isScreening.value;
 
-            if (status == 'applied' || status == 'doc_check') {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: (isScreening || isUpdating)
-                        ? null
-                        : () => controller.updateStatus('under_review'),
-                    icon: isUpdating
-                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                        : const Icon(Icons.rate_review_outlined, size: 18),
-                    label: const Text('Move to Review (Manual)'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      side: const BorderSide(color: AppColors.surface),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (status == 'applied' || status == 'doc_check')
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: (isScreening || isUpdating)
+                            ? null
+                            : () => controller.updateStatus('under_review'),
+                        icon: isUpdating
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                            : const Icon(Icons.rate_review_outlined, size: 18),
+                        label: const Text('Move to Review (Manual)'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textPrimary,
+                          side: const BorderSide(color: AppColors.surface),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: candidate),
+                      icon: const Icon(Icons.mail_outline, size: 18),
+                      label: const Text('Detail Invitation'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
                     ),
                   ),
                 ),
-              );
-            }
-            
-            if (status == 'interview') {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: candidate),
-                    icon: const Icon(Icons.info_outline, size: 18),
-                    label: const Text('View Interview Detail'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                      foregroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-              );
-            }
-            return const SizedBox();
+              ],
+            );
           }),
           Row(
             children: [

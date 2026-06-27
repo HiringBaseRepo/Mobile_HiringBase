@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/modules/profile/controllers/profile_controller.dart';
+import 'package:uifrontendmobile/app/core/widgets/skeleton_loader.dart';
 
 class AktivitasView extends GetView<ProfileController> {
   const AktivitasView({super.key});
@@ -29,7 +30,12 @@ class AktivitasView extends GetView<ProfileController> {
             style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 24),
-          ...controller.activities.map((activity) {
+          if (controller.isLoadingActivities.value) ...[
+            _buildSkeletonItem(),
+            _buildSkeletonItem(),
+            _buildSkeletonItem(),
+          ] else
+            ...controller.activities.map((activity) {
             IconData icon;
             Color color;
 
@@ -114,10 +120,51 @@ class AktivitasView extends GetView<ProfileController> {
                 ),
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 40), // Bottom padding for comfortable scrolling
         ],
       )),
+    );
+  }
+
+  Widget _buildSkeletonItem() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.05)),
+        ),
+        child: const SkeletonLoader(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonShape.rectangle(width: 40, height: 40, borderRadius: 12),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SkeletonShape.rectangle(width: 140, height: 16),
+                    SizedBox(height: 8),
+                    SkeletonShape.rectangle(width: 200, height: 14),
+                    SizedBox(height: 12),
+                    Row(
+                      children: [
+                        SkeletonShape.circle(size: 14),
+                        SizedBox(width: 6),
+                        SkeletonShape.rectangle(width: 50, height: 10),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

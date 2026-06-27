@@ -4,6 +4,7 @@ import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../controllers/public_vacancy_controller.dart';
+import 'job_detail_skeleton.dart';
 
 class JobDetailView extends GetView<PublicVacancyController> {
   const JobDetailView({super.key});
@@ -13,11 +14,7 @@ class JobDetailView extends GetView<PublicVacancyController> {
     return Obx(() {
       final vacancy = controller.selectedVacancy.value;
       if (vacancy == null) {
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+        return const JobDetailSkeleton();
       }
       
       return Scaffold(

@@ -5,6 +5,7 @@ import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import '../controllers/analytics_controller.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
 import 'package:uifrontendmobile/app/core/widgets/app_bottom_nav.dart';
+import 'package:uifrontendmobile/app/core/widgets/skeleton_loader.dart';
 
 class AnalyticsView extends GetView<AnalyticsController> {
   const AnalyticsView({super.key});
@@ -105,8 +106,9 @@ class AnalyticsView extends GetView<AnalyticsController> {
             if (controller.isLoadingJobs.value) {
               return const SizedBox(
                 height: 40,
-                width: 40,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                child: SkeletonLoader(
+                  child: SkeletonShape.rectangle(width: 80, height: 35, borderRadius: 8),
+                ),
               );
             }
             return Text(
@@ -127,9 +129,36 @@ class AnalyticsView extends GetView<AnalyticsController> {
   Widget _buildJobList() {
     return Obx(() {
       if (controller.isLoadingJobs.value) {
-        return const SizedBox(
+        return SizedBox(
           height: 160,
-          child: Center(child: CircularProgressIndicator()),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: 140,
+                margin: const EdgeInsets.only(right: 15),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.surface, width: 2),
+                ),
+                child: const SkeletonLoader(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SkeletonShape.circle(size: 36),
+                      Spacer(),
+                      SkeletonShape.rectangle(width: 100, height: 16),
+                      SizedBox(height: 8),
+                      SkeletonShape.rectangle(width: 60, height: 12),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         );
       }
 
@@ -248,11 +277,50 @@ class AnalyticsView extends GetView<AnalyticsController> {
         const SizedBox(height: 20),
         Obx(() {
           if (controller.isLoadingCandidates.value) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 30),
-                child: CircularProgressIndicator(),
-              ),
+            return Column(
+              children: List.generate(3, (index) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 15),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const SkeletonLoader(
+                    child: Row(
+                      children: [
+                        SkeletonShape.circle(size: 50),
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SkeletonShape.rectangle(width: 120, height: 16),
+                              SizedBox(height: 8),
+                              SkeletonShape.rectangle(width: 80, height: 12, borderRadius: 6),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SkeletonShape.rectangle(width: 30, height: 18),
+                            SizedBox(height: 6),
+                            SkeletonShape.rectangle(width: 45, height: 10),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
             );
           }
 

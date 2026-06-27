@@ -4,6 +4,7 @@ import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/routes/app_pages.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
+import 'package:uifrontendmobile/app/core/widgets/skeleton_loader.dart';
 import '../../controllers/home_controller.dart';
 
 class HrCandidatesSection extends StatelessWidget {
@@ -48,11 +49,11 @@ class HrCandidatesSection extends StatelessWidget {
         const SizedBox(height: 10),
         Obx(() {
           if (controller.isLoading.value) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: CircularProgressIndicator(),
-              ),
+            return const Column(
+              children: [
+                HomeCandidateCardSkeleton(),
+                HomeCandidateCardSkeleton(),
+              ],
             );
           }
 
@@ -243,6 +244,55 @@ class _HomeCandidateCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class HomeCandidateCardSkeleton extends StatelessWidget {
+  const HomeCandidateCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const SkeletonLoader(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                SkeletonShape.circle(size: 48),
+                SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SkeletonShape.rectangle(width: 120, height: 16),
+                      SizedBox(height: 6),
+                      SkeletonShape.rectangle(width: 80, height: 12),
+                    ],
+                  ),
+                ),
+                SkeletonShape.rectangle(width: 70, height: 20, borderRadius: 10),
+              ],
+            ),
+            SizedBox(height: 15),
+            Row(
+              children: [
+                SkeletonShape.circle(size: 32),
+                SizedBox(width: 12),
+                SkeletonShape.rectangle(width: 130, height: 14),
+              ],
+            ),
+            SizedBox(height: 12),
+            SkeletonShape.rectangle(width: double.infinity, height: 40, borderRadius: 12),
+          ],
+        ),
       ),
     );
   }
