@@ -22,6 +22,7 @@ abstract class Routes {
   static const SCHEDULE_INTERVIEW = _Paths.SCHEDULE_INTERVIEW;
   static const INTERVIEW_DETAIL = _Paths.INTERVIEW_DETAIL;
   static const AKTIVITAS = _Paths.AKTIVITAS;
+  static const SPLASH = _Paths.SPLASH;
 }
 
 abstract class _Paths {
@@ -45,4 +46,5 @@ abstract class _Paths {
   static const SCHEDULE_INTERVIEW = '/schedule-interview';
   static const INTERVIEW_DETAIL = '/interview-detail';
   static const AKTIVITAS = '/aktivitas';
+  static const SPLASH = '/splash';
 }

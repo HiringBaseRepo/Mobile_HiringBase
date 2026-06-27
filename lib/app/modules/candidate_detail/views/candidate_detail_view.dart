@@ -10,6 +10,9 @@ import 'components/document_card.dart';
 import 'components/status_control_card.dart';
 import 'components/screening_progress_card.dart';
 
+import 'components/candidate_detail_skeleton.dart';
+import 'components/warning_card.dart';
+
 class CandidateDetailView extends GetView<CandidateDetailController> {
   const CandidateDetailView({super.key});
 
@@ -56,10 +59,10 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
         ),
       ),
       body: Obx(() {
-        final candidate = controller.candidate.value;
-        if (candidate == null) {
-          return const Center(child: CircularProgressIndicator());
+        if (controller.isLoading.value || controller.candidate.value == null) {
+          return const CandidateDetailSkeleton();
         }
+        final candidate = controller.candidate.value!;
 
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -83,38 +86,28 @@ class CandidateDetailView extends GetView<CandidateDetailController> {
               // Rejection reason (rejected status)
               if (candidate.status.toLowerCase() == 'rejected' && candidate.rejectionReason != null && candidate.rejectionReason!.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Alasan Ditolak',
-                            style: AppTextStyles.subHeader1.copyWith(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
+                      const Icon(Icons.cancel_outlined, color: AppColors.error, size: 20),
+                      const SizedBox(width: 8),
                       Text(
-                        candidate.rejectionReason!,
-                        style: AppTextStyles.bodyM.copyWith(color: AppColors.textPrimary),
+                        'ALASAN DITOLAK',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+                ...candidate.rejectionReason!
+                    .split('\n')
+                    .where((line) => line.trim().isNotEmpty)
+                    .map((line) => WarningCard(rawMessage: line)),
               ],
               // AI Insights — only show when score is available
               if (candidate.score > 0) ...[

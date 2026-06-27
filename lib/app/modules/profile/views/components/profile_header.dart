@@ -28,29 +28,58 @@ class ProfileHeader extends GetView<ProfileController> {
               // Avatar circle
               Stack(
                 children: [
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.white, width: 4),
-                      color: AppColors.white.withValues(alpha: 0.2),
-                      image: controller.userAvatar != null
-                          ? DecorationImage(
-                              image: NetworkImage(controller.userAvatar!),
-                              fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: controller.changeAvatar,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.white, width: 4),
+                        color: AppColors.white.withValues(alpha: 0.2),
+                        image: controller.userAvatar != null && controller.userAvatar!.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(controller.userAvatar!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      child: controller.userAvatar == null || controller.userAvatar!.isEmpty
+                          ? Center(
+                              child: Text(
+                                controller.initials,
+                                style: AppTextStyles.h1
+                                    .copyWith(color: AppColors.white, fontSize: 36),
+                              ),
                             )
                           : null,
                     ),
-                    child: controller.userAvatar == null
-                        ? Center(
-                            child: Text(
-                              controller.initials,
-                              style: AppTextStyles.h1
-                                  .copyWith(color: AppColors.white, fontSize: 36),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: controller.changeAvatar,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: AppColors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
                             ),
-                          )
-                        : null,
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

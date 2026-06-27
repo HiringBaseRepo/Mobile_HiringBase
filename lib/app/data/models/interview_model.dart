@@ -21,11 +21,11 @@ class Interview {
     return const Interview(
       candidateName: '',
       role: '',
-      date: '',
-      time: '',
-      platform: '',
-      link: '',
-      status: '',
+      date: '-',
+      time: '-',
+      platform: '-',
+      link: '-',
+      status: 'Not Scheduled',
     );
   }
 
@@ -33,11 +33,11 @@ class Interview {
     return Interview(
       candidateName: candidate?.name ?? '',
       role: candidate?.role ?? '',
-      date: '',
-      time: '',
-      platform: '',
-      link: '',
-      status: '',
+      date: '-',
+      time: '-',
+      platform: '-',
+      link: '-',
+      status: 'Not Scheduled',
     );
   }
 

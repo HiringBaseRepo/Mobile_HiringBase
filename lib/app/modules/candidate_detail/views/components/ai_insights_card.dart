@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_score.dart';
+import 'package:uifrontendmobile/app/modules/candidate_detail/views/components/warning_card.dart';
 
 class AiInsightsCard extends StatelessWidget {
   final CandidateScore? scoreData;
@@ -209,7 +210,7 @@ class AiInsightsCard extends StatelessWidget {
                 const SizedBox(height: 24),
                 const Divider(height: 1, color: AppColors.surface),
                 const SizedBox(height: 20),
-                ...scoreData!.redFlags!.map((rf) => _RedFlagCard(flag: rf)),
+                ...scoreData!.redFlags!.map((rf) => WarningCard(rawMessage: rf.message)),
               ],
             ],
           ),
@@ -379,42 +380,6 @@ class _RiskBadge extends StatelessWidget {
   }
 }
 
-class _RedFlagCard extends StatelessWidget {
-  final RedFlag flag;
-  const _RedFlagCard({required this.flag});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.error.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                flag.message,
-                style: AppTextStyles.bodyM.copyWith(
-                  color: AppColors.textPrimary,
-                  height: 1.4,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _ComponentReasoningTile extends StatelessWidget {
   final String label;

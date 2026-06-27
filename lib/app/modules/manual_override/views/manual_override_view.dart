@@ -189,6 +189,7 @@ class _CandidateSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (candidate == null) return const SizedBox();
+    final hasImg = candidate.imageUrl != null && candidate.imageUrl.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -197,14 +198,37 @@ class _CandidateSummary extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(backgroundImage: NetworkImage(candidate.imageUrl)),
+          CircleAvatar(
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+            backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
+            child: !hasImg
+                ? Text(
+                    candidate.name != null && candidate.name.isNotEmpty
+                        ? candidate.name[0].toUpperCase()
+                        : '?',
+                    style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                  )
+                : null,
+          ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(candidate.name, style: AppTextStyles.subHeader2),
-              Text(candidate.role, style: AppTextStyles.caption),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  candidate.name ?? 'Unknown',
+                  style: AppTextStyles.subHeader2,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  candidate.role ?? 'Unknown Role',
+                  style: AppTextStyles.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -53,6 +53,7 @@ class Vacancy {
   final int? salaryMax;
   final int applicantCount;
   final List<VacancyRequirement> requirements;
+  final String? companyName;
 
   const Vacancy({
     required this.id,
@@ -73,6 +74,7 @@ class Vacancy {
     this.salaryMax,
     this.applicantCount = 0,
     this.requirements = const [],
+    this.companyName,
   });
 
   /// Deserialises from the server's `JobListItem` JSON response.
@@ -98,6 +100,7 @@ class Vacancy {
                 ?.map((r) => VacancyRequirement.fromJson(Map<String, dynamic>.from(r as Map)))
                 .toList() ??
             const [],
+        companyName: json['company_name'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -114,6 +117,7 @@ class Vacancy {
         'salary_min': salaryMin,
         'salary_max': salaryMax,
         'requirements': requirements.map((r) => r.toJson()).toList(),
+        'company_name': companyName,
       };
 
   Vacancy copyWith({
@@ -135,6 +139,7 @@ class Vacancy {
     int? salaryMax,
     int? applicantCount,
     List<VacancyRequirement>? requirements,
+    String? companyName,
   }) =>
       Vacancy(
         id: id ?? this.id,
@@ -155,6 +160,7 @@ class Vacancy {
         salaryMax: salaryMax ?? this.salaryMax,
         applicantCount: applicantCount ?? this.applicantCount,
         requirements: requirements ?? this.requirements,
+        companyName: companyName ?? this.companyName,
       );
 
   /// Returns a display-friendly salary string, e.g. "Rp 5.000.000 - Rp 8.000.000".

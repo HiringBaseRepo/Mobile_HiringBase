@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../controllers/public_vacancy_controller.dart';
+import 'apply_form_submission_skeleton.dart';
 
 class ApplyFormView extends GetView<PublicVacancyController> {
   const ApplyFormView({super.key});
@@ -25,13 +26,18 @@ class ApplyFormView extends GetView<PublicVacancyController> {
         centerTitle: true,
       ),
       body: Obx(() {
+        if (controller.isLoading.value) {
+          return const ApplyFormSubmissionSkeleton();
+        }
         if (controller.currentStep.value == 2) {
           return _buildPersonalInfoForm();
         } else {
           return _buildDocumentUpload();
         }
       }),
-      bottomNavigationBar: _buildBottomAction(),
+      bottomNavigationBar: Obx(() => controller.isLoading.value
+          ? const SizedBox.shrink()
+          : _buildBottomAction()),
     );
   }
 

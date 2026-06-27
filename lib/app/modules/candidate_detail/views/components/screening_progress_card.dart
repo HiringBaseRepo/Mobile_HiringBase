@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
+import 'package:uifrontendmobile/app/modules/candidate_detail/views/components/warning_card.dart';
 
 /// Displays the AI screening lifecycle to HR:
 /// - In-progress: pulsing animation + step indicator
@@ -195,41 +196,30 @@ class ScreeningProgressCard extends StatelessWidget {
     required String title,
     required String subtitle,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.error, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppTextStyles.subHeader1.copyWith(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w700,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: AppColors.error, size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: AppTextStyles.subHeader1.copyWith(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.bodyM.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...subtitle
+            .split('\n')
+            .where((line) => line.trim().isNotEmpty)
+            .map((line) => WarningCard(rawMessage: line)),
+      ],
     );
   }
 

@@ -50,13 +50,14 @@ class Candidate {
   /// From `ApplicationListItem` — minimal data for list cards.
   factory Candidate.fromListItem(Map<String, dynamic> json) {
     final status = (json['status'] as String? ?? 'applied').toLowerCase();
+    final score = json['score'] as int? ?? 0;
     return Candidate(
       id: (json['id'] ?? 0).toString(),
       name: json['applicant_name'] as String? ?? 'Applicant #${json['id']}',
       role: json['status_label'] ?? status.toUpperCase(),
       status: status,
-      score: 0,
-      matchText: json['status_label'] ?? status,
+      score: score,
+      matchText: _matchTextFromScore(score, null),
       appliedAt: _formatDate(json['created_at'] as String?),
       imageUrl: '',
       statusColor: _statusColor(status).toARGB32(),
@@ -196,7 +197,7 @@ class Candidate {
   }
 
   static String _matchTextFromScore(int score, CandidateScore? scoreData) {
-    if (scoreData == null || score == 0) return 'Pending Screening';
+    if (score == 0) return 'Pending Screening';
     if (score >= 90) return 'Top 5% Match';
     if (score >= 80) return 'Strong Match';
     if (score >= 70) return 'Good Fit';

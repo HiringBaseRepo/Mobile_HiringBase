@@ -42,14 +42,19 @@ class JobApplicantStatsCard extends StatelessWidget {
               Text('Applicant Statistics', style: AppTextStyles.subHeader1),
               if (total == 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.textTertiary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'No applicants yet',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.textTertiary),
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
                   ),
                 ),
             ],
@@ -58,23 +63,35 @@ class JobApplicantStatsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _StatCircle(label: 'Total', value: total.toString(), color: AppColors.primary),
-              _StatCircle(label: 'New', value: newApplicants.toString(), color: AppColors.secondary),
-              _StatCircle(label: 'Interview', value: inInterview.toString(), color: AppColors.warning),
+              _StatCircle(
+                label: 'Total',
+                value: total.toString(),
+                color: AppColors.primary,
+              ),
+              _StatCircle(
+                label: 'New',
+                value: newApplicants.toString(),
+                color: AppColors.secondary,
+              ),
+              _StatCircle(
+                label: 'Interview',
+                value: inInterview.toString(),
+                color: AppColors.warning,
+              ),
             ],
           ),
           const SizedBox(height: 24),
           _StatusProgress(
             label: 'AI Screening',
             progress: aiScreeningProgress,
-            color: Colors.purple,
+            color: AppColors.secondary,
             count: (aiScreeningProgress * total).toInt(),
           ),
           const SizedBox(height: 12),
           _StatusProgress(
             label: 'Technical Test',
             progress: technicalTestProgress,
-            color: Colors.blue,
+            color: AppColors.info,
             count: (technicalTestProgress * total).toInt(),
           ),
         ],
@@ -88,7 +105,11 @@ class _StatCircle extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatCircle({required this.label, required this.value, required this.color});
+  const _StatCircle({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
