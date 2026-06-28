@@ -180,7 +180,7 @@ Future<void> switchToApplicant(WidgetTester tester) async {
   await pumpUntil(tester, find.text('Saya Pelamar'));
 
   await tester.tap(find.text('Saya Pelamar'));
-  await pumpUntil(tester, find.text('Private Access'));
+  await pumpUntil(tester, find.text('Akses Lowongan Privat'));
 }
 
 Future<String> applyForJob(WidgetTester tester, String applyCode) async {
@@ -188,7 +188,7 @@ Future<String> applyForJob(WidgetTester tester, String applyCode) async {
   pvc.jobCodeController.text = applyCode;
   await pvc.accessPrivateJob();
   await tester.pump(TestConfig.mediumWait);
-  await pumpUntil(tester, find.text('Apply for this Position'));
+  await pumpUntil(tester, find.text('Lamar Posisi Ini'));
 
   // Open apply form
   pvc.nextStep();
@@ -210,7 +210,7 @@ Future<String> applyForJob(WidgetTester tester, String applyCode) async {
   // Submit
   await pvc.submitApplication();
   await tester.pump(TestConfig.longWait);
-  await pumpUntil(tester, find.text('Application Submitted Successfully!'));
+  await pumpUntil(tester, find.text('Lamaran Berhasil Dikirim!'));
 
   final ticket = pvc.generatedTicket.value;
   expect(ticket, isNotEmpty, reason: 'Got ticket code');

@@ -17,7 +17,8 @@ class VacancyListView extends GetView<PublicVacancyController> {
       backgroundColor: AppColors.background,
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+          if (scrollInfo.metrics.pixels >=
+              scrollInfo.metrics.maxScrollExtent - 200) {
             controller.loadMore();
           }
           return true;
@@ -31,27 +32,44 @@ class VacancyListView extends GetView<PublicVacancyController> {
               backgroundColor: AppColors.background,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppColors.textPrimary,
+                ),
                 onPressed: () {
                   Get.offAllNamed(Routes.SELECTION);
                 },
               ),
               flexibleSpace: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  final settings = context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
-                  final double deltaExtent = settings == null ? 1.0 : (settings.maxExtent - settings.minExtent);
-                  final double currentExtent = settings == null ? 1.0 : (settings.currentExtent - settings.minExtent);
-                  final double percent = deltaExtent == 0.0 ? 0.0 : (currentExtent / deltaExtent).clamp(0.0, 1.0);
+                  final settings = context
+                      .dependOnInheritedWidgetOfExactType<
+                        FlexibleSpaceBarSettings
+                      >();
+                  final double deltaExtent = settings == null
+                      ? 1.0
+                      : (settings.maxExtent - settings.minExtent);
+                  final double currentExtent = settings == null
+                      ? 1.0
+                      : (settings.currentExtent - settings.minExtent);
+                  final double percent = deltaExtent == 0.0
+                      ? 0.0
+                      : (currentExtent / deltaExtent).clamp(0.0, 1.0);
 
                   // 24.0 saat expand penuh (percent = 1.0), 56.0 saat collapse penuh (percent = 0.0)
                   final double leftPadding = 56.0 - (32.0 * percent);
 
                   return FlexibleSpaceBar(
-                    titlePadding: EdgeInsets.only(left: leftPadding, bottom: 16),
+                    titlePadding: EdgeInsets.only(
+                      left: leftPadding,
+                      bottom: 16,
+                    ),
                     centerTitle: false,
                     title: Text(
                       "Lowongan",
-                      style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
+                      style: AppTextStyles.h2.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   );
                 },
@@ -64,23 +82,22 @@ class VacancyListView extends GetView<PublicVacancyController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Find your next role",
+                      "Temukan pekerjaan impian Anda",
                       style: AppTextStyles.h1.copyWith(fontSize: 32),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Explore public openings or enter a private code.",
-                      style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
+                      "Cari lowongan umum atau masukkan kode akses privat.",
+                      style: AppTextStyles.bodyM.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     _buildSearchBar(),
                     const SizedBox(height: 24),
                     _buildPrivateAccessCard(),
                     const SizedBox(height: 32),
-                    Text(
-                      "Public Openings",
-                      style: AppTextStyles.h3,
-                    ),
+                    Text("Lowongan Umum", style: AppTextStyles.h3),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -106,11 +123,17 @@ class VacancyListView extends GetView<PublicVacancyController> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.work_off_outlined, size: 64, color: AppColors.textTertiary),
+                        Icon(
+                          Icons.work_off_outlined,
+                          size: 64,
+                          color: AppColors.textTertiary,
+                        ),
                         const SizedBox(height: 16),
                         Text(
-                          "No public openings available",
-                          style: AppTextStyles.bodyL.copyWith(color: AppColors.textSecondary),
+                          "Tidak ada lowongan umum yang tersedia",
+                          style: AppTextStyles.bodyL.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -121,20 +144,17 @@ class VacancyListView extends GetView<PublicVacancyController> {
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index == controller.vacancies.length) {
-                        return PaginationFooter(
-                          isLoading: controller.isLoadingMore.value,
-                          hasMore: controller.hasMore.value,
-                          noMoreText: 'Semua lowongan telah dimuat',
-                        );
-                      }
-                      final vacancy = controller.vacancies[index];
-                      return _buildVacancyCard(vacancy);
-                    },
-                    childCount: controller.vacancies.length + 1,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    if (index == controller.vacancies.length) {
+                      return PaginationFooter(
+                        isLoading: controller.isLoadingMore.value,
+                        hasMore: controller.hasMore.value,
+                        noMoreText: 'Semua lowongan telah dimuat',
+                      );
+                    }
+                    final vacancy = controller.vacancies[index];
+                    return _buildVacancyCard(vacancy);
+                  }, childCount: controller.vacancies.length + 1),
                 ),
               );
             }),
@@ -161,9 +181,14 @@ class VacancyListView extends GetView<PublicVacancyController> {
       child: TextField(
         controller: controller.searchController,
         decoration: InputDecoration(
-          hintText: "Search roles, skills, or locations...",
-          hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
-          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textSecondary),
+          hintText: "Cari peran, keahlian, atau lokasi...",
+          hintStyle: AppTextStyles.bodyM.copyWith(
+            color: AppColors.textTertiary,
+          ),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: AppColors.textSecondary,
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
@@ -177,7 +202,10 @@ class VacancyListView extends GetView<PublicVacancyController> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
@@ -211,16 +239,22 @@ class VacancyListView extends GetView<PublicVacancyController> {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.lock_rounded, color: AppColors.primary, size: 20),
+                    child: const Icon(
+                      Icons.lock_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  Text("Private Access", style: AppTextStyles.h3),
+                  Text("Akses Lowongan Privat", style: AppTextStyles.h3),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
-                "Have an invite code from a recruiter? Enter it below to unlock hidden roles.",
-                style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
+                "Punya kode undangan dari rekruter? Masukkan di bawah untuk membuka lowongan khusus.",
+                style: AppTextStyles.bodyS.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 20),
               Row(
@@ -235,10 +269,12 @@ class VacancyListView extends GetView<PublicVacancyController> {
                       child: TextField(
                         controller: controller.jobCodeController,
                         decoration: InputDecoration(
-                          hintText: "Enter job code",
+                          hintText: "Masukkan kode lowongan",
                           hintStyle: AppTextStyles.caption,
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -249,11 +285,16 @@ class VacancyListView extends GetView<PublicVacancyController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.cardBackground,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 0,
                     ),
-                    child: const Text("Access Job"),
+                    child: const Text("Akses Lowongan"),
                   ),
                 ],
               ),
@@ -294,10 +335,16 @@ class VacancyListView extends GetView<PublicVacancyController> {
                     Expanded(
                       child: Text(
                         vacancy.title,
-                        style: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
+                        style: AppTextStyles.h3.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_rounded, color: AppColors.textTertiary, size: 20),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: AppColors.textTertiary,
+                      size: 20,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),

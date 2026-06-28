@@ -318,7 +318,7 @@ class ProfileView extends GetView<ProfileController> {
         subtitle: Text(subtitle, style: AppTextStyles.bodyS),
         value: value,
         onChanged: (val) {},
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
