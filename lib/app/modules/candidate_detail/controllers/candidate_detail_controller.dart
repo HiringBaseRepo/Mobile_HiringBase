@@ -89,19 +89,19 @@ class CandidateDetailController extends GetxController {
         } catch (_) {}
 
         Get.snackbar(
-          'Status Updated',
-          'Status changed to ${data?['new_status_label'] ?? updated}',
+          'Status Diperbarui',
+          'Status diubah menjadi ${candidate.value?.statusIndonesian ?? updated}',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
         Get.snackbar(
-          'Error',
-          response.body?['message']?.toString() ?? 'Failed to update status.',
+          'Kesalahan',
+          response.body?['message']?.toString() ?? 'Gagal memperbarui status.',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (_) {
-      Get.snackbar('Error', 'Connection error.', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Kesalahan', 'Kesalahan koneksi.', snackPosition: SnackPosition.BOTTOM);
     } finally {
       isUpdatingStatus.value = false;
     }
@@ -118,8 +118,8 @@ class CandidateDetailController extends GetxController {
 
       if (response.statusCode == 200 && response.body != null) {
         Get.snackbar(
-          'AI Screening Queued',
-          response.body?['message']?.toString() ?? 'Screening has been queued successfully.',
+          'Skrining AI Masuk Antrean',
+          'Proses skrining berhasil dimasukkan ke dalam antrean.',
           snackPosition: SnackPosition.BOTTOM,
         );
         // Poll until screening completes
@@ -137,13 +137,13 @@ class CandidateDetailController extends GetxController {
         }
       } else {
         Get.snackbar(
-          'Error',
-          response.body?['message']?.toString() ?? 'Failed to start AI screening.',
+          'Kesalahan',
+          response.body?['message']?.toString() ?? 'Gagal memulai skrining AI.',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (_) {
-      Get.snackbar('Error', 'Connection error.', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Kesalahan', 'Kesalahan koneksi.', snackPosition: SnackPosition.BOTTOM);
     } finally {
       isScreening.value = false;
       isPolling.value = false;
@@ -166,10 +166,10 @@ class CandidateDetailController extends GetxController {
 
   /// Available status transitions — presented in UI action sheet.
   static const statusOptions = [
-    {'value': 'under_review', 'label': 'Under Review'},
-    {'value': 'interview', 'label': 'Invite to Interview'},
-    {'value': 'offered', 'label': 'Send Offer'},
-    {'value': 'hired', 'label': 'Mark as Hired'},
-    {'value': 'rejected', 'label': 'Reject'},
+    {'value': 'under_review', 'label': 'Tinjau Lamaran'},
+    {'value': 'interview', 'label': 'Undang Wawancara'},
+    {'value': 'offered', 'label': 'Kirim Penawaran Kerja'},
+    {'value': 'hired', 'label': 'Terima Kerja'},
+    {'value': 'rejected', 'label': 'Tolak Lamaran'},
   ];
 }

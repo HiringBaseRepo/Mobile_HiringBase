@@ -27,7 +27,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'APPLICATION CONTROL',
+            'KONTROL LAMARAN',
             style: AppTextStyles.caption.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -35,7 +35,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Current Status',
+            'Status Saat Ini',
             style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -92,12 +92,12 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                       : () => controller.runScreening(),
                   icon: isProcessing
                       ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Icon(Icons.psychology, size: 18),
+                      : const Icon(Icons.smart_toy_outlined, size: 18),
                   label: Text(isPolling
-                      ? 'AI Screening in Progress...'
+                      ? 'Skrining AI Sedang Berjalan...'
                       : isProcessing
-                          ? 'Processing AI Screening...'
-                          : 'Run AI Screening'),
+                          ? 'Memproses Skrining AI...'
+                          : 'Jalankan Skrining AI'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -132,7 +132,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                         icon: isUpdating
                             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
                             : const Icon(Icons.rate_review_outlined, size: 18),
-                        label: const Text('Move to Review (Manual)'),
+                        label: const Text('Tinjau Lamaran (Manual)'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.textPrimary,
                           side: const BorderSide(color: AppColors.surface),
@@ -149,7 +149,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                     child: ElevatedButton.icon(
                       onPressed: () => Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: candidate),
                       icon: const Icon(Icons.mail_outline, size: 18),
-                      label: const Text('Detail Invitation'),
+                      label: const Text('Detail Undangan'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                         foregroundColor: AppColors.primary,
@@ -169,7 +169,7 @@ class StatusControlCard extends GetView<CandidateDetailController> {
                 child: OutlinedButton.icon(
                   onPressed: () => Get.toNamed(Routes.SCHEDULE_INTERVIEW, arguments: controller.candidate.value),
                   icon: const Icon(Icons.event, size: 18),
-                  label: const Text('Schedule'),
+                  label: const Text('Jadwalkan'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

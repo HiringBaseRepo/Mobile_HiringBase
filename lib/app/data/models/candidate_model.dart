@@ -159,6 +159,35 @@ class Candidate {
 
   // ── Helpers ──────────────────────────────────────────────────────────
 
+  String get statusIndonesian {
+    switch (status) {
+      case 'applied':
+        return 'Baru Terdaftar';
+      case 'doc_check':
+        return 'Verifikasi Dokumen';
+      case 'doc_failed':
+        return 'Verifikasi Dokumen Gagal';
+      case 'ai_processing':
+        return 'Proses AI Screening';
+      case 'ai_passed':
+        return 'Lolos AI Screening';
+      case 'under_review':
+        return 'Sedang Ditinjau';
+      case 'interview':
+        return 'Wawancara';
+      case 'offered':
+        return 'Ditawarkan Kontrak';
+      case 'hired':
+        return 'Diterima Kerja';
+      case 'rejected':
+        return 'Ditolak';
+      case 'knockout':
+        return 'Gugur Kualifikasi';
+      default:
+        return status;
+    }
+  }
+
   static Color _statusColor(String status) {
     switch (status) {
       case 'hired':
@@ -186,10 +215,10 @@ class Candidate {
     try {
       final dt = DateTime.parse(raw).toLocal();
       final diff = DateTime.now().difference(dt);
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      if (diff.inDays < 7) return '${diff.inDays}d ago';
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
+      if (diff.inHours < 24) return '${diff.inHours} jam lalu';
+      if (diff.inDays < 7) return '${diff.inDays} hari lalu';
+      const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
       return '${dt.day} ${months[dt.month - 1]}';
     } catch (_) {
       return raw.length > 10 ? raw.substring(0, 10) : raw;
@@ -197,12 +226,12 @@ class Candidate {
   }
 
   static String _matchTextFromScore(int score, CandidateScore? scoreData) {
-    if (score == 0) return 'Pending Screening';
-    if (score >= 90) return 'Top 5% Match';
-    if (score >= 80) return 'Strong Match';
-    if (score >= 70) return 'Good Fit';
-    if (score >= 60) return 'Possible Fit';
-    return 'Low Match';
+    if (score == 0) return 'Menunggu Screening';
+    if (score >= 90) return 'Sangat Cocok (Top 5%)';
+    if (score >= 80) return 'Sangat Cocok';
+    if (score >= 70) return 'Cocok';
+    if (score >= 60) return 'Cukup Cocok';
+    return 'Kurang Cocok';
   }
 
   static List<Map<String, dynamic>> _parseList(dynamic raw) {

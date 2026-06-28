@@ -27,8 +27,8 @@ class ScheduleInterviewController extends GetxController {
   Future<void> submitSchedule() async {
     if (dateController.text.isEmpty || timeController.text.isEmpty) {
       Get.snackbar(
-        'Validation Error',
-        'Please select date and time',
+        'Kesalahan Validasi',
+        'Silakan pilih tanggal dan waktu',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,
@@ -80,8 +80,8 @@ class ScheduleInterviewController extends GetxController {
           final link = linkController.text.trim();
           if (link.isEmpty) {
             Get.snackbar(
-              'Validation Error',
-              'Please enter the meeting link',
+              'Kesalahan Validasi',
+              'Silakan masukkan tautan pertemuan',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: AppColors.error.withValues(alpha: 0.1),
               colorText: AppColors.error,
@@ -100,8 +100,8 @@ class ScheduleInterviewController extends GetxController {
           final loc = locationController.text.trim();
           if (loc.isEmpty) {
             Get.snackbar(
-              'Validation Error',
-              'Please enter the interview location',
+              'Kesalahan Validasi',
+              'Silakan masukkan lokasi wawancara',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: AppColors.error.withValues(alpha: 0.1),
               colorText: AppColors.error,
@@ -124,9 +124,9 @@ class ScheduleInterviewController extends GetxController {
       );
 
       if (response.status.hasError || response.body?['success'] != true) {
-        final msg = response.body?['message']?.toString() ?? 'Failed to schedule interview.';
+        final msg = response.body?['message']?.toString() ?? 'Gagal menjadwalkan wawancara.';
         Get.snackbar(
-          'Error',
+          'Kesalahan',
           msg,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
@@ -149,16 +149,16 @@ class ScheduleInterviewController extends GetxController {
       } catch (_) {}
 
       Get.snackbar(
-        'Success',
-        'Interview scheduled and invitation sent',
+        'Berhasil',
+        'Wawancara berhasil dijadwalkan dan undangan telah dikirim',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.success.withValues(alpha: 0.1),
         colorText: AppColors.success,
       );
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'An unexpected error occurred.',
+        'Kesalahan',
+        'Terjadi kesalahan yang tidak terduga.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error.withValues(alpha: 0.1),
         colorText: AppColors.error,

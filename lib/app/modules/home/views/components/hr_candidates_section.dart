@@ -21,7 +21,7 @@ class HrCandidatesSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recent Candidates',
+              'Kandidat Terbaru',
               style: AppTextStyles.subHeader1,
             ),
             TextButton(
@@ -31,7 +31,7 @@ class HrCandidatesSection extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    'View All',
+                    'Lihat Semua',
                     style: AppTextStyles.button.copyWith(
                       color: AppColors.primary,
                     ),
@@ -72,7 +72,7 @@ class HrCandidatesSection extends StatelessWidget {
                   const Icon(Icons.people_outline, size: 40, color: AppColors.textTertiary),
                   const SizedBox(height: 12),
                   Text(
-                    'No candidates applied yet.',
+                    'Belum ada pelamar.',
                     style: AppTextStyles.bodyM.copyWith(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
@@ -131,13 +131,25 @@ class _HomeCandidateCard extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
-                child: !hasImg
-                    ? Text(
+                child: hasImg
+                    ? ClipOval(
+                        child: Image.network(
+                          candidate.imageUrl,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Text(
+                              candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                              style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                            );
+                          },
+                        ),
+                      )
+                    : Text(
                         candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
                         style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
-                      )
-                    : null,
+                      ),
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -167,7 +179,7 @@ class _HomeCandidateCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  candidate.status.toUpperCase(),
+                  candidate.statusIndonesian.toUpperCase(),
                   style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colorVal,
@@ -209,7 +221,7 @@ class _HomeCandidateCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  candidate.score > 0 ? candidate.matchText : 'AI Screening Pending',
+                  candidate.score > 0 ? candidate.matchText : 'Menunggu Skrining AI',
                   style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textSecondary,

@@ -181,15 +181,29 @@ class _CandidateHeader extends StatelessWidget {
         CircleAvatar(
           radius: 28,
           backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-          backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
-          child: !hasImg
-              ? Text(
+          child: hasImg
+              ? ClipOval(
+                  child: Image.network(
+                    candidate.imageUrl,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Text(
+                        candidate.name != null && candidate.name.isNotEmpty
+                            ? candidate.name[0].toUpperCase()
+                            : '?',
+                        style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
+                      );
+                    },
+                  ),
+                )
+              : Text(
                   candidate.name != null && candidate.name.isNotEmpty
                       ? candidate.name[0].toUpperCase()
                       : '?',
                   style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
-                )
-              : null,
+                ),
         ),
         const SizedBox(width: 16),
         Expanded(

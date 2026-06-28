@@ -22,7 +22,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
             Get.offAllNamed(Routes.SELECTION);
           },
         ),
-        title: Text("Track Application", style: AppTextStyles.h3),
+        title: Text("Lacak Lamaran", style: AppTextStyles.h3),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -81,12 +81,12 @@ class TrackStatusView extends GetView<PublicVacancyController> {
           Icon(Icons.track_changes_outlined, size: 64, color: AppColors.textTertiary),
           const SizedBox(height: 16),
           Text(
-            "No Application Selected",
+            "Tidak Ada Lamaran Terpilih",
             style: AppTextStyles.subHeader1,
           ),
           const SizedBox(height: 8),
           Text(
-            "Enter a ticket code above to track your real-time recruitment progress.",
+            "Masukkan kode tiket di atas untuk melacak perkembangan rekrutmen Anda secara real-time.",
             style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
@@ -113,10 +113,10 @@ class TrackStatusView extends GetView<PublicVacancyController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Check Your Status", style: AppTextStyles.h2.copyWith(fontSize: 20)),
+          Text("Periksa Status Anda", style: AppTextStyles.h2.copyWith(fontSize: 20)),
           const SizedBox(height: 8),
           Text(
-            "Enter your unique ticket ID to see the latest updates on your application.",
+            "Masukkan ID tiket unik Anda untuk melihat pembaruan terbaru lamaran Anda.",
             style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 20),
@@ -153,16 +153,53 @@ class TrackStatusView extends GetView<PublicVacancyController> {
   Widget _buildStatusTimeline(Map<String, dynamic> data) {
     final status = (data['application_status'] as String? ?? 'applied').toLowerCase();
     final statusLabel = data['application_status_label'] as String? ?? 'Applied';
-    final jobTitle = data['job_title'] as String? ?? 'Vacancy';
-    final applicantName = data['applicant_name'] as String? ?? 'Applicant';
+    final jobTitle = data['job_title'] as String? ?? 'Lowongan';
+    final applicantName = data['applicant_name'] as String? ?? 'Pelamar';
     final createdAt = data['created_at'] as String? ?? '';
 
+    String localizedStatusLabel = statusLabel;
+    switch (status) {
+      case 'applied':
+        localizedStatusLabel = 'Baru Terdaftar';
+        break;
+      case 'doc_check':
+        localizedStatusLabel = 'Verifikasi Dokumen';
+        break;
+      case 'doc_failed':
+        localizedStatusLabel = 'Verifikasi Gagal';
+        break;
+      case 'ai_processing':
+        localizedStatusLabel = 'Proses AI';
+        break;
+      case 'ai_passed':
+        localizedStatusLabel = 'Lolos AI';
+        break;
+      case 'under_review':
+        localizedStatusLabel = 'Sedang Ditinjau';
+        break;
+      case 'interview':
+        localizedStatusLabel = 'Wawancara';
+        break;
+      case 'offered':
+        localizedStatusLabel = 'Ditawarkan';
+        break;
+      case 'hired':
+        localizedStatusLabel = 'Diterima';
+        break;
+      case 'rejected':
+        localizedStatusLabel = 'Ditolak';
+        break;
+      case 'knockout':
+        localizedStatusLabel = 'Gugur';
+        break;
+    }
+
     // Parse date safely
-    String dateStr = 'Recently';
+    String dateStr = 'Baru saja';
     if (createdAt.isNotEmpty) {
       try {
         final dt = DateTime.parse(createdAt);
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
         dateStr = '${dt.day} ${months[dt.month - 1]} ${dt.year}';
       } catch (_) {}
     }
@@ -217,7 +254,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  statusLabel.toUpperCase(),
+                  localizedStatusLabel.toUpperCase(),
                   style: AppTextStyles.caption.copyWith(
                     color: statusColor,
                     fontWeight: FontWeight.w800,
@@ -228,34 +265,34 @@ class TrackStatusView extends GetView<PublicVacancyController> {
           ),
           const SizedBox(height: 32),
           _buildTimelineItem(
-            "Application Received",
-            "Submitted on $dateStr",
+            "Lamaran Diterima",
+            "Dikirim pada $dateStr",
             isCompleted: step1Complete,
             isLast: false,
           ),
           _buildTimelineItem(
-            "HiringBase AI Analysis",
+            "Analisis AI HiringBase",
             step2Complete 
-              ? "AI Screening analysis completed."
-              : (step2Active ? "Initial screening analysis is in progress..." : "Queueing for AI screening."),
+              ? "Analisis skrining AI selesai."
+              : (step2Active ? "Analisis skrining awal sedang berlangsung..." : "Mengantre untuk skrining AI."),
             isCompleted: step2Complete,
             isActive: step2Active,
             isLast: false,
           ),
           _buildTimelineItem(
-            "Hiring Interview",
+            "Wawancara Kerja",
             step3Complete 
-              ? "Hiring Manager interview completed."
-              : (step3Active ? "Interview scheduled! Recruiter will contact you shortly." : "Pending selection review."),
+              ? "Wawancara dengan Manajer HRD selesai."
+              : (step3Active ? "Wawancara telah dijadwalkan! Perekrut akan segera menghubungi Anda." : "Menunggu tinjauan seleksi."),
             isCompleted: step3Complete,
             isActive: step3Active,
             isLast: false,
           ),
           _buildTimelineItem(
-            "Final Decision",
+            "Keputusan Akhir",
             status == 'accepted' 
-              ? "Congratulations! You have been accepted for this role."
-              : (status == 'rejected' ? "Application closed. Thank you for your time." : "Awaiting final recruitment decision."),
+              ? "Selamat! Anda telah diterima untuk posisi ini."
+              : (status == 'rejected' ? "Lamaran ditutup. Terima kasih atas partisipasi Anda." : "Menunggu keputusan akhir rekrutmen."),
             isCompleted: step4Complete,
             isActive: step4Active,
             isLast: true,
@@ -328,15 +365,15 @@ class TrackStatusView extends GetView<PublicVacancyController> {
   Widget _buildAIPulseCard(Map<String, dynamic> data) {
     final status = (data['application_status'] as String? ?? 'applied').toLowerCase();
     
-    String message = "Your profile is queued for processing. Good luck!";
+    String message = "Profil Anda sedang mengantre untuk diproses. Semoga beruntung!";
     if (status == 'screening') {
-      message = "HiringBase AI is currently scoring your CV and skills matching.";
+      message = "AI HiringBase sedang menilai CV dan kesesuaian keahlian Anda.";
     } else if (status == 'interview') {
-      message = "Congratulations! Your profile has qualified for the next interview step.";
+      message = "Selamat! Profil Anda memenuhi syarat untuk tahap wawancara selanjutnya.";
     } else if (status == 'accepted') {
-      message = "You have been matched successfully! HR will contact you with the offer letter.";
+      message = "Anda telah berhasil dicocokkan! HRD akan menghubungi Anda dengan surat penawaran kerja.";
     } else if (status == 'rejected') {
-      message = "We appreciate your interest. We will keep your CV for future matching roles.";
+      message = "Kami menghargai minat Anda. Kami akan menyimpan CV Anda untuk posisi yang cocok di masa mendatang.";
     }
 
     return Container(
@@ -365,7 +402,7 @@ class TrackStatusView extends GetView<PublicVacancyController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "HiringBase Insights",
+                  "Wawasan HiringBase",
                   style: AppTextStyles.bodyM.copyWith(color: AppColors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
