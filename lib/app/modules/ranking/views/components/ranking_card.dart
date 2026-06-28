@@ -8,12 +8,8 @@ import '../../../../routes/app_pages.dart';
 class RankingCard extends StatelessWidget {
   final Candidate candidate;
   final int rank;
-  
-  const RankingCard({
-    super.key,
-    required this.candidate,
-    required this.rank,
-  });
+
+  const RankingCard({super.key, required this.candidate, required this.rank});
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +39,23 @@ class RankingCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Text(
-                            candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
-                            style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                            candidate.name.isNotEmpty
+                                ? candidate.name[0].toUpperCase()
+                                : '?',
+                            style: AppTextStyles.subHeader2.copyWith(
+                              color: AppColors.primary,
+                            ),
                           );
                         },
                       ),
                     )
                   : Text(
-                      candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
-                      style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                      candidate.name.isNotEmpty
+                          ? candidate.name[0].toUpperCase()
+                          : '?',
+                      style: AppTextStyles.subHeader2.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
             ),
             const SizedBox(width: 16),
@@ -79,7 +83,7 @@ class _RankIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (rank) {
-      1 => AppColors.warning,      // gold
+      1 => AppColors.warning, // gold
       2 => AppColors.textTertiary, // silver
       3 => const Color(0xFFCD7F32), // bronze
       _ => AppColors.textTertiary,
@@ -95,7 +99,10 @@ class _RankIndicator extends StatelessWidget {
       ),
       child: Text(
         rank.toString(),
-        style: AppTextStyles.bodyM.copyWith(color: color, fontWeight: FontWeight.bold),
+        style: AppTextStyles.bodyM.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

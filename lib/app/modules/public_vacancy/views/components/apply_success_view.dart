@@ -72,7 +72,9 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
                 color: AppColors.surface,
                 shape: BoxShape.circle,
                 image: const DecorationImage(
-                  image: NetworkImage("https://lh3.googleusercontent.com/a/default-user=s80-p"),
+                  image: NetworkImage(
+                    "https://lh3.googleusercontent.com/a/default-user=s80-p",
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -156,51 +158,55 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
             ),
           ),
           const SizedBox(height: 16),
-          Obx(() => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.surface, width: 1),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      controller.generatedTicket.value,
-                      style: AppTextStyles.h2.copyWith(
-                        color: AppColors.primary,
-                        fontSize: 24,
-                        letterSpacing: 1,
-                        fontFamily: 'monospace',
-                        fontWeight: FontWeight.bold,
+          Obx(
+            () => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.surface, width: 1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        controller.generatedTicket.value,
+                        style: AppTextStyles.h2.copyWith(
+                          color: AppColors.primary,
+                          fontSize: 24,
+                          letterSpacing: 1,
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                IconButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: controller.generatedTicket.value));
-                    Get.snackbar(
-                      "Copied",
-                      "Ticket code copied to clipboard",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: AppColors.primary,
-                      colorText: AppColors.white,
-                    );
-                  },
-                  icon: const Icon(Icons.content_copy_rounded, size: 20),
-                  color: AppColors.textSecondary,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  hoverColor: AppColors.transparent,
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  IconButton(
+                    onPressed: () {
+                      Clipboard.setData(
+                        ClipboardData(text: controller.generatedTicket.value),
+                      );
+                      Get.snackbar(
+                        "Copied",
+                        "Ticket code copied to clipboard",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: AppColors.primary,
+                        colorText: AppColors.white,
+                      );
+                    },
+                    icon: const Icon(Icons.content_copy_rounded, size: 20),
+                    color: AppColors.textSecondary,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    hoverColor: AppColors.transparent,
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -211,9 +217,21 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
       children: [
         Row(
           children: [
-            Expanded(child: _buildBentoCard(Icons.info_rounded, "Save your code", "Keep this ticket code to verify your identity when checking status.")),
+            Expanded(
+              child: _buildBentoCard(
+                Icons.info_rounded,
+                "Save your code",
+                "Keep this ticket code to verify your identity when checking status.",
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildBentoCard(Icons.track_changes_rounded, "AI Screening", "HiringBase AI is now analyzing your resume for the best match.")),
+            Expanded(
+              child: _buildBentoCard(
+                Icons.track_changes_rounded,
+                "AI Screening",
+                "HiringBase AI is now analyzing your resume for the best match.",
+              ),
+            ),
           ],
         ),
       ],
@@ -258,11 +276,16 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.white,
               padding: const EdgeInsets.symmetric(vertical: 18),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 4,
               shadowColor: AppColors.primary.withValues(alpha: 0.3),
             ),
-            child: Text("Track Status Now", style: AppTextStyles.button.copyWith(fontSize: 16)),
+            child: Text(
+              "Track Status Now",
+              style: AppTextStyles.button.copyWith(fontSize: 16),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -274,9 +297,14 @@ class ApplySuccessView extends GetView<PublicVacancyController> {
               foregroundColor: AppColors.textPrimary,
               padding: const EdgeInsets.symmetric(vertical: 18),
               side: const BorderSide(color: AppColors.surface, width: 2),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
-            child: Text("Back to Jobs", style: AppTextStyles.button.copyWith(fontSize: 16)),
+            child: Text(
+              "Back to Jobs",
+              style: AppTextStyles.button.copyWith(fontSize: 16),
+            ),
           ),
         ),
       ],

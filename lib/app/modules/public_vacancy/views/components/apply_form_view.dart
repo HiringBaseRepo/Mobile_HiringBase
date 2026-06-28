@@ -16,13 +16,18 @@ class ApplyFormView extends GetView<PublicVacancyController> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => controller.currentStep.value--,
         ),
-        title: Obx(() => Text(
-          controller.currentStep.value == 2 ? "Data Diri" : "Unggah Berkas",
-          style: AppTextStyles.subHeader1,
-        )),
+        title: Obx(
+          () => Text(
+            controller.currentStep.value == 2 ? "Data Diri" : "Unggah Berkas",
+            style: AppTextStyles.subHeader1,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Obx(() {
@@ -35,9 +40,11 @@ class ApplyFormView extends GetView<PublicVacancyController> {
           return _buildDocumentUpload();
         }
       }),
-      bottomNavigationBar: Obx(() => controller.isLoading.value
-          ? const SizedBox.shrink()
-          : _buildBottomAction()),
+      bottomNavigationBar: Obx(
+        () => controller.isLoading.value
+            ? const SizedBox.shrink()
+            : _buildBottomAction(),
+      ),
     );
   }
 
@@ -54,37 +61,69 @@ class ApplyFormView extends GetView<PublicVacancyController> {
             style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 32),
-          _buildFieldGroup("Nama Lengkap", controller.fullNameController, "Contoh: John Doe"),
+          _buildFieldGroup(
+            "Nama Lengkap",
+            controller.fullNameController,
+            "Contoh: John Doe",
+          ),
           const SizedBox(height: 20),
-          _buildFieldGroup("Email Aktif", controller.emailController, "Contoh: john@example.com", keyboardType: TextInputType.emailAddress),
+          _buildFieldGroup(
+            "Email Aktif",
+            controller.emailController,
+            "Contoh: john@example.com",
+            keyboardType: TextInputType.emailAddress,
+          ),
           const SizedBox(height: 20),
-          _buildFieldGroup("Nomor WhatsApp", controller.phoneController, "Contoh: 08123456789", keyboardType: TextInputType.phone),
+          _buildFieldGroup(
+            "Nomor WhatsApp",
+            controller.phoneController,
+            "Contoh: 08123456789",
+            keyboardType: TextInputType.phone,
+          ),
           const SizedBox(height: 20),
-          _buildFieldGroup("LinkedIn URL (Opsional)", controller.linkedinController, "linkedin.com/in/username"),
+          _buildFieldGroup(
+            "LinkedIn URL (Opsional)",
+            controller.linkedinController,
+            "linkedin.com/in/username",
+          ),
           const SizedBox(height: 20),
-          _buildFieldGroup("Pendidikan Terakhir", controller.educationController, "Contoh: S1 Teknik Informatika / SMA IPA"),
+          _buildFieldGroup(
+            "Pendidikan Terakhir",
+            controller.educationController,
+            "Contoh: S1 Teknik Informatika / SMA IPA",
+          ),
           const SizedBox(height: 20),
           Obx(() {
             final widgets = <Widget>[];
             final standardKeys = {
-              'full_name', 'email', 'email_address', 'phone', 
-              'phone_number', 'whatsapp', 'education', 
-              'work_experience', 'experience', 'linkedin', 'skills'
+              'full_name',
+              'email',
+              'email_address',
+              'phone',
+              'phone_number',
+              'whatsapp',
+              'education',
+              'work_experience',
+              'experience',
+              'linkedin',
+              'skills',
             };
-            
+
             for (var field in controller.customFormFields) {
               final key = field['field_key']?.toString();
               final label = field['label']?.toString() ?? 'Field';
               final isRequired = field['is_required'] as bool? ?? false;
-              
+
               if (key != null && !standardKeys.contains(key.toLowerCase())) {
                 final textController = controller.customControllers[key];
                 if (textController != null) {
-                  widgets.add(_buildFieldGroup(
-                    "$label${isRequired ? ' *' : ' (Opsional)'}",
-                    textController,
-                    "Masukkan $label...",
-                  ));
+                  widgets.add(
+                    _buildFieldGroup(
+                      "$label${isRequired ? ' *' : ' (Opsional)'}",
+                      textController,
+                      "Masukkan $label...",
+                    ),
+                  );
                   widgets.add(const SizedBox(height: 20));
                 }
               }
@@ -141,8 +180,11 @@ class ApplyFormView extends GetView<PublicVacancyController> {
               maxLines: 4,
               style: AppTextStyles.bodyM,
               decoration: InputDecoration(
-                hintText: "Briefly describe your relevant roles and responsibilities...",
-                hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
+                hintText:
+                    "Briefly describe your relevant roles and responsibilities...",
+                hintStyle: AppTextStyles.bodyM.copyWith(
+                  color: AppColors.textTertiary,
+                ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(16),
               ),
@@ -158,11 +200,15 @@ class ApplyFormView extends GetView<PublicVacancyController> {
             ),
           ),
           const SizedBox(height: 12),
-          Obx(() => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: controller.skills.map((skill) => _buildSkillChip(skill)).toList(),
-              )),
+          Obx(
+            () => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: controller.skills
+                  .map((skill) => _buildSkillChip(skill))
+                  .toList(),
+            ),
+          ),
           const SizedBox(height: 16),
           Container(
             decoration: BoxDecoration(
@@ -176,9 +222,14 @@ class ApplyFormView extends GetView<PublicVacancyController> {
               style: AppTextStyles.bodyM,
               decoration: InputDecoration(
                 hintText: "Type a skill and press enter...",
-                hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
+                hintStyle: AppTextStyles.bodyM.copyWith(
+                  color: AppColors.textTertiary,
+                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
               ),
             ),
           ),
@@ -207,7 +258,11 @@ class ApplyFormView extends GetView<PublicVacancyController> {
           const SizedBox(width: 6),
           GestureDetector(
             onTap: () => controller.removeSkill(label),
-            child: const Icon(Icons.close_rounded, size: 14, color: AppColors.primary),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 14,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ),
@@ -230,7 +285,9 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                   docs.isEmpty
                       ? "Tidak ada berkas wajib yang perlu diunggah untuk lowongan ini."
                       : "Pastikan format file sesuai (PDF/JPG/PNG) dan ukuran maksimal 5MB.",
-                  style: AppTextStyles.bodyM.copyWith(color: AppColors.textSecondary),
+                  style: AppTextStyles.bodyM.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -251,13 +308,17 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                           const SizedBox(height: 16),
                           Text(
                             "Semua Persyaratan Terpenuhi",
-                            style: AppTextStyles.h3.copyWith(color: AppColors.textPrimary),
+                            style: AppTextStyles.h3.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             "Anda bisa langsung mengirim lamaran tanpa mengunggah berkas tambahan.",
                             textAlign: TextAlign.center,
-                            style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
+                            style: AppTextStyles.bodyS.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ],
                       ),
@@ -269,7 +330,8 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                     itemBuilder: (context, index) {
                       final docName = docs[index];
                       return Obx(() {
-                        final isUploaded = controller.uploadedDocs[docName] ?? false;
+                        final isUploaded =
+                            controller.uploadedDocs[docName] ?? false;
                         return _buildUploadCard(docName, isUploaded);
                       });
                     },
@@ -280,13 +342,21 @@ class ApplyFormView extends GetView<PublicVacancyController> {
     });
   }
 
-  Widget _buildFieldGroup(String label, TextEditingController textController, String hint, {TextInputType? keyboardType}) {
+  Widget _buildFieldGroup(
+    String label,
+    TextEditingController textController,
+    String hint, {
+    TextInputType? keyboardType,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: AppTextStyles.bodyS.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
@@ -301,9 +371,14 @@ class ApplyFormView extends GetView<PublicVacancyController> {
             style: AppTextStyles.bodyM,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: AppTextStyles.bodyM.copyWith(color: AppColors.textTertiary),
+              hintStyle: AppTextStyles.bodyM.copyWith(
+                color: AppColors.textTertiary,
+              ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
             ),
           ),
         ),
@@ -319,20 +394,28 @@ class ApplyFormView extends GetView<PublicVacancyController> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isUploaded ? AppColors.success.withValues(alpha: 0.05) : AppColors.cardBackground,
+          color: isUploaded
+              ? AppColors.success.withValues(alpha: 0.05)
+              : AppColors.cardBackground,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isUploaded ? AppColors.success : AppColors.surface, width: 2),
+          border: Border.all(
+            color: isUploaded ? AppColors.success : AppColors.surface,
+            width: 2,
+          ),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: (isUploaded ? AppColors.success : AppColors.textTertiary).withValues(alpha: 0.1),
+                color: (isUploaded ? AppColors.success : AppColors.textTertiary)
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                isUploaded ? Icons.description_outlined : Icons.cloud_upload_outlined,
+                isUploaded
+                    ? Icons.description_outlined
+                    : Icons.cloud_upload_outlined,
                 color: isUploaded ? AppColors.success : AppColors.textTertiary,
                 size: 24,
               ),
@@ -342,12 +425,23 @@ class ApplyFormView extends GetView<PublicVacancyController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: AppTextStyles.bodyM.copyWith(fontWeight: FontWeight.bold)),
                   Text(
-                    isUploaded ? (fileName ?? "Berhasil diunggah") : "Ketuk untuk memilih file (PDF, JPG, PNG)",
+                    label,
+                    style: AppTextStyles.bodyM.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    isUploaded
+                        ? (fileName ?? "Berhasil diunggah")
+                        : "Ketuk untuk memilih file (PDF, JPG, PNG)",
                     style: AppTextStyles.caption.copyWith(
-                      color: isUploaded ? AppColors.success : AppColors.textTertiary,
-                      fontWeight: isUploaded ? FontWeight.w500 : FontWeight.normal,
+                      color: isUploaded
+                          ? AppColors.success
+                          : AppColors.textTertiary,
+                      fontWeight: isUploaded
+                          ? FontWeight.w500
+                          : FontWeight.normal,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -360,11 +454,19 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                 onTap: () => controller.removeDocument(label),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: Icon(Icons.delete_outline_rounded, color: AppColors.error.withValues(alpha: 0.8), size: 22),
+                  child: Icon(
+                    Icons.delete_outline_rounded,
+                    color: AppColors.error.withValues(alpha: 0.8),
+                    size: 22,
+                  ),
                 ),
               )
             else
-              const Icon(Icons.add_rounded, color: AppColors.textTertiary, size: 24),
+              const Icon(
+                Icons.add_rounded,
+                color: AppColors.textTertiary,
+                size: 24,
+              ),
           ],
         ),
       ),
@@ -401,13 +503,19 @@ class ApplyFormView extends GetView<PublicVacancyController> {
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 0,
               ),
-              child: Obx(() => Text(
-                controller.currentStep.value == 2 ? "Lanjut ke Berkas" : "Kirim Lamaran",
-                style: AppTextStyles.button.copyWith(fontSize: 16),
-              )),
+              child: Obx(
+                () => Text(
+                  controller.currentStep.value == 2
+                      ? "Lanjut ke Berkas"
+                      : "Kirim Lamaran",
+                  style: AppTextStyles.button.copyWith(fontSize: 16),
+                ),
+              ),
             ),
           ),
         ],

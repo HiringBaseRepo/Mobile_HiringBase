@@ -60,11 +60,11 @@ class AppBottomNav extends StatelessWidget {
   static const List<BottomNavigationBarItem> _applicantItems = [
     BottomNavigationBarItem(
       icon: Icon(Icons.work_outline),
-      label: 'Jobs',
+      label: 'Lowongan',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.track_changes_outlined),
-      label: 'Track',
+      label: 'Lacak',
     ),
   ];
 }

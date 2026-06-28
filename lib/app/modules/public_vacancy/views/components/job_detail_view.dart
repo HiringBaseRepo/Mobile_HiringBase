@@ -16,7 +16,7 @@ class JobDetailView extends GetView<PublicVacancyController> {
       if (vacancy == null) {
         return const JobDetailSkeleton();
       }
-      
+
       return Scaffold(
         backgroundColor: AppColors.background,
         body: CustomScrollView(
@@ -31,7 +31,8 @@ class JobDetailView extends GetView<PublicVacancyController> {
                     _buildBentoHero(vacancy),
                     const SizedBox(height: 32),
                     _buildAboutSection(vacancy.description),
-                    if (vacancy.responsibilities != null && vacancy.responsibilities!.trim().isNotEmpty) ...[
+                    if (vacancy.responsibilities != null &&
+                        vacancy.responsibilities!.trim().isNotEmpty) ...[
                       const SizedBox(height: 32),
                       _buildResponsibilitiesSection(vacancy.responsibilities),
                     ],
@@ -66,11 +67,17 @@ class JobDetailView extends GetView<PublicVacancyController> {
       title: Text("Job Details", style: AppTextStyles.subHeader1),
       actions: [
         IconButton(
-          icon: const Icon(Icons.bookmark_outline_rounded, color: AppColors.textSecondary),
+          icon: const Icon(
+            Icons.bookmark_outline_rounded,
+            color: AppColors.textSecondary,
+          ),
           onPressed: () {},
         ),
         IconButton(
-          icon: const Icon(Icons.share_outlined, color: AppColors.textSecondary),
+          icon: const Icon(
+            Icons.share_outlined,
+            color: AppColors.textSecondary,
+          ),
           onPressed: () {},
         ),
       ],
@@ -104,7 +111,11 @@ class JobDetailView extends GetView<PublicVacancyController> {
                   color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.business_rounded, color: AppColors.primary, size: 24),
+                child: const Icon(
+                  Icons.business_rounded,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -128,7 +139,10 @@ class JobDetailView extends GetView<PublicVacancyController> {
             runSpacing: 8,
             children: [
               _buildHeroChip(Icons.location_on_outlined, vacancy.location),
-              _buildHeroChip(Icons.schedule_outlined, vacancy.employmentTypeLabel),
+              _buildHeroChip(
+                Icons.schedule_outlined,
+                vacancy.employmentTypeLabel,
+              ),
               _buildHeroChip(Icons.payments_outlined, vacancy.salaryDisplay),
             ],
           ),
@@ -182,7 +196,7 @@ class JobDetailView extends GetView<PublicVacancyController> {
     final name = req.name;
     final val = req.value;
     final isReq = req.isRequired ? ' (Wajib)' : '';
-    
+
     if (req.category.toLowerCase() == 'skill') {
       return '$name$isReq';
     }
@@ -231,7 +245,11 @@ class JobDetailView extends GetView<PublicVacancyController> {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check, size: 12, color: AppColors.primary),
+                  child: const Icon(
+                    Icons.check,
+                    size: 12,
+                    color: AppColors.primary,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -247,33 +265,39 @@ class JobDetailView extends GetView<PublicVacancyController> {
             ),
           )
         else
-          ...requirements.map((req) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 2),
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check, size: 12, color: AppColors.primary),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _formatRequirement(req),
-                    style: AppTextStyles.bodyM.copyWith(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
+          ...requirements.map(
+            (req) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      size: 12,
+                      color: AppColors.primary,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _formatRequirement(req),
+                      style: AppTextStyles.bodyM.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
       ],
     );
   }
@@ -286,22 +310,24 @@ class JobDetailView extends GetView<PublicVacancyController> {
             .split(RegExp(r'[\n\r,;]'))
             .map((s) {
               var trimmed = s.trim();
-              if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('•')) {
+              if (trimmed.startsWith('-') ||
+                  trimmed.startsWith('*') ||
+                  trimmed.startsWith('•')) {
                 trimmed = trimmed.substring(1).trim();
               }
               return trimmed;
             })
-            .where((s) => s.isNotEmpty)
+            .where((s) => s.isNotEmpty),
       );
     }
-    
+
     // Fallback default benefits if none specified
     if (list.isEmpty) {
       list.addAll([
         'Asuransi Kesehatan',
         'Waktu Kerja Fleksibel',
         'Pengembangan Karir',
-        'Lingkungan Kerja Suportif'
+        'Lingkungan Kerja Suportif',
       ]);
     }
 
@@ -336,9 +362,7 @@ class JobDetailView extends GetView<PublicVacancyController> {
       rows.add(
         Row(
           children: [
-            Expanded(
-              child: _buildBenefitCard(benefit1, icon1, color1),
-            ),
+            Expanded(child: _buildBenefitCard(benefit1, icon1, color1)),
             const SizedBox(width: 12),
             Expanded(
               child: benefit2 != null && icon2 != null && color2 != null
@@ -429,11 +453,16 @@ class JobDetailView extends GetView<PublicVacancyController> {
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 4,
                 shadowColor: AppColors.primary.withValues(alpha: 0.3),
               ),
-              child: Text("Apply for this Position", style: AppTextStyles.button.copyWith(fontSize: 16)),
+              child: Text(
+                "Apply for this Position",
+                style: AppTextStyles.button.copyWith(fontSize: 16),
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -486,8 +515,14 @@ class JobDetailView extends GetView<PublicVacancyController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary)),
-          Text(value, style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: AppTextStyles.bodyS.copyWith(color: AppColors.textSecondary),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.bodyS.copyWith(fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );

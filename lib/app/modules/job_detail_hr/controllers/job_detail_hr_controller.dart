@@ -213,6 +213,7 @@ class JobDetailHrController extends GetxController {
   }
 
   /// Refreshes job details.
+  @override
   Future<void> refresh() async {
     if (job.value != null) {
       await _fetchDetails(int.parse(job.value!.id), forceRefresh: true);

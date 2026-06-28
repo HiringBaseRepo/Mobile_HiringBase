@@ -309,8 +309,11 @@ class JobsController extends GetxController {
   }
 
   void removeSkill(String skill, bool isRequired) {
-    if (isRequired) requiredSkills.remove(skill);
-    else preferredSkills.remove(skill);
+    if (isRequired) {
+      requiredSkills.remove(skill);
+    } else {
+      preferredSkills.remove(skill);
+    }
   }
 
   void toggleFieldRequired(int index) {

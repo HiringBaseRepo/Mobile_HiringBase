@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:get/get.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
 
 import 'package:uifrontendmobile/main.dart' as app;
-import 'package:uifrontendmobile/app/services/application_service.dart';
 import 'package:uifrontendmobile/app/services/app_service.dart';
 import 'package:uifrontendmobile/app/modules/jobs/controllers/jobs_controller.dart';
 import 'package:uifrontendmobile/app/modules/candidates/controllers/candidates_controller.dart';
@@ -58,7 +55,7 @@ void main() {
     pvc.jobCodeController.text = applyCode;
     await pvc.accessPrivateJob();
     await tester.pump(TestConfig.mediumWait);
-    await pumpUntil(tester, find.text('Apply for this Position'));
+    await pumpUntil(tester, find.text('Lamar Posisi Ini'));
 
     // Open apply form
     pvc.nextStep();
@@ -91,7 +88,7 @@ void main() {
     // Submit
     await pvc.submitApplication();
     await tester.pump(TestConfig.longWait);
-    await pumpUntil(tester, find.text('Application Submitted Successfully!'));
+    await pumpUntil(tester, find.text('Lamaran Berhasil Dikirim!'));
     debugPrint('Second applicant applied');
 
     // ═══════════════════════════════════════════════════════════════════════

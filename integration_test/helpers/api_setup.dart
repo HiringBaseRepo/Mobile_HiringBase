@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 import 'package:uifrontendmobile/app/services/app_service.dart';
@@ -35,13 +35,13 @@ class ApiSetup {
       'password': TestConfig.hrPassword,
     });
     if (loginResp.statusCode != 200 || loginResp.body == null) {
-      print('API SETUP: login status=${loginResp.statusCode} body=${loginResp.body}');
+      debugPrint('API SETUP: login status=${loginResp.statusCode} body=${loginResp.body}');
       throw Exception('Login failed');
     }
     final data = loginResp.body['data'] as Map<String, dynamic>?;
     _token = data?['access_token'] as String?;
     if (_token == null) {
-      print('API SETUP: login body = ${loginResp.body}');
+      debugPrint('API SETUP: login body = ${loginResp.body}');
       throw Exception('No access_token');
     }
     Get.find<AppService>().accessToken.value = _token!;
@@ -150,7 +150,7 @@ class ApiSetup {
       log.add('poll$i: score=$score');
     }
 
-    print('API SETUP: ${log.join(' | ')} | final_score=$score');
+    debugPrint('API SETUP: ${log.join(' | ')} | final_score=$score');
 
     return ApiSetupResult(
       applyCode: applyCode,

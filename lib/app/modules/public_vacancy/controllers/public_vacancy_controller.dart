@@ -15,7 +15,7 @@ class PublicVacancyController extends GetxController {
 
   // Step control for Application Form
   final currentStep = 1.obs;
-  
+
   // Vacancies State
   final vacancies = <Vacancy>[].obs;
   final selectedVacancy = Rxn<Vacancy>();
@@ -35,7 +35,7 @@ class PublicVacancyController extends GetxController {
   final experienceController = TextEditingController();
   final educationController = TextEditingController();
   final skillInputController = TextEditingController();
-  
+
   // Track status tab
   final trackTicketController = TextEditingController();
   final trackedTicketData = Rxn<Map<String, dynamic>>();
@@ -43,11 +43,11 @@ class PublicVacancyController extends GetxController {
 
   // Professional Experience
   final skills = <String>[].obs;
-  
+
   // Document Upload Status
   final uploadedDocs = <String, bool>{}.obs;
   final selectedFiles = <String, PlatformFile?>{}.obs;
-  
+
   // Ticket Generation
   final generatedTicket = ''.obs;
 
@@ -59,16 +59,27 @@ class PublicVacancyController extends GetxController {
   bool _isDocumentField(String key, String label) {
     final k = key.toLowerCase();
     final l = label.toLowerCase();
-    return k.contains('ijazah') || k.contains('ktp') || k.contains('skck') || 
-           k.contains('sehat') || k.contains('sertifikat') || l.contains('cv') || 
-           l.contains('portfolio') || k.contains('file') || k.contains('document') || 
-           k.contains('dokumen') || k.contains('berkas') || l.contains('vaksin') || 
-           l.contains('foto') || k.contains('card');
+    return k.contains('ijazah') ||
+        k.contains('ktp') ||
+        k.contains('skck') ||
+        k.contains('sehat') ||
+        k.contains('sertifikat') ||
+        l.contains('cv') ||
+        l.contains('portfolio') ||
+        k.contains('file') ||
+        k.contains('document') ||
+        k.contains('dokumen') ||
+        k.contains('berkas') ||
+        l.contains('vaksin') ||
+        l.contains('foto') ||
+        k.contains('card');
   }
 
   String _getServerDocType(String label) {
     final l = label.toLowerCase();
-    if (l.contains('cv') || l.contains('portfolio') || l.contains('portofolio')) {
+    if (l.contains('cv') ||
+        l.contains('portfolio') ||
+        l.contains('portofolio')) {
       return 'portfolio';
     }
     if (l.contains('ijazah') || l.contains('degree')) {
@@ -83,7 +94,9 @@ class PublicVacancyController extends GetxController {
     if (l.contains('sehat') || l.contains('health')) {
       return 'health_certificate';
     }
-    if (l.contains('sertifikat') || l.contains('certificate') || l.contains('vaksin')) {
+    if (l.contains('sertifikat') ||
+        l.contains('certificate') ||
+        l.contains('vaksin')) {
       return 'certificate';
     }
     return 'portfolio'; // Default fallback
@@ -102,7 +115,7 @@ class PublicVacancyController extends GetxController {
   void onInit() {
     super.onInit();
     fetchPublicVacancies();
-    
+
     // Auto re-fetch on search input changes with 300ms debounce
     searchController.addListener(() {
       _debounceTimer?.cancel();
@@ -144,7 +157,9 @@ class PublicVacancyController extends GetxController {
           total = (outer['total'] as int?) ?? 0;
         }
 
-        final newVacancies = items.map((j) => Vacancy.fromJson(j as Map<String, dynamic>)).toList();
+        final newVacancies = items
+            .map((j) => Vacancy.fromJson(j as Map<String, dynamic>))
+            .toList();
 
         if (currentPage.value == 1) {
           vacancies.assignAll(newVacancies);
@@ -187,10 +202,13 @@ class PublicVacancyController extends GetxController {
   Future<void> trackApplication() async {
     final ticketCode = trackTicketController.text.trim();
     if (ticketCode.isEmpty) {
-      Get.snackbar('Error', 'Please enter a ticket code.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: AppColors.white);
+      Get.snackbar(
+        'Error',
+        'Please enter a ticket code.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
       return;
     }
 
@@ -199,26 +217,35 @@ class PublicVacancyController extends GetxController {
 
     try {
       final response = await _appService.trackTicket(ticketCode);
-      
+
       if (response.statusCode == 200 && response.body != null) {
         final body = response.body!;
         if (body['success'] == true && body['data'] != null) {
           trackedTicketData.value = body['data'] as Map<String, dynamic>;
         } else {
-          Get.snackbar('Not Found', 'Ticket code not found on server.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.warning,
-              colorText: AppColors.white);
+          Get.snackbar(
+            'Not Found',
+            'Ticket code not found on server.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.warning,
+            colorText: AppColors.white,
+          );
         }
       } else {
-        Get.snackbar('Error', 'Invalid ticket code or server error. Status: ${response.statusCode}, Msg: ${response.statusText}',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: AppColors.white);
+        Get.snackbar(
+          'Error',
+          'Invalid ticket code or server error. Status: ${response.statusCode}, Msg: ${response.statusText}',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: AppColors.white,
+        );
       }
     } catch (e) {
-      Get.snackbar('Connection Error', 'Please check your internet. Exception: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Connection Error',
+        'Please check your internet. Exception: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isTrackingLoading.value = false;
     }
@@ -228,10 +255,13 @@ class PublicVacancyController extends GetxController {
   Future<void> accessPrivateJob() async {
     final code = jobCodeController.text.trim();
     if (code.isEmpty) {
-      Get.snackbar('Error', 'Please enter a valid job code.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: AppColors.white);
+      Get.snackbar(
+        'Error',
+        'Please enter a valid job code.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
       return;
     }
 
@@ -251,23 +281,35 @@ class PublicVacancyController extends GetxController {
           final matched = Vacancy.fromJson(items.first as Map<String, dynamic>);
           selectVacancy(matched);
           jobCodeController.clear();
-          Get.snackbar('Access Granted', 'Unlocked private vacancy: ${matched.title}',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.success,
-              colorText: AppColors.white);
+          Get.snackbar(
+            'Access Granted',
+            'Unlocked private vacancy: ${matched.title}',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.success,
+            colorText: AppColors.white,
+          );
         } else {
-          Get.snackbar('Not Found', 'Invalid job code. Please try again.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.error,
-              colorText: AppColors.white);
+          Get.snackbar(
+            'Not Found',
+            'Invalid job code. Please try again.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: AppColors.white,
+          );
         }
       } else {
-        Get.snackbar('Error', 'Failed to verify job code.',
-            snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Error',
+          'Failed to verify job code.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } catch (_) {
-      Get.snackbar('Connection Error', 'Failed to contact server.',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Connection Error',
+        'Failed to contact server.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -280,7 +322,7 @@ class PublicVacancyController extends GetxController {
     selectedFiles.clear();
     customFormFields.clear();
     requiredDocLabels.clear();
-    
+
     // Dispose old custom controllers
     customControllers.forEach((_, c) => c.dispose());
     customControllers.clear();
@@ -301,9 +343,17 @@ class PublicVacancyController extends GetxController {
           final fields = data['form_fields'] as List? ?? [];
 
           const standardKeys = {
-            'full_name', 'email', 'email_address', 'phone',
-            'phone_number', 'whatsapp', 'education',
-            'work_experience', 'experience', 'linkedin', 'skills'
+            'full_name',
+            'email',
+            'email_address',
+            'phone',
+            'phone_number',
+            'whatsapp',
+            'education',
+            'work_experience',
+            'experience',
+            'linkedin',
+            'skills',
           };
 
           for (var f in fields) {
@@ -317,7 +367,8 @@ class PublicVacancyController extends GetxController {
                 if (!docList.contains(label)) {
                   docList.add(label);
                 }
-                if (f['is_required'] == true && !requiredDocLabels.contains(label)) {
+                if (f['is_required'] == true &&
+                    !requiredDocLabels.contains(label)) {
                   requiredDocLabels.add(label);
                 }
               } else {
@@ -335,7 +386,9 @@ class PublicVacancyController extends GetxController {
             docList.clear();
             requiredDocLabels.clear();
             for (var serverType in reqDocs) {
-              final label = _serverToLabel[serverType.toString().toLowerCase()] ?? serverType.toString();
+              final label =
+                  _serverToLabel[serverType.toString().toLowerCase()] ??
+                  serverType.toString();
               docList.add(label);
               requiredDocLabels.add(label);
             }
@@ -355,24 +408,30 @@ class PublicVacancyController extends GetxController {
 
   void nextStep() {
     if (currentStep.value == 2) {
-      if (fullNameController.text.isEmpty || 
-          emailController.text.isEmpty || 
+      if (fullNameController.text.isEmpty ||
+          emailController.text.isEmpty ||
           !GetUtils.isEmail(emailController.text)) {
-        Get.snackbar('Validation Error', 'Harap isi nama dan email yang valid.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: AppColors.white);
+        Get.snackbar(
+          'Validation Error',
+          'Harap isi nama dan email yang valid.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: AppColors.white,
+        );
         return;
       }
       if (phoneController.text.isEmpty || phoneController.text.length < 10) {
-        Get.snackbar('Validation Error', 'Harap isi nomor WhatsApp yang valid (min. 10 digit).',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: AppColors.white);
+        Get.snackbar(
+          'Validation Error',
+          'Harap isi nomor WhatsApp yang valid (min. 10 digit).',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: AppColors.white,
+        );
         return;
       }
     }
-    
+
     if (currentStep.value < 3) {
       currentStep.value++;
     }
@@ -394,7 +453,7 @@ class PublicVacancyController extends GetxController {
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-        
+
         // 5MB limit
         const maxSizeBytes = 5 * 1024 * 1024;
         if (file.size > maxSizeBytes) {
@@ -428,21 +487,27 @@ class PublicVacancyController extends GetxController {
   }
 
   bool validateForm() {
-    if (fullNameController.text.isEmpty || 
-        emailController.text.isEmpty || 
+    if (fullNameController.text.isEmpty ||
+        emailController.text.isEmpty ||
         !GetUtils.isEmail(emailController.text)) {
-      Get.snackbar('Validation Error', 'Please fill all required fields with valid email.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: AppColors.white);
+      Get.snackbar(
+        'Validation Error',
+        'Please fill all required fields with valid email.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
       return false;
     }
 
     if (phoneController.text.isEmpty || phoneController.text.length < 10) {
-      Get.snackbar('Validation Error', 'Please enter a valid WhatsApp number (min. 10 digits).',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: AppColors.white);
+      Get.snackbar(
+        'Validation Error',
+        'Please enter a valid WhatsApp number (min. 10 digits).',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
       return false;
     }
 
@@ -451,33 +516,47 @@ class PublicVacancyController extends GetxController {
       final key = field['field_key']?.toString();
       final isRequired = field['is_required'] as bool? ?? false;
       final label = field['label']?.toString() ?? 'Field';
-      
+
       if (isRequired) {
         if (key == 'linkedin' && linkedinController.text.trim().isEmpty) {
-          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.error,
-              colorText: AppColors.white);
+          Get.snackbar(
+            'Validation Error',
+            'Field \'$label\' wajib diisi.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: AppColors.white,
+          );
           return false;
-        } else if ((key == 'experience' || key == 'work_experience') && experienceController.text.trim().isEmpty) {
-          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.error,
-              colorText: AppColors.white);
+        } else if ((key == 'experience' || key == 'work_experience') &&
+            experienceController.text.trim().isEmpty) {
+          Get.snackbar(
+            'Validation Error',
+            'Field \'$label\' wajib diisi.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: AppColors.white,
+          );
           return false;
-        } else if (key == 'education' && educationController.text.trim().isEmpty) {
-          Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: AppColors.error,
-              colorText: AppColors.white);
+        } else if (key == 'education' &&
+            educationController.text.trim().isEmpty) {
+          Get.snackbar(
+            'Validation Error',
+            'Field \'$label\' wajib diisi.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.error,
+            colorText: AppColors.white,
+          );
           return false;
         } else if (key != null && customControllers.containsKey(key)) {
           final controller = customControllers[key]!;
           if (controller.text.trim().isEmpty) {
-            Get.snackbar('Validation Error', 'Field \'$label\' wajib diisi.',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: AppColors.error,
-                colorText: AppColors.white);
+            Get.snackbar(
+              'Validation Error',
+              'Field \'$label\' wajib diisi.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.error,
+              colorText: AppColors.white,
+            );
             return false;
           }
         }
@@ -487,10 +566,13 @@ class PublicVacancyController extends GetxController {
     // Validate required documents
     for (var docLabel in requiredDocLabels) {
       if (uploadedDocs[docLabel] != true || selectedFiles[docLabel] == null) {
-        Get.snackbar('Validation Error', 'Dokumen \'$docLabel\' wajib diunggah.',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.error,
-            colorText: AppColors.white);
+        Get.snackbar(
+          'Validation Error',
+          'Dokumen \'$docLabel\' wajib diunggah.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error,
+          colorText: AppColors.white,
+        );
         return false;
       }
     }
@@ -545,23 +627,27 @@ class PublicVacancyController extends GetxController {
         if (file != null) {
           final serverType = _getServerDocType(docLabel);
           if (file.bytes != null) {
-            formData.files.add(MapEntry(
-              'file_$serverType',
-              MultipartFile(
-                file.bytes!,
-                filename: file.name,
-                contentType: getContentTypeForFile(file.name),
+            formData.files.add(
+              MapEntry(
+                'file_$serverType',
+                MultipartFile(
+                  file.bytes!,
+                  filename: file.name,
+                  contentType: getContentTypeForFile(file.name),
+                ),
               ),
-            ));
+            );
           } else if (file.path != null) {
-            formData.files.add(MapEntry(
-              'file_$serverType',
-              MultipartFile(
-                io.File(file.path!),
-                filename: file.name,
-                contentType: getContentTypeForFile(file.name),
+            formData.files.add(
+              MapEntry(
+                'file_$serverType',
+                MultipartFile(
+                  io.File(file.path!),
+                  filename: file.name,
+                  contentType: getContentTypeForFile(file.name),
+                ),
               ),
-            ));
+            );
           }
         }
       });
@@ -573,7 +659,7 @@ class PublicVacancyController extends GetxController {
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'] as Map<String, dynamic>;
           generatedTicket.value = data['ticket_code'] ?? 'TKT-PENDING';
-          
+
           // Clear inputs on success
           fullNameController.clear();
           emailController.clear();
@@ -588,14 +674,21 @@ class PublicVacancyController extends GetxController {
         }
       }
 
-      final errorMsg = response.body?['message'] ?? 'Failed to submit application.';
-      Get.snackbar('Application Error', errorMsg.toString(),
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: AppColors.error,
-          colorText: AppColors.white);
+      final errorMsg =
+          response.body?['message'] ?? 'Failed to submit application.';
+      Get.snackbar(
+        'Application Error',
+        errorMsg.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+      );
     } catch (_) {
-      Get.snackbar('Error', 'Connection error. Please try again.',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Connection error. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
