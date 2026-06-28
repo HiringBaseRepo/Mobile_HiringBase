@@ -32,8 +32,8 @@ class CandidatesView extends GetView<CandidatesController> {
         ),
         title: Obx(() => Text(
           controller.isSelectionMode.value
-              ? '${controller.selectedIds.length} Selected'
-              : 'Recent Candidates',
+              ? '${controller.selectedIds.length} Terpilih'
+              : 'Kandidat Terbaru',
           style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
         )),
         centerTitle: true,
@@ -41,7 +41,7 @@ class CandidatesView extends GetView<CandidatesController> {
           Obx(() => controller.isSelectionMode.value
               ? IconButton(
                   icon: Text(
-                    controller.allSelected ? 'Deselect All' : 'Select All',
+                    controller.allSelected ? 'Batal Pilih' : 'Pilih Semua',
                     style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
                   ),
                   onPressed: () => controller.selectAll(),
@@ -150,8 +150,8 @@ class CandidatesView extends GetView<CandidatesController> {
                             : const Icon(Icons.smart_toy_outlined, size: 18),
                         label: Text(
                           controller.isBatchRunning.value
-                              ? 'Screening...'
-                              : 'Run AI Screening (${controller.selectedIds.length})',
+                              ? 'Memproses...'
+                              : 'Jalankan Skrining AI (${controller.selectedIds.length})',
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -181,7 +181,29 @@ class _StatusFilterTabs extends GetView<CandidatesController> {
       child: Row(
         children: controller.statusTabs.map((tab) {
           final isActive = controller.activeFilter.value == tab;
-          final label = tab == 'all' ? 'All' : tab.replaceAll('_', ' ').capitalizeFirst ?? tab;
+          final String label;
+          switch (tab) {
+            case 'all':
+              label = 'Semua';
+              break;
+            case 'applied':
+              label = 'Baru';
+              break;
+            case 'under_review':
+              label = 'Ditinjau';
+              break;
+            case 'interview':
+              label = 'Wawancara';
+              break;
+            case 'hired':
+              label = 'Diterima';
+              break;
+            case 'rejected':
+              label = 'Ditolak';
+              break;
+            default:
+              label = tab.replaceAll('_', ' ').capitalizeFirst ?? tab;
+          }
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(

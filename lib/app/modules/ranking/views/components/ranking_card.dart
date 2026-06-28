@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_text_styles.dart';
 import '../../../../data/models/candidate_model.dart';
@@ -34,7 +33,26 @@ class RankingCard extends StatelessWidget {
             const SizedBox(width: 16),
             CircleAvatar(
               radius: 24,
-              backgroundImage: CachedNetworkImageProvider(candidate.imageUrl),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              child: candidate.imageUrl.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        candidate.imageUrl,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                            style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                          );
+                        },
+                      ),
+                    )
+                  : Text(
+                      candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                      style: AppTextStyles.subHeader2.copyWith(color: AppColors.primary),
+                    ),
             ),
             const SizedBox(width: 16),
             Expanded(

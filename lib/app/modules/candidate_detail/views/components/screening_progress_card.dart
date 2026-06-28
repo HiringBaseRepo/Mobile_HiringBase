@@ -28,7 +28,7 @@ class ScreeningProgressCard extends StatelessWidget {
               const Icon(Icons.psychology, color: AppColors.secondary, size: 20),
               const SizedBox(width: 8),
               Text(
-                'AI SCREENING',
+                'SKRINING AI',
                 style: AppTextStyles.caption.copyWith(
                   color: AppColors.secondary,
                   fontWeight: FontWeight.bold,
@@ -63,16 +63,16 @@ class ScreeningProgressCard extends StatelessWidget {
       case 'doc_check':
         return _buildInProgressStep(
           icon: Icons.folder_open,
-          title: 'Validating Documents',
-          subtitle: 'Checking uploaded documents against requirements...',
+          title: 'Memvalidasi Dokumen',
+          subtitle: 'Memeriksa kesesuaian dokumen yang diunggah dengan persyaratan...',
           step: 1,
           totalSteps: 2,
         );
       case 'ai_processing':
         return _buildInProgressStep(
           icon: Icons.auto_awesome,
-          title: 'AI Analysis in Progress',
-          subtitle: 'Scanning documents, matching skills, and generating score...',
+          title: 'Analisis AI Sedang Berjalan',
+          subtitle: 'Memindai dokumen, mencocokkan keahlian, dan menghasilkan skor...',
           step: 2,
           totalSteps: 2,
         );
@@ -81,14 +81,14 @@ class ScreeningProgressCard extends StatelessWidget {
       case 'doc_failed':
         return _buildFailureState(
           icon: Icons.folder_off,
-          title: 'Document Check Failed',
-          subtitle: rejectionReason ?? 'One or more required documents are missing or invalid.',
+          title: 'Pemeriksaan Dokumen Gagal',
+          subtitle: rejectionReason ?? 'Satu atau beberapa dokumen wajib tidak ada atau tidak valid.',
         );
       case 'knockout':
         return _buildFailureState(
           icon: Icons.gpp_bad,
-          title: 'Knockout Rule Failed',
-          subtitle: rejectionReason ?? 'Candidate does not meet one or more mandatory requirements.',
+          title: 'Aturan Gugur Kualifikasi Gagal',
+          subtitle: rejectionReason ?? 'Kandidat tidak memenuhi satu atau beberapa persyaratan wajib.',
         );
       default:
         return const SizedBox.shrink();
@@ -172,14 +172,14 @@ class ScreeningProgressCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Screening Queued',
+                'Skrining Mengantre',
                 style: AppTextStyles.subHeader1.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Application submitted. Screening will start shortly...',
+                'Lamaran telah dikirim. Skrining akan segera dimulai...',
                 style: AppTextStyles.bodyM.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -246,14 +246,14 @@ class ScreeningProgressCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Document Check',
+              'Pemeriksaan Dokumen',
               style: AppTextStyles.caption.copyWith(
                 color: currentStep > 1 ? AppColors.primary : AppColors.textSecondary,
                 fontWeight: currentStep > 1 ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
             Text(
-              'AI Scoring',
+              'Penilaian AI',
               style: AppTextStyles.caption.copyWith(
                 color: currentStep > 2 ? AppColors.primary : AppColors.textSecondary,
                 fontWeight: currentStep > 2 ? FontWeight.w600 : FontWeight.normal,

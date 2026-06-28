@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// Represents an authenticated HR user.
 ///
 /// Maps to the `UserResponse` schema returned by the HiringBase backend.
@@ -26,6 +28,20 @@ class User {
     this.createdAt,
   });
 
+  static String? _proxyUrl(String? url) {
+    if (url == null || url.isEmpty) return null;
+    if (url.contains('boyblanco.my.id')) {
+      final filename = url.split('/').last;
+      try {
+        final baseUrl = dotenv.env['API_BASE_URL'];
+        if (baseUrl != null && baseUrl.isNotEmpty) {
+          return '$baseUrl/users/avatar/$filename';
+        }
+      } catch (_) {}
+    }
+    return url;
+  }
+
   /// Deserialises from the server's `UserResponse` JSON.
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: (json['id'] ?? 0).toString(),
@@ -34,10 +50,11 @@ class User {
         role: _normaliseRole(json['role']?.toString() ?? ''),
         companyId: json['company_id'] as int?,
         isActive: json['is_active'] as bool? ?? true,
-        imageUrl: json['avatar_url'] as String? ?? json['imageUrl'] as String?,
+        imageUrl: _proxyUrl(json['avatar_url'] as String? ?? json['imageUrl'] as String?),
         phone: json['phone'] as String?,
         createdAt: json['created_at'] as String?,
       );
+
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -67,7 +84,7 @@ class User {
         role: role ?? this.role,
         companyId: companyId ?? this.companyId,
         isActive: isActive ?? this.isActive,
-        imageUrl: imageUrl ?? this.imageUrl,
+        imageUrl: imageUrl != null ? _proxyUrl(imageUrl) : this.imageUrl,
         phone: phone ?? this.phone,
         createdAt: createdAt ?? this.createdAt,
       );

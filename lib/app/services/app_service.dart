@@ -21,6 +21,7 @@ class AppService extends GetxService {
   static const _userNameKey = 'app_user_name';
   static const _userEmailKey = 'app_user_email';
   static const _userCompanyIdKey = 'app_user_company_id';
+  static const _userImageUrlKey = 'app_user_image_url';
 
   /// Restores a persisted session from [SharedPreferences].
   Future<void> init() async {
@@ -33,6 +34,7 @@ class AppService extends GetxService {
       final id = prefs.getString(_userIdKey);
       final name = prefs.getString(_userNameKey);
       final email = prefs.getString(_userEmailKey);
+      final imageUrl = prefs.getString(_userImageUrlKey);
       if (id != null && name != null && email != null) {
         currentUser.value = User(
           id: id,
@@ -40,6 +42,7 @@ class AppService extends GetxService {
           email: email,
           role: currentRole.value,
           companyId: prefs.getInt(_userCompanyIdKey),
+          imageUrl: imageUrl,
         );
       }
     }
@@ -71,6 +74,11 @@ class AppService extends GetxService {
       await prefs.setString(_userIdKey, user.id);
       await prefs.setString(_userNameKey, user.name);
       await prefs.setString(_userEmailKey, user.email);
+      if (user.imageUrl != null) {
+        await prefs.setString(_userImageUrlKey, user.imageUrl!);
+      } else {
+        await prefs.remove(_userImageUrlKey);
+      }
       if (user.companyId != null) {
         await prefs.setInt(_userCompanyIdKey, user.companyId!);
       }
@@ -90,5 +98,6 @@ class AppService extends GetxService {
     await prefs.remove(_userNameKey);
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userCompanyIdKey);
+    await prefs.remove(_userImageUrlKey);
   }
 }

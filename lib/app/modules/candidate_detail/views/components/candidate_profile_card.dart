@@ -40,13 +40,25 @@ class CandidateProfileCard extends StatelessWidget {
             child: CircleAvatar(
               radius: 48,
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              backgroundImage: hasImg ? NetworkImage(candidate.imageUrl) : null,
-              child: !hasImg
-                  ? Text(
+              child: hasImg
+                  ? ClipOval(
+                      child: Image.network(
+                        candidate.imageUrl,
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                            style: AppTextStyles.h1.copyWith(color: AppColors.primary, fontSize: 32),
+                          );
+                        },
+                      ),
+                    )
+                  : Text(
                       candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
                       style: AppTextStyles.h1.copyWith(color: AppColors.primary, fontSize: 32),
-                    )
-                  : null,
+                    ),
             ),
           ),
           const SizedBox(height: 16),
@@ -64,7 +76,7 @@ class CandidateProfileCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildBadge(
-                candidate.status,
+                candidate.statusIndonesian,
                 colorVal.withValues(alpha: 0.1),
                 colorVal,
               ),

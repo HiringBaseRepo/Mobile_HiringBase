@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:uifrontendmobile/app/core/values/app_colors.dart';
 import 'package:uifrontendmobile/app/core/values/app_text_styles.dart';
 import 'package:uifrontendmobile/app/data/models/candidate_model.dart';
@@ -73,15 +72,25 @@ class CandidateCard extends StatelessWidget {
               CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                backgroundImage: candidate.imageUrl.isNotEmpty
-                    ? CachedNetworkImageProvider(candidate.imageUrl)
-                    : null,
-                child: candidate.imageUrl.isEmpty
-                    ? Text(
+                child: candidate.imageUrl.isNotEmpty
+                    ? ClipOval(
+                        child: Image.network(
+                          candidate.imageUrl,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Text(
+                              candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+                              style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
+                            );
+                          },
+                        ),
+                      )
+                    : Text(
                         candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
                         style: AppTextStyles.subHeader1.copyWith(color: AppColors.primary),
-                      )
-                    : null,
+                      ),
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -104,10 +113,10 @@ class CandidateCard extends StatelessWidget {
               PopupMenuButton<String>(
                 onSelected: (status) => controller.updateCandidateStatus(candidate.id, status),
                 itemBuilder: (context) => [
-                  _buildPopupItem('under_review', AppColors.textTertiary),
-                  _buildPopupItem('interview', AppColors.primary),
-                  _buildPopupItem('hired', AppColors.success),
-                  _buildPopupItem('rejected', AppColors.error),
+                  _buildPopupItem('under_review', 'Ditinjau', AppColors.textTertiary),
+                  _buildPopupItem('interview', 'Wawancara', AppColors.primary),
+                  _buildPopupItem('hired', 'Diterima', AppColors.success),
+                  _buildPopupItem('rejected', 'Ditolak', AppColors.error),
                 ],
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -119,7 +128,7 @@ class CandidateCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        candidate.status,
+                        candidate.statusIndonesian,
                         style: AppTextStyles.caption.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Color(candidate.statusColor),
@@ -169,7 +178,7 @@ class CandidateCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'AI SCORE',
+                        'SKOR AI',
                         style: AppTextStyles.caption.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textTertiary,
@@ -189,7 +198,7 @@ class CandidateCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'Applied',
+                      'Mendaftar',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -225,7 +234,7 @@ class CandidateCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(
-                    'View Details',
+                    'Lihat Detail',
                     style: AppTextStyles.button.copyWith(color: AppColors.cardBackground),
                   ),
                 ),
@@ -248,7 +257,7 @@ class CandidateCard extends StatelessWidget {
     ));
   }
 
-  PopupMenuItem<String> _buildPopupItem(String value, Color color) {
+  PopupMenuItem<String> _buildPopupItem(String value, String label, Color color) {
     return PopupMenuItem(
       value: value,
       child: Row(
@@ -260,7 +269,7 @@ class CandidateCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            value,
+            label,
             style: AppTextStyles.bodyM.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,

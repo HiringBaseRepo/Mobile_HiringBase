@@ -104,7 +104,7 @@ class CandidatesController extends GetxController {
 
       if (response.statusCode != 200 || response.body == null) {
         errorMessage.value = response.body?['message']?.toString() ??
-            'Failed to load candidates.';
+            'Gagal memuat kandidat.';
         return;
       }
 
@@ -136,7 +136,7 @@ class CandidatesController extends GetxController {
         currentPage.value++;
       }
     } catch (e) {
-      errorMessage.value = 'Connection error. Please check your internet.';
+      errorMessage.value = 'Kesalahan koneksi. Silakan periksa koneksi internet Anda.';
     } finally {
       isLoading.value = false;
       isLoadingMore.value = false;
@@ -220,20 +220,20 @@ class CandidatesController extends GetxController {
         final duplicates = data?['duplicates'] ?? 0;
         final quotaBlocked = data?['quota_blocked'] ?? 0;
 
-        String message = '$queued of $total screening(s) queued.';
-        if (duplicates > 0) message += ' $duplicates duplicate(s) skipped.';
-        if (quotaBlocked > 0) message += ' $quotaBlocked blocked by quota.';
+        String message = '$queued dari $total proses skrining masuk antrean.';
+        if (duplicates > 0) message += ' $duplicates duplikat dilewati.';
+        if (quotaBlocked > 0) message += ' $quotaBlocked dibatasi oleh kuota.';
 
-        Get.snackbar('Batch Screening', message);
+        Get.snackbar('Skrining Massal', message);
       } else {
-        Get.snackbar('Error', response.body?['message']?.toString() ?? 'Batch screening failed.');
+        Get.snackbar('Kesalahan', response.body?['message']?.toString() ?? 'Gagal menjalankan skrining massal.');
       }
 
       selectedIds.clear();
       isSelectionMode.value = false;
       fetchCandidates(refresh: true);
     } catch (e) {
-      Get.snackbar('Error', 'Connection error. Please check your internet.');
+      Get.snackbar('Kesalahan', 'Kesalahan koneksi. Silakan periksa internet Anda.');
     } finally {
       isBatchRunning.value = false;
     }

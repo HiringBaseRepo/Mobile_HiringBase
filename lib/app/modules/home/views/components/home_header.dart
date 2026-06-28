@@ -74,16 +74,31 @@ class HomeHeader extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 20,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  backgroundImage: hasImg ? NetworkImage(user.imageUrl!) : null,
-                  child: !hasImg
-                      ? Text(
+                  child: hasImg
+                      ? ClipOval(
+                          child: Image.network(
+                            user.imageUrl!,
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Text(
+                                initial,
+                                style: AppTextStyles.caption.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Text(
                           initial,
                           style: AppTextStyles.caption.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
                           ),
-                        )
-                      : null,
+                        ),
                 ),
               );
             }),

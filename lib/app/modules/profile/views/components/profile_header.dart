@@ -37,22 +37,32 @@ class ProfileHeader extends GetView<ProfileController> {
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.white, width: 4),
                         color: AppColors.white.withValues(alpha: 0.2),
-                        image: controller.userAvatar != null && controller.userAvatar!.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(controller.userAvatar!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
                       ),
-                      child: controller.userAvatar == null || controller.userAvatar!.isEmpty
-                          ? Center(
+                      child: controller.userAvatar != null && controller.userAvatar!.isNotEmpty
+                          ? ClipOval(
+                              child: Image.network(
+                                controller.userAvatar!,
+                                fit: BoxFit.cover,
+                                width: 102,
+                                height: 102,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Text(
+                                      controller.initials,
+                                      style: AppTextStyles.h1
+                                          .copyWith(color: AppColors.white, fontSize: 36),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : Center(
                               child: Text(
                                 controller.initials,
                                 style: AppTextStyles.h1
                                     .copyWith(color: AppColors.white, fontSize: 36),
                               ),
-                            )
-                          : null,
+                            ),
                     ),
                   ),
                   Positioned(
