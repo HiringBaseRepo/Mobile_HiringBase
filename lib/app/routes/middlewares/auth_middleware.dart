@@ -27,7 +27,6 @@ class AuthMiddleware extends GetMiddleware {
       Routes.HOME,
       Routes.CANDIDATES,
       Routes.JOBS_LIST,
-      Routes.ANALYTICS,
       Routes.PROFILE,
       Routes.SETTINGS,
     ];

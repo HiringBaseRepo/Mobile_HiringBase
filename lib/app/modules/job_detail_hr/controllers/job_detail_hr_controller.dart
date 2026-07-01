@@ -4,6 +4,7 @@ import 'package:uifrontendmobile/app/core/utils/simple_cache.dart';
 import 'package:uifrontendmobile/app/data/models/vacancy_model.dart';
 import 'package:uifrontendmobile/app/services/job_service.dart';
 import 'package:uifrontendmobile/app/services/application_service.dart';
+import 'package:uifrontendmobile/app/modules/jobs_list/controllers/jobs_list_controller.dart';
 
 /// Controller for the HR Job Detail screen.
 ///
@@ -187,9 +188,12 @@ class JobDetailHrController extends GetxController {
       final response = await _jobService.closeJob(int.parse(job.value!.id));
 
       if (response.status.hasError || response.body?['success'] != true) {
+        final errorMsg = response.body?['message']?.toString() ?? 
+            'Failed to close job. Status: ${response.statusCode}, Error: ${response.statusText}';
+        print('Close Job Error: $errorMsg, Body: ${response.body}');
         Get.snackbar(
           'Error',
-          response.body?['message']?.toString() ?? 'Failed to close job.',
+          errorMsg,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
@@ -197,7 +201,25 @@ class JobDetailHrController extends GetxController {
         return;
       }
 
-      job.value = job.value!.copyWith(status: 'closed', statusLabel: 'Closed');
+      final data = response.body?['data'];
+      final newStatus = data?['status']?.toString() ?? 'closed';
+      final newStatusLabel = data?['status_label']?.toString() ?? 'Ditutup';
+
+      job.value = job.value!.copyWith(status: newStatus, statusLabel: newStatusLabel);
+
+      // Sync changes with JobsListController if registered
+      if (Get.isRegistered<JobsListController>()) {
+        final listController = Get.find<JobsListController>();
+        final index = listController.jobs.indexWhere((j) => j.id == job.value!.id);
+        if (index != -1) {
+          listController.jobs[index] = listController.jobs[index].copyWith(
+            status: newStatus,
+            statusLabel: newStatusLabel,
+          );
+          listController.jobs.refresh();
+        }
+      }
+
       Get.snackbar(
         'Job Closed',
         'Vacancy has been closed successfully.',

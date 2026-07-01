@@ -8,7 +8,6 @@ class NavigationService extends GetxService {
   static final _hrRoutes = [
     Routes.HOME,
     Routes.JOBS_LIST,
-    Routes.ANALYTICS,
     Routes.PROFILE,
   ];
 

@@ -43,8 +43,6 @@ void main() {
         reason: 'Dashboard tab visible');
     expect(find.text('Jobs'), findsWidgets,
         reason: 'Jobs tab visible');
-    expect(find.text('Analytic'), findsWidgets,
-        reason: 'Analytic tab visible');
     expect(find.text('Profile'), findsWidgets,
         reason: 'Profile tab visible');
 

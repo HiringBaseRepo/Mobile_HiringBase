@@ -9,7 +9,6 @@ abstract class Routes {
   static const CREATE_JOB = _Paths.CREATE_JOB;
   static const JOB_DETAIL_HR = _Paths.JOB_DETAIL_HR;
   static const CANDIDATE_DETAIL = _Paths.CANDIDATE_DETAIL;
-  static const ANALYTICS = _Paths.ANALYTICS;
   static const PROFILE = _Paths.PROFILE;
   static const SELECTION = _Paths.SELECTION;
   static const PUBLIC_VACANCY = _Paths.PUBLIC_VACANCY;
@@ -33,7 +32,6 @@ abstract class _Paths {
   static const CREATE_JOB = '/create-job';
   static const JOB_DETAIL_HR = '/job-detail-hr';
   static const CANDIDATE_DETAIL = '/candidate-detail';
-  static const ANALYTICS = '/analytics';
   static const PROFILE = '/profile';
   static const SELECTION = '/selection';
   static const PUBLIC_VACANCY = '/public-vacancy';

@@ -22,7 +22,6 @@ void main() {
     // ── 2. Verify bottom nav tabs visible ──
     expect(find.text('Dashboard'), findsWidgets, reason: 'Dashboard tab visible');
     expect(find.text('Jobs'), findsWidgets, reason: 'Jobs tab visible');
-    expect(find.text('Analytic'), findsWidgets, reason: 'Analytic tab visible');
     expect(find.text('Profile'), findsWidgets, reason: 'Profile tab visible');
 
     // ── 3. Navigate to each tab ──
@@ -30,12 +29,6 @@ void main() {
     await pumpUntil(tester, find.byIcon(Icons.add));
     expect(find.byIcon(Icons.add), findsOneWidget,
         reason: 'Jobs tab has add button');
-
-    await navigateToTab(tester, 'Analytic');
-    await tester.pump(TestConfig.shortWait);
-    // Analytics screen should be visible
-    expect(find.text('Analytic'), findsWidgets,
-        reason: 'Analytic screen visible');
 
     await navigateToTab(tester, 'Profile');
     await tester.pump(TestConfig.shortWait);

@@ -48,10 +48,6 @@ class AppBottomNav extends StatelessWidget {
       label: 'Jobs',
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.analytics_outlined),
-      label: 'Analytic',
-    ),
-    BottomNavigationBarItem(
       icon: Icon(Icons.person_outline),
       label: 'Profile',
     ),

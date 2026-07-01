@@ -73,30 +73,6 @@ class PublishControlStep extends StatelessWidget {
                 value: controller.publishMode.value,
                 onChanged: (v) => controller.publishMode.value = v!,
               )),
-              const SizedBox(height: 25),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined, size: 20, color: AppColors.textTertiary),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Text("Schedule Publish Date", style: AppTextStyles.subHeader2),
-                  ),
-                  Obx(() => Switch(
-                    value: controller.isScheduled.value,
-                    onChanged: (v) => controller.isScheduled.value = v,
-                    activeThumbColor: AppColors.primary,
-                  )),
-                ],
-              ),
-              Obx(() => controller.isScheduled.value 
-                ? Column(
-                    children: [
-                      const SizedBox(height: 15),
-                      const JobTextField(hint: "Select Date & Time"),
-                    ],
-                  )
-                : const SizedBox.shrink()
-              ),
             ],
           ),
         ),

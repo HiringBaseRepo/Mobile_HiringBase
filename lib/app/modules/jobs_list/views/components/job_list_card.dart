@@ -40,7 +40,7 @@ class JobListCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _StatusBadge(status: job.status),
+                _StatusBadge(status: job.status, statusLabel: job.statusLabel),
                 Text(job.postedAt, style: AppTextStyles.caption),
               ],
             ),
@@ -70,7 +70,8 @@ class JobListCard extends StatelessWidget {
 
 class _StatusBadge extends StatelessWidget {
   final String status;
-  const _StatusBadge({required this.status});
+  final String statusLabel;
+  const _StatusBadge({required this.status, required this.statusLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        status.toUpperCase(),
+        statusLabel.toUpperCase(),
         style: AppTextStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.bold,

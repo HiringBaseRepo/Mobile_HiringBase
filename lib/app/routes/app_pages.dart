@@ -8,8 +8,6 @@ import '../modules/jobs/bindings/jobs_binding.dart';
 import '../modules/jobs/views/jobs_view.dart';
 import '../modules/candidate_detail/bindings/candidate_detail_binding.dart';
 import '../modules/candidate_detail/views/candidate_detail_view.dart';
-import '../modules/analytics/bindings/analytics_binding.dart';
-import '../modules/analytics/views/analytics_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/views/aktivitas_view.dart';
@@ -83,12 +81,6 @@ class AppPages {
       name: _Paths.CANDIDATE_DETAIL,
       page: () => const CandidateDetailView(),
       binding: CandidateDetailBinding(),
-      middlewares: [AuthMiddleware()],
-    ),
-    GetPage(
-      name: _Paths.ANALYTICS,
-      page: () => const AnalyticsView(),
-      binding: AnalyticsBinding(),
       middlewares: [AuthMiddleware()],
     ),
     GetPage(

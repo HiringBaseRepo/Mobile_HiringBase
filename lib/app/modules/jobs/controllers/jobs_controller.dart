@@ -76,8 +76,6 @@ class JobsController extends GetxController {
   final administrativeWeight = 5.0.obs;
 
   final publishMode = 'public'.obs; // 'public' | 'private'
-  final isScheduled = false.obs;
-  final scheduledDate = RxnString();
   final publishedApplyCode = RxnString(); // populated after step 4 succeeds
 
   double get totalWeight =>
@@ -266,7 +264,7 @@ class JobsController extends GetxController {
       final response = await _jobService.publishJob(
         jobId: _createdJobId!,
         mode: publishMode.value,
-        scheduledAt: isScheduled.value ? scheduledDate.value : null,
+        scheduledAt: null,
       );
 
       if (response.status.hasError || response.body?['success'] != true) {

@@ -156,7 +156,10 @@ class JobService extends GetConnect {
     return patch<Map<String, dynamic>>(
       '/jobs/$jobId/close',
       {},
-      headers: _authHeaders,
+      headers: {
+        ..._authHeaders,
+        'Content-Type': 'application/json',
+      },
     );
   }
 

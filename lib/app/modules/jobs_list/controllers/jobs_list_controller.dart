@@ -29,7 +29,6 @@ class JobsListController extends GetxController {
     'Published': 'published',
     'Draft':     'draft',
     'Closed':    'closed',
-    'Scheduled': 'scheduled',
   };
 
   List<String> get filterOptions => _filterMap.keys.toList();
@@ -146,10 +145,13 @@ class JobsListController extends GetxController {
   Future<void> closeJob(String jobId) async {
     try {
       final response = await _jobService.closeJob(int.parse(jobId));
-      if (response.status.hasError) {
+      if (response.status.hasError || response.body?['success'] != true) {
+        final errorMsg = response.body?['message']?.toString() ?? 
+            'Failed to close job. Status: ${response.statusCode}, Error: ${response.statusText}';
+        print('Close Job Error (List): $errorMsg, Body: ${response.body}');
         Get.snackbar(
           'Error',
-          'Failed to close job. Please try again.',
+          errorMsg,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.error.withValues(alpha: 0.1),
           colorText: AppColors.error,
